@@ -56,7 +56,7 @@ El resto de tablas (pagos, compras, consumos, movimientos, mensajes, toques NFC)
 | `kit_por_tipo` | `tipo_id` × `producto_id` → `cantidad`, `por` (`limpieza`/`persona`). | |
 | `movimientos_insumo` | Historial de stock: `tipo` (compra, limpieza, venta, merma, conteo, anulacion, consumo_diario), `cantidad` con signo, `stock_resultante`. | Solo inserción. Su trigger cambia `productos.stock` y las alertas. |
 | `compras` / `compras_lineas` | Facturas: proveedor, número, fecha, foto, total; líneas con cantidad y costo. `anulada_en`. | No se repite proveedor + número activo. |
-| `consumos` | Ventas: `cantidad`, precio y costo congelados, `total_centavos` (generado), `reserva_id` (al cuarto) o `medio` + `pagado_en`. | Pendiente = `reserva_id` y `medio` null. |
+| `consumos` | Ventas: `cantidad`, precio y costo congelados, `total_centavos` (generado), `reserva_id` (al cuarto) o `medio` + `pagado_en`. | Pendiente = `reserva_id` y `medio` null. Anulada = `anulado_en` no null (filtrar siempre `anulado_en is null`). |
 | `reportes_mantenimiento` | Daños: nota, foto, quién; `resuelto_en`. | |
 | `alertas` | `tipo` (stock_bajo, por_limpiar, mantenimiento, cuarto_no_listo, conflicto_ical), `mensaje` listo para mostrar/enviar, `resuelta_en`, `notificada_en`. | **Realtime.** Una sola `stock_bajo` abierta por producto. |
 | `mensajes_whatsapp` | Entrantes/salientes. `wa_message_id` único (webhook idempotente). | Escribe service_role. |
@@ -92,6 +92,7 @@ Storage: bucket privado `hotel`, ruta `<hotel_id>/<comprobantes|danos|facturas|p
 | `ajustar_stock(p_producto uuid, p_tipo tipo_movimiento, p_cantidad numeric, p_nota text = null)` | duena, recepcion | `conteo` (cantidad = lo que hay), `merma` (lo perdido) o `compra` suelta. Devuelve el stock nuevo. Así se crea el stock de un producto nuevo. |
 | `cargar_factura(p_hotel uuid, p_proveedor text, p_numero text, p_fecha date, p_lineas jsonb, p_foto_path text = null)` | duena, recepcion | `p_lineas = [{producto_id, cantidad, costo_unit_centavos}]`. Suma stock, guarda costo en el producto. Devuelve `uuid` de la compra. |
 | `anular_factura(p_compra uuid, p_motivo text = null)` | duena | Revierte el stock de cada línea. |
+| `anular_consumo(p_consumo uuid, p_motivo text = null)` | duena, recepcion | Anula una venta: devuelve el stock con un movimiento `anulacion` y marca `consumos.anulado_en` (la fila queda como historial). Ya no cuenta en `cuadre_dia`, `cuenta_reserva`, `check_out` ni `dinero_mes_centavos`. Falla si ya estaba anulada. |
 | `registrar_consumo(p_producto uuid, p_cantidad numeric, p_reserva uuid = null, p_medio medio_pago = null)` | duena, recepcion | Exactamente uno: al cuarto (reserva confirmada/en curso) o pagado ya. Exige precio de venta. Descuenta stock. Devuelve `uuid`. |
 | `cuadre_dia(p_hotel uuid, p_fecha date = hoy)` | duena, recepcion | `{fecha, total_centavos, costo_centavos, margen_centavos, sin_costo, por_producto:[{producto, categoria, cantidad, total_centavos, margen_centavos}], por_categoria:[{categoria, total_centavos}], por_medio:[{medio: efectivo|transferencia|al_cuarto, total_centavos}]}` |
 | `resumen_inicio(p_hotel uuid)` | duena, recepcion | `{cuartos, ocupados, ocupacion_pct, por_limpiar, limpiando, en_arreglo, llegadas_hoy:[{reserva_id, codigo, habitacion, huesped, personas, estado}], salidas_hoy:[{reserva_id, codigo, habitacion, huesped, personas, estado}], insumos_bajos:[{producto_id, nombre, stock, minimo, unidad}], dinero_mes_centavos}` (pagos + consumos cobrados del mes). |
@@ -103,7 +104,7 @@ CRUD directo con supabase-js (RLS): `reservas` (crear/mover/editar desde el cale
 - **Estados** (`habitaciones.estado`): libre → ocupado → por_limpiar → limpiando → libre; limpiando → por_limpiar (deshacer); cualquiera → mantenimiento; mantenimiento → libre/por_limpiar solo la dueña.
 - **Reservas**: sin cruces (prereserva, confirmada y en curso bloquean; salida y entrada el mismo día no chocan). Personas ≤ capacidad. Canal sale de la fuente (booking/airbnb → su canal; resto → directo). Total = tarifa de cada noche según su temporada; sin tarifa directa la reserva falla; Booking/Airbnb sin tarifa quedan con total null hasta cargarlo.
 - **Stock**: solo por `movimientos_insumo`. Null = sin contar: las salidas no lo tocan; una compra o un conteo lo empiezan. Puede quedar negativo, pero siempre con alerta.
-- **Alerta de stock**: al quedar en o bajo el mínimo (o negativo) se abre una sola; se actualiza su mensaje mientras siga baja y se cierra al reponer.
+- **Alerta de stock**: al quedar en o bajo el mínimo (o negativo) se abre una sola; el mensaje escribe decimales con coma ("1,5 kg"); se actualiza mientras siga baja y se cierra al reponer.
 
 ## Tareas programadas (`pg_cron`, migración `…600_cron.sql`)
 - `liberar-prereservas` cada 5 min → `privado.liberar_prereservas_vencidas()`.

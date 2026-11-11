@@ -344,12 +344,15 @@ export type Database = {
       };
       consumos: {
         Row: {
+          anulado_en: string | null;
+          anulado_por: string | null;
           cantidad: number;
           costo_unit_centavos: number | null;
           creado_en: string;
           hotel_id: string;
           id: string;
           medio: Database["public"]["Enums"]["medio_pago"] | null;
+          motivo_anulacion: string | null;
           pagado_en: string | null;
           precio_unit_centavos: number;
           producto_id: string;
@@ -359,12 +362,15 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          anulado_en?: string | null;
+          anulado_por?: string | null;
           cantidad: number;
           costo_unit_centavos?: number | null;
           creado_en?: string;
           hotel_id: string;
           id?: string;
           medio?: Database["public"]["Enums"]["medio_pago"] | null;
+          motivo_anulacion?: string | null;
           pagado_en?: string | null;
           precio_unit_centavos: number;
           producto_id: string;
@@ -373,12 +379,15 @@ export type Database = {
           total_centavos?: never;
         };
         Update: {
+          anulado_en?: string | null;
+          anulado_por?: string | null;
           cantidad?: number;
           costo_unit_centavos?: number | null;
           creado_en?: string;
           hotel_id?: string;
           id?: string;
           medio?: Database["public"]["Enums"]["medio_pago"] | null;
+          motivo_anulacion?: string | null;
           pagado_en?: string | null;
           precio_unit_centavos?: number;
           producto_id?: string;
@@ -1274,6 +1283,10 @@ export type Database = {
           p_tipo: Database["public"]["Enums"]["tipo_movimiento"];
         };
         Returns: number;
+      };
+      anular_consumo: {
+        Args: { p_consumo: string; p_motivo?: string };
+        Returns: undefined;
       };
       anular_factura: {
         Args: { p_compra: string; p_motivo?: string };
