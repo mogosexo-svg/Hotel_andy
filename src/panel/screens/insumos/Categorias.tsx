@@ -1,19 +1,17 @@
 import { useState } from 'react';
 import { Boton } from '../../ui/kit';
-import { Icon } from '../../ui/Icon';
+import { CLAVES_CAT, Icon, IconoCat, NOMBRE_CAT, claveCat } from '../../ui/Icon';
 import { useToast } from '../../ui/Toast';
 import type { Cat, InsumosApi } from '../../data/insumos';
 import { Campo, HojaEstable } from './piezas';
 
-/** Íconos para elegir: la dueña los reconoce de un vistazo. */
-export const ICONOS_CAT = ['🧻', '🛏️', '🧽', '🏊', '🥤', '🍫', '🧴', '🧺', '🔧', '💡', '🍽️', '📦'];
-
 function SelectorIcono({ valor, onChange }: { valor: string | null; onChange: (i: string) => void }) {
+  const actual = claveCat(valor);
   return (
     <div className="ins-iconos" role="radiogroup" aria-label="Ícono">
-      {ICONOS_CAT.map((i) => (
-        <button key={i} type="button" role="radio" aria-checked={valor === i} aria-label={`Ícono ${i}`} className="ins-icono-op" onClick={() => onChange(i)}>
-          {i}
+      {CLAVES_CAT.map((i) => (
+        <button key={i} type="button" role="radio" aria-checked={actual === i} aria-label={NOMBRE_CAT[i]} title={NOMBRE_CAT[i]} className="ins-icono-op" onClick={() => onChange(i)}>
+          <Icon name={i} />
         </button>
       ))}
     </div>
@@ -36,7 +34,7 @@ export function Categorias({ api, onCerrar }: { api: InsumosApi; onCerrar: () =>
   function abrir(c: Cat | 'nueva') {
     setEditando(c === 'nueva' ? 'nueva' : c.id);
     setNombre(c === 'nueva' ? '' : c.nombre);
-    setIcono(c === 'nueva' ? ICONOS_CAT[11] : c.icono);
+    setIcono(c === 'nueva' ? 'otros' : claveCat(c.icono));
     setError(null);
   }
 
@@ -144,7 +142,7 @@ export function Categorias({ api, onCerrar }: { api: InsumosApi; onCerrar: () =>
           {cats.map((c, i) => (
             <li key={c.id} className="ins-cat">
               <span className="ins-cat__ico" aria-hidden="true">
-                {c.icono ?? '📦'}
+                <IconoCat clave={c.icono} />
               </span>
               <span className="ins-cat__nombre">
                 {c.nombre}

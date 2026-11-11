@@ -41,10 +41,13 @@ export function Login() {
         <p className="login__logo">Hotel Andy</p>
         <h1 className="login__lema">Todo el hotel, en una sola pantalla.</h1>
         <p className="login__sub">Cuartos, limpieza e insumos al momento, sin preguntarle a nadie.</p>
-        <svg className="login__ola" viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden="true">
-          <path d="M0 30c40 0 40-20 80-20s40 20 80 20 40-20 80-20 40 20 80 20 40-20 80-20v50H0z" />
-        </svg>
       </section>
+
+      <svg className="login__olas" viewBox="0 0 1600 120" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 40q100-40 200 0t200 0 200 0 200 0 200 0 200 0 200 0 200 0" />
+        <path d="M0 40q100-40 200 0t200 0 200 0 200 0 200 0 200 0 200 0 200 0" />
+        <path d="M0 40q100-40 200 0t200 0 200 0 200 0 200 0 200 0 200 0 200 0" />
+      </svg>
 
       <section className="login__form">
         {enviado ? (

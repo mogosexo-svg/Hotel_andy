@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/shell.css';
@@ -76,22 +76,34 @@ function Shell() {
   const [pagina, setPagina] = useState<Pagina>(() => paginaDeHash(window.location.hash, perfil.rol));
   const [paleta, setPaleta] = useState(false);
   const [masAbierto, setMasAbierto] = useState(false);
+  // Dirección de la transición entre pantallas: hacia adelante entra desde la derecha, hacia atrás desde la izquierda.
+  const [dx, setDx] = useState(0);
+  const pagActual = useRef(pagina);
+  const mover = useCallback(
+    (nueva: Pagina) => {
+      const orden = paginas.map((p) => p.id);
+      setDx(Math.sign(orden.indexOf(nueva) - orden.indexOf(pagActual.current)) * 28);
+      pagActual.current = nueva;
+      setPagina(nueva);
+    },
+    [paginas],
+  );
 
   const ir = useCallback(
     (p: Pagina) => {
       if (window.location.hash !== `#/${p}`) window.history.pushState(null, '', `#/${p}`);
-      setPagina(p);
+      mover(p);
       setMasAbierto(false);
       window.scrollTo({ top: 0 });
     },
-    [],
+    [mover],
   );
 
   useEffect(() => {
-    const onHash = () => setPagina(paginaDeHash(window.location.hash, perfil.rol));
+    const onHash = () => mover(paginaDeHash(window.location.hash, perfil.rol));
     window.addEventListener('popstate', onHash);
     return () => window.removeEventListener('popstate', onHash);
-  }, [perfil.rol]);
+  }, [perfil.rol, mover]);
 
   useEffect(() => {
     if (perfil.rol === 'limpieza') return;
@@ -133,7 +145,13 @@ function Shell() {
       {!solo && (
         <nav className="nav" aria-label="Secciones">
           <p className="marca nav__marca">Hotel Andy</p>
-          <ul>
+          <ul
+            style={{
+              ['--n' as string]: principales + (extras.length ? 1 : 0),
+              ['--i-m' as string]: extraActiva ? principales : Math.max(0, paginas.findIndex((p) => p.id === pagina)),
+              ['--i-d' as string]: Math.max(0, paginas.findIndex((p) => p.id === pagina)),
+            }}
+          >
             {paginas.map((p, i) => (
               <li key={p.id} className={i >= principales ? 'nav__extra' : undefined}>
                 <a
@@ -193,7 +211,7 @@ function Shell() {
         </nav>
       )}
 
-      <main className="contenido" id="contenido">
+      <main className="contenido" id="contenido" style={{ ['--dx' as string]: `${dx}px` }}>
         {pagina === 'inicio' && <Inicio ir={ir} />}
         {pagina === 'cuartos' && <Mapa />}
         {pagina === 'reservas' && <Reservas />}

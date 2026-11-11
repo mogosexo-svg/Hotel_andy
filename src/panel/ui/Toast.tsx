@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Icon } from './Icon';
+import { sinEmoji } from '../lib/format';
 
 interface ToastItem {
   id: number;
@@ -47,7 +48,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {items.map((t) => (
           <div key={t.id} className={`toast ${t.error ? 'toast--error' : ''} ${t.saliendo ? 'toast--sale' : ''}`}>
             {t.error && <Icon name="alerta" />}
-            <span className="toast__texto">{t.texto}</span>
+            <span className="toast__texto">{sinEmoji(t.texto)}</span>
             {t.deshacer && (
               <button
                 type="button"

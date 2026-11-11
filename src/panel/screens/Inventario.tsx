@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import '../styles/insumos.css';
 import { tomarAccionInsumos, useInsumos, type AlertaStock, type Prod } from '../data/insumos';
-import { numero } from '../lib/format';
+import { numero, sinEmoji } from '../lib/format';
 import { esBajo } from '../lib/stock';
 import { Aviso, BarraStock, Boton, ErrorCarga, Skeleton } from '../ui/kit';
-import { Icon } from '../ui/Icon';
+import { Icon, IconoCat } from '../ui/Icon';
 import { coincide } from './insumos/logica';
 import { Categorias } from './insumos/Categorias';
 import { CargarFactura } from './insumos/CargarFactura';
@@ -17,9 +17,9 @@ import { Venta } from './insumos/Venta';
 type Filtro = 'todo' | 'bajos' | 'inactivos' | string;
 type Pestana = 'insumos' | 'facturas' | 'cuadre';
 
-/** "⚠️ Se está acabando Cloro: quedan 4 kg (…)" → "Quedan 4 kg (…)": el grupo ya dice que se está acabando. */
+/** Alerta de la base "Se está acabando Cloro: quedan 4 kg (…)" → "Quedan 4 kg (…)": el grupo ya dice que se está acabando; también se quita cualquier emoji. */
 function textoAlerta(a: AlertaStock): string {
-  const t = a.mensaje.replace(/^[^\p{L}\p{N}]+/u, '');
+  const t = sinEmoji(a.mensaje).replace(/^[^\p{L}\p{N}]+/u, '');
   const resto = t.includes(': ') ? t.slice(t.indexOf(': ') + 2) : t;
   return resto.charAt(0).toUpperCase() + resto.slice(1);
 }
@@ -214,11 +214,9 @@ export function Inventario() {
                 return (
                   <div className="grupo" key={cat.id}>
                     <h2 className="grupo__titulo">
-                      {cat.icono && (
-                        <span className="grupo__ico" aria-hidden="true">
-                          {cat.icono}
-                        </span>
-                      )}
+                      <span className="grupo__ico" aria-hidden="true">
+                        <IconoCat clave={cat.icono} size="sm" />
+                      </span>
                       {cat.nombre}
                       {filtro !== 'inactivos' && (
                         <span className={`grupo__estado ${n ? 'is-alerta' : ''}`}>{n ? `${n} por comprar` : sc ? `${sc} sin contar` : 'Todo bien'}</span>

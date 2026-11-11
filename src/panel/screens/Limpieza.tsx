@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import type { Database } from '../../lib/database.types';
 import { useCuartos } from '../data/cuartos';
@@ -7,6 +7,7 @@ import { usePerfil } from '../data/sesion';
 import { fechaCorta, hace } from '../lib/format';
 import { Aviso, Boton, ChipEstado, ErrorCarga, Hoja, Skeleton } from '../ui/kit';
 import { Icon } from '../ui/Icon';
+import { useFlip } from '../ui/flip';
 import { FormDanio } from './HojaCuarto';
 
 type Fila = Database['public']['Functions']['cuartos_por_limpiar']['Returns'][number];
@@ -39,6 +40,8 @@ export function Limpieza() {
     .filter(({ c }) => c && (c.estado === 'por_limpiar' || c.estado === 'limpiando'));
   const porLimpiar = items.filter(({ c }) => c?.estado === 'por_limpiar').length;
   const limpiando = items.length - porLimpiar;
+  const listaRef = useRef<HTMLUListElement>(null);
+  useFlip(listaRef, items.map(({ f }) => f.habitacion_id).join());
 
   async function correr(f: Fila, fn: () => Promise<boolean>) {
     setOcupados((s) => new Set(s).add(f.habitacion_id));
@@ -76,12 +79,12 @@ export function Limpieza() {
       ) : items.length === 0 ? (
         <Aviso icono="libre" titulo="Todo está limpio" texto="Cuando alguien haga check-out, el cuarto aparece aquí al instante." />
       ) : (
-        <ul className="limpieza-lista">
+        <ul className="limpieza-lista" ref={listaRef}>
           {items.map(({ f, c }, i) => {
             if (!c) return null;
             const trabajando = c.estado === 'limpiando';
             return (
-              <li key={f.habitacion_id} className={`tarea e-${c.estado}`} style={{ ['--i' as string]: i }}>
+              <li key={f.habitacion_id} data-flip={f.habitacion_id} className={`tarea e-${c.estado}`} style={{ ['--i' as string]: i }}>
                 <div className="tarea__cab">
                   <span className="tarea__num">{f.numero}</span>
                   <div className="tarea__quien">

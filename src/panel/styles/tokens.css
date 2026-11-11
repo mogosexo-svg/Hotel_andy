@@ -1,59 +1,71 @@
 /* Sistema de diseño del panel · Hotel Andy
-   Paleta tranquila de arena y tinta; el color vive SOLO en los estados y en la acción principal. */
-@import '@fontsource-variable/figtree';
+   Blanco puro, tinta azul marino y una gama de azules claros (cielo, celeste) como único acento. El color de estado vive solo en los estados. */
+@import '@fontsource-variable/manrope';
+@import '@fontsource/instrument-serif';
 
 :root {
   color-scheme: light;
 
-  /* Superficies */
-  --bg: #f5f2ea;
+  /* Superficies: todo blanco; la separación son líneas frías y sombras suaves */
+  --bg: #ffffff;
   --surface: #ffffff;
-  --surface-2: #eeeadf;
-  --line: #e0dbcd;
-  --line-strong: #c9c3b1;
+  --surface-2: #f3f6f9; /* solo hover, pistas de barras y skeleton */
+  --line: #e4eaf0;
+  --line-strong: #c3ced8;
+  --line-input: #8998a6; /* borde de campos: ≥ 3:1 sobre blanco */
 
-  /* Tinta (contraste sobre --bg: 14.2 / 7.1 / 4.9) */
-  --ink: #1a2a2e;
-  --ink-2: #435257;
-  --ink-3: #5b696d;
+  /* Tinta azul marino (contraste sobre blanco: 17.5 / 9.3 / 5.6) */
+  --ink: #0a1b2e;
+  --ink-2: #33475b;
+  --ink-3: #566a7e;
 
-  /* Marca: mar profundo, solo para acción principal y navegación activa */
-  --brand: #0d5666;
-  --brand-hover: #0a4452;
-  --brand-soft: #dcebee;
+  /* Marca: azules claros (cielo y celeste). El marino es solo tinta de texto */
+  --brand: #1a6fb0;
+  --brand-hover: #145a93;
+  --brand-soft: #eaf4fd; /* celeste muy claro: selección, hover, velos */
+  --agua: #5db8ee; /* cielo: realces, barras, indicadores */
+  --agua-suave: #cde7fa;
   --on-brand: #ffffff;
 
-  /* Estados: fuerte (íconos, bordes), tinte (fondo), tinta (texto) */
-  --libre: #1f7a4d;
-  --libre-tinte: #ddf1e4;
-  --libre-tinta: #12533a;
-  --ocupado: #c2362d;
-  --ocupado-tinte: #fbe1de;
-  --ocupado-tinta: #8a2019;
-  --por-limpiar: #d4700f;
-  --por-limpiar-tinte: #fde7cf;
-  --por-limpiar-tinta: #85470a;
-  --limpiando: #9a7500;
-  --limpiando-tinte: #faefb8;
-  --limpiando-tinta: #5f4a00;
-  --mantenimiento: #4a5057;
-  --mantenimiento-tinte: #e2e4e6;
-  --mantenimiento-tinta: #30353b;
+  /* Estados: fuerte (ícono, punto, borde), tinte (chip), tinta (texto) */
+  --libre: #1a8a5a;
+  --libre-tinte: #e7f6ee;
+  --libre-tinta: #0f5a3b;
+  --ocupado: #d03a35;
+  --ocupado-tinte: #fdebea;
+  --ocupado-tinta: #8f211d;
+  --por-limpiar: #ec7a10;
+  --por-limpiar-tinte: #fff0e0;
+  --por-limpiar-tinta: #8a4506;
+  --limpiando: #d9a400;
+  --limpiando-tinte: #fff7d6;
+  --limpiando-tinta: #675000;
+  --mantenimiento: #46525f;
+  --mantenimiento-tinte: #eceff2;
+  --mantenimiento-tinta: #2b343d;
 
-  /* Datos (series de gráficos, validadas con dataviz) */
-  --serie-1: #2a78d6;
-  --serie-2: #6250d6;
-  --serie-3: #e87ba4;
-  --grid: #e7e2d4;
+  /* Datos: paleta fría (series de gráficos) */
+  --serie-1: #2a87cf;
+  --serie-2: #7dbbea;
+  --serie-3: #b8dbf4;
+  --grid: #e9eff5;
 
-  /* Tipografía */
-  --font: 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Vidrio: blanco translúcido con borde de 1 px. Nunca bajo textos largos. */
+  --glass: rgb(255 255 255 / 0.86);
+  --glass-fuerte: rgb(255 255 255 / 0.93);
+  --glass-linea: rgb(10 27 46 / 0.09);
+  --glass-blur: blur(18px) saturate(1.5);
+
+  /* Tipografía: serif display para titulares y cifras; sans legible para todo lo demás */
+  --font: 'Manrope Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
   --t-base: 1.125rem; /* 18 px: mínimo del cuerpo */
   --t-sm: 1rem; /* 16 px: solo etiquetas secundarias y datos densos */
   --t-lg: 1.375rem;
   --t-xl: 1.75rem;
   --t-2xl: 2.25rem;
-  --t-num: clamp(2.75rem, 11vw, 3.75rem);
+  --t-num: 2.5rem; /* cifras: sans, tabulares, sobrias */
+  --t-label: 0.875rem; /* etiquetas en mayúsculas espaciadas (decorativas; el dato va a 16+) */
 
   /* Espacio (escala de 4) */
   --s-1: 0.25rem;
@@ -66,27 +78,39 @@
   --gutter: 1rem;
 
   /* Forma y profundidad */
-  --r-sm: 10px;
-  --r-md: 14px;
-  --r-lg: 20px;
+  --r-sm: 8px;
+  --r-md: 10px;
+  --r-lg: 12px;
+  --r-hoja: 16px;
   --touch: 3rem; /* 48 px */
-  --shadow-1: 0 1px 2px rgb(26 42 46 / 0.06), 0 2px 8px rgb(26 42 46 / 0.04);
-  --shadow-2: 0 2px 4px rgb(26 42 46 / 0.08), 0 12px 32px rgb(26 42 46 / 0.12);
-  --shadow-sheet: 0 -8px 40px rgb(26 42 46 / 0.18);
+  --shadow-1: 0 1px 2px rgb(10 27 46 / 0.04);
+  --shadow-2: 0 1px 3px rgb(10 27 46 / 0.06), 0 8px 24px rgb(10 27 46 / 0.08);
+  --shadow-sheet: 0 -10px 50px rgb(10 27 46 / 0.16);
 
   /* Movimiento */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --resorte: cubic-bezier(0.34, 1.32, 0.5, 1);
   --d-1: 150ms;
   --d-2: 250ms;
   --d-3: 400ms;
 
   --nav-h: 4.5rem;
-  --side-w: 15rem;
+  --side-w: 15.5rem;
+}
+
+/* Si la persona pide menos transparencia, el vidrio pasa a blanco opaco (contraste primero) */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass: #ffffff;
+    --glass-fuerte: #ffffff;
+    --glass-blur: none;
+  }
 }
 
 @media (min-width: 1024px) {
   :root {
-    --gutter: 2rem;
-    --t-num: 3.5rem;
+    --gutter: 2.5rem;
+    --t-num: 2.75rem;
+    --t-2xl: 2.75rem;
   }
 }

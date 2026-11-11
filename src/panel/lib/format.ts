@@ -67,3 +67,8 @@ export function unidadPlural(unidad: string, n: number): string {
   if (n === 1 || unidad.length <= 2) return unidad;
   return /[aeiouáéíóú]$/i.test(unidad) ? unidad + 's' : unidad + 'es';
 }
+
+/** Quita emojis de un texto que viene de la base: el panel solo dibuja íconos propios. */
+export function sinEmoji(t: string): string {
+  return t.replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, '').replace(/\s{2,}/g, ' ').trim();
+}

@@ -5,13 +5,6 @@ import type { FilaIngreso } from './Inicio';
 const H = 190;
 const M = { t: 12, r: 8, b: 28, l: 34 };
 
-/** Barra con 4 px redondeados arriba y base recta. */
-function barra(x: number, y: number, w: number, h: number): string {
-  if (h <= 0) return '';
-  const r = Math.min(4, w / 2, h);
-  return `M${x},${y + h}V${y + r}a${r},${r} 0 0 1 ${r},-${r}h${w - 2 * r}a${r},${r} 0 0 1 ${r},${r}V${y + h}z`;
-}
-
 /** Cuartos ocupados por día: una sola serie, sin leyenda; el título la nombra. */
 export function GraficoOcupacion({ serie }: { serie: FilaIngreso[] }) {
   const dias = useMemo(() => {
@@ -40,10 +33,18 @@ export function GraficoOcupacion({ serie }: { serie: FilaIngreso[] }) {
   const iw = W - M.l - M.r;
   const ih = H - M.t - M.b;
   const slot = iw / Math.max(1, dias.length);
-  const bw = Math.min(16, slot * 0.6);
+  const px = (i: number) => M.l + i * slot + slot / 2;
   const y = (v: number) => M.t + ih - (v / max) * ih;
   const ticks = [0, Math.round(max / 2), max];
+  const linea = dias.map((d, i) => `${i ? 'L' : 'M'}${px(i)},${y(d.ocupados)}`).join(' ');
+  const [ultimo, setUltimo] = useState(0);
+  useEffect(() => {
+    if (sel != null) setUltimo(sel);
+  }, [sel]);
   const s = sel != null ? dias[sel] : null;
+  const b = dias[Math.min(ultimo, dias.length - 1)];
+  const bx = b ? Math.min(Math.max(px(ultimo), 70), W - 70) : 0;
+  const by = b ? Math.max(0, y(b.ocupados) - 18) : 0;
 
   return (
     <figure className="grafico" ref={caja}>
@@ -56,32 +57,48 @@ export function GraficoOcupacion({ serie }: { serie: FilaIngreso[] }) {
           <span>Toca un día para ver el detalle</span>
         )}
       </div>
+      {b && (
+        <div className={`g-burbuja ${s ? 'is-on' : ''}`} style={{ ['--bx' as string]: `${bx}px`, ['--by' as string]: `${by + 40}px`, translate: '-50% -100%' }} aria-hidden="true">
+          {fechaCorta(b.dia)} · {b.ocupados} de {b.total}
+        </div>
+      )}
+      <div className="g-lienzo">
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Cuartos ocupados por día en los últimos 30 días" onPointerLeave={() => setSel(null)}>
         {ticks.map((t) => (
           <g key={t}>
-            <line x1={M.l} x2={W - M.r} y1={y(t)} y2={y(t)} className="g-grid" />
+            <line x1={M.l} x2={W - M.r} y1={y(t)} y2={y(t)} className={t === 0 ? 'g-eje' : 'g-grid'} />
             <text x={M.l - 8} y={y(t) + 5} textAnchor="end" className="g-txt">
               {t}
             </text>
           </g>
         ))}
-        {dias.map((d, i) => {
-          const x = M.l + i * slot + (slot - bw) / 2;
-          return (
-            <g key={d.dia}>
-              <path d={barra(x, y(d.ocupados), bw, M.t + ih - y(d.ocupados))} className={`g-barra ${sel === i ? 'is-sel' : ''}`} />
-              <rect
-                x={M.l + i * slot}
-                y={M.t}
-                width={slot}
-                height={ih}
-                fill="transparent"
-                onPointerEnter={() => setSel(i)}
-                onPointerDown={() => setSel(i)}
-              />
-            </g>
-          );
-        })}
+        {dias.length > 1 && (
+          <>
+            <defs>
+              <linearGradient id="g-area" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0" stopColor="var(--serie-1)" stopOpacity="0.22" />
+                <stop offset="1" stopColor="var(--serie-1)" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <path d={`${linea} L${px(dias.length - 1)},${M.t + ih} L${px(0)},${M.t + ih}Z`} fill="url(#g-area)" />
+            <path d={linea} className="g-linea" />
+          </>
+        )}
+        {s && sel != null && (
+          <>
+            <line x1={px(sel)} x2={px(sel)} y1={M.t} y2={M.t + ih} className="g-guia" />
+            <circle cx={px(sel)} cy={y(s.ocupados)} r="5" className="g-punto" />
+          </>
+        )}
+        {dias.length > 0 && <circle cx={px(dias.length - 1)} cy={y(dias[dias.length - 1].ocupados)} r="4" className="g-punto g-punto--hoy" />}
+        {dias.map((d, i) => (
+          <rect key={d.dia} x={M.l + i * slot} y={M.t} width={slot} height={ih} fill="transparent" onPointerEnter={() => setSel(i)} onPointerDown={() => setSel(i)} />
+        ))}
+        {dias.length > 0 && (
+          <text x={px(dias.length - 1)} y={y(dias[dias.length - 1].ocupados) - 10} textAnchor="end" className="g-etq">
+            Hoy {dias[dias.length - 1].ocupados}
+          </text>
+        )}
         {[0, Math.floor((dias.length - 1) / 2), dias.length - 1].map((i, k) =>
           dias[i] ? (
             <text key={k} x={M.l + i * slot + slot / 2} y={H - 6} textAnchor={k === 0 ? 'start' : k === 2 ? 'end' : 'middle'} className="g-txt">
@@ -90,6 +107,7 @@ export function GraficoOcupacion({ serie }: { serie: FilaIngreso[] }) {
           ) : null,
         )}
       </svg>
+      </div>
       <table className="sr-only">
         <caption>Cuartos ocupados por día</caption>
         <thead>
@@ -124,7 +142,7 @@ export function GraficoCanales({ serie }: { serie: FilaIngreso[] }) {
   const filas = useMemo(() => {
     const t = new Map<string, number>();
     serie.forEach((f) => t.set(f.canal, (t.get(f.canal) ?? 0) + f.ingresos_centavos));
-    return CANALES.map((c) => ({ ...c, total: t.get(c.id) ?? 0 }));
+    return CANALES.map((c) => ({ ...c, total: t.get(c.id) ?? 0 })).sort((a, b) => b.total - a.total);
   }, [serie]);
   const max = Math.max(1, ...filas.map((f) => f.total));
   const suma = filas.reduce((a, f) => a + f.total, 0);

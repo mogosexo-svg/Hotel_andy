@@ -91,40 +91,47 @@ function InicioDatos({ r, serie, ir }: { r: Resumen; serie: FilaIngreso[]; ir: (
   const hayDatos = useMemo(() => serie.some((f) => f.cuartos_ocupados > 0 || f.ingresos_centavos > 0), [serie]);
   return (
     <div className="inicio">
-      <button type="button" className="card tarjeta tarjeta--ocupacion" onClick={() => ir('cuartos')}>
-        <span className="card__titulo">Ocupación de hoy</span>
-        <span className="tarjeta__cifra">
-          <Contador valor={r.ocupados} />
-          <span className="tarjeta__de">de {r.cuartos} cuartos</span>
-        </span>
-        <span className="ocupacion__barra" aria-hidden="true">
-          <i style={{ ['--pct' as string]: r.cuartos ? r.ocupados / r.cuartos : 0 }} />
-        </span>
-        <span className="tarjeta__linea">
-          {Math.round(r.ocupacion_pct)} % ocupado · {libres} {libres === 1 ? 'libre' : 'libres'}
-        </span>
-        <span className="card__pie">
-          Ver los cuartos <Icon name="siguiente" size="sm" />
-        </span>
-      </button>
+      <div className="card kpis">
+        <button type="button" className="kpi" onClick={() => ir('cuartos')}>
+          <span className="card__titulo">Ocupación de hoy</span>
+          <span className="tarjeta__cifra">
+            <Contador valor={r.ocupados} />
+            <span className="tarjeta__de">de {r.cuartos} cuartos</span>
+          </span>
+          <span className="ocupacion__barra" aria-hidden="true">
+            <i style={{ ['--pct' as string]: r.cuartos ? r.ocupados / r.cuartos : 0 }} />
+          </span>
+          <span className="kpi__fila">
+            <span className="tarjeta__linea">
+              {Math.round(r.ocupacion_pct)} % ocupado · {libres} {libres === 1 ? 'libre' : 'libres'}
+            </span>
+            <span className="kpi__ir">
+              <span className="kpi__txt">Ver los cuartos</span> <Icon name="siguiente" size="sm" />
+            </span>
+          </span>
+        </button>
 
-      <button type="button" className="card tarjeta tarjeta--limpiar" onClick={() => ir('limpieza')}>
-        <span className="card__titulo">Por limpiar</span>
-        <span className="tarjeta__cifra">
-          <Contador valor={r.por_limpiar} />
-          <span className="tarjeta__de">{r.limpiando ? `${r.limpiando} limpiando ahora` : r.por_limpiar ? 'esperando' : 'todo limpio'}</span>
-        </span>
-        <span className="card__pie">
-          Ver limpieza <Icon name="siguiente" size="sm" />
-        </span>
-      </button>
+        <button type="button" className="kpi" onClick={() => ir('limpieza')}>
+          <span className="card__titulo">Por limpiar</span>
+          <span className="tarjeta__cifra">
+            <Contador valor={r.por_limpiar} />
+            <span className="tarjeta__de">{r.limpiando ? `${r.limpiando} limpiando ahora` : r.por_limpiar ? 'esperando' : 'todo limpio'}</span>
+          </span>
+          <span className="kpi__fila">
+            <span className="tarjeta__linea" />
+            <span className="kpi__ir">
+              <span className="kpi__txt">Ver limpieza</span> <Icon name="siguiente" size="sm" />
+            </span>
+          </span>
+        </button>
 
-      <div className="card tarjeta tarjeta--dinero">
-        <span className="card__titulo">Dinero del mes</span>
-        <span className="tarjeta__cifra">
-          <Contador valor={r.dinero_mes_centavos} formato={(n) => dinero(Math.round(n / 100) * 100)} />
-        </span>
-        <span className="tarjeta__linea">Pagos y consumos cobrados</span>
+        <div className="kpi">
+          <span className="card__titulo">Dinero del mes</span>
+          <span className="tarjeta__cifra">
+            <Contador valor={r.dinero_mes_centavos} formato={(n) => dinero(Math.round(n / 100) * 100)} />
+          </span>
+          <span className="tarjeta__linea">Pagos y consumos cobrados</span>
+        </div>
       </div>
 
       <div className="card tarjeta tarjeta--mov">
