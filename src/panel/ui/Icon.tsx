@@ -39,9 +39,46 @@ const P = {
   check: 'M5 12.5l4.5 4.5L19 7.5',
   factura: 'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h3',
   atras: 'M15 6l-6 6 6 6',
+  // Categorías de insumos (claves guardadas en `categorias.icono`)
+  bano: 'M3 12h18v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4zM6 12V6a2 2 0 0 1 4 0M7 19l-1 2M17 19l1 2',
+  lenceria: 'M3 19V6M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6M7 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z',
+  limpieza: 'M9 21h6a1 1 0 0 0 1-1v-7l-2-3h-4l-2 3v7a1 1 0 0 0 1 1zM10 10V7h4v3M14 7l4-2M18 9.5h2.5M18 12.5h2',
+  piscina: 'M9 3v10M15 3v10M9 7h6M9 11h6M3 17c2 0 2-1.5 4.5-1.5S10 17 12 17s2-1.5 4.5-1.5S19 17 21 17M3 21c2 0 2-1.5 4.5-1.5S10 21 12 21s2-1.5 4.5-1.5S19 21 21 21',
+  bebidas: 'M10 3h4v3l2 3v11a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9l2-3zM8 13h8',
+  snacks: 'M6 4h12l-1 16H7zM6 4l2 3h8l2-3M9 12h6',
+  amenities: 'M9 3h6v3H9zM8 6h8l1 4v10a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V10zM10 13h4',
+  lavanderia: 'M4 9h16l-1.5 10a1 1 0 0 1-1 .9h-11a1 1 0 0 1-1-.9zM8 9l1.5-4h5L16 9M9 13v3M15 13v3',
+  luz: 'M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z',
+  cocina: 'M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 0-3 2.5-3 6 0 2 1 3 3 3v9M17 3v18',
+  otros: 'M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8',
 } as const;
 
+/** Claves de categoría que ofrece el selector (la dueña elige por dibujo, no por texto). */
+export const CLAVES_CAT = ['bano', 'lenceria', 'limpieza', 'piscina', 'bebidas', 'snacks', 'amenities', 'lavanderia', 'mantenimiento', 'luz', 'cocina', 'otros'] as const satisfies readonly IconoNombre[];
+export type ClaveCat = (typeof CLAVES_CAT)[number];
+export const NOMBRE_CAT: Record<ClaveCat, string> = {
+  bano: 'Baño y papel',
+  lenceria: 'Ropa de cama',
+  limpieza: 'Limpieza',
+  piscina: 'Piscina',
+  bebidas: 'Bebidas',
+  snacks: 'Snacks',
+  amenities: 'Jabón y aseo',
+  lavanderia: 'Lavandería',
+  mantenimiento: 'Mantenimiento',
+  luz: 'Luz y electricidad',
+  cocina: 'Cocina',
+  otros: 'Otros',
+};
+/** Clave guardada → clave dibujable. Un emoji viejo o un valor desconocido cae al ícono genérico. */
+export const claveCat = (v: string | null | undefined): ClaveCat => ((CLAVES_CAT as readonly string[]).includes(v ?? '') ? (v as ClaveCat) : 'otros');
+
 export type IconoNombre = keyof typeof P;
+
+/** Ícono de una categoría a partir de su clave (nunca pinta emoji). */
+export function IconoCat({ clave, size = 'md' }: { clave: string | null | undefined; size?: 'sm' | 'md' | 'lg' }) {
+  return <Icon name={claveCat(clave)} size={size} />;
+}
 
 interface Props extends Omit<SVGProps<SVGSVGElement>, 'name'> {
   name: IconoNombre;

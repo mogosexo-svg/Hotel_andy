@@ -1,6 +1,7 @@
 /* Ajustes del hotel (solo dueña). Sobre los tokens y componentes base del panel. */
 .cfg {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--s-5);
   align-items: start;
 }
@@ -20,8 +21,8 @@
   align-items: center;
   min-height: var(--touch);
   padding: 0 var(--s-4);
-  border: 1.5px solid var(--line-strong);
-  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
   background: var(--surface);
   color: var(--ink);
   font-weight: 650;
@@ -80,7 +81,7 @@
 }
 .cfg-intro h2 {
   font-size: var(--t-xl);
-  font-weight: 750;
+  font-weight: 700;
   letter-spacing: -0.02em;
 }
 .cfg-intro p {
@@ -116,13 +117,15 @@
   align-items: flex-start;
   gap: var(--s-3);
   padding: var(--s-3) var(--s-4);
+  border: 1px solid color-mix(in srgb, var(--limpiando) 45%, var(--line));
   border-radius: var(--r-md);
-  background: var(--limpiando-tinte);
-  color: var(--limpiando-tinta);
+  background: var(--surface);
+  color: var(--ink);
   font-weight: 550;
 }
 .cfg-nota--aviso .ico {
   margin-top: 0.15rem;
+  color: var(--limpiando);
 }
 .cfg-enlace {
   display: inline-flex;
@@ -290,7 +293,7 @@
   justify-items: start;
   min-height: 3.75rem;
   padding: var(--s-2) var(--s-4);
-  border: 1.5px solid var(--line-strong);
+  border: 1px solid var(--line-strong);
   border-radius: var(--r-md);
   background: var(--surface);
   text-align: left;
@@ -314,7 +317,7 @@
 }
 .cfg-pbtn__val {
   font-size: var(--t-lg);
-  font-weight: 750;
+  font-weight: 700;
   letter-spacing: -0.01em;
 }
 .cfg-pbtn.is-vacio {
@@ -416,7 +419,7 @@
   gap: var(--s-3);
   min-height: 3.5rem;
   padding: var(--s-3) var(--s-4);
-  border: 1.5px solid var(--line-strong);
+  border: 1px solid var(--line-strong);
   border-radius: var(--r-md);
   background: var(--surface);
   cursor: pointer;
@@ -443,7 +446,11 @@
 }
 .cfg-opcion .ico {
   opacity: 0;
+  transform: scale(0.4);
   color: var(--brand);
+  transition:
+    opacity var(--d-1) var(--ease),
+    transform var(--d-2) var(--resorte);
 }
 .cfg-opcion:has(input:checked) {
   border-color: var(--brand);
@@ -451,6 +458,7 @@
 }
 .cfg-opcion:has(input:checked) .ico {
   opacity: 1;
+  transform: scale(1);
 }
 .cfg-opcion:has(input:focus-visible) {
   outline: 3px solid var(--brand);
@@ -493,7 +501,7 @@
 }
 .cfg-placa__toques strong {
   font-size: var(--t-xl);
-  font-weight: 750;
+  font-weight: 700;
 }
 .cfg-placa__toques span {
   color: var(--ink-2);
