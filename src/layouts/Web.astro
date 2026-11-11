@@ -1,7 +1,9 @@
 ---
-import '@fontsource-variable/funnel-display';
-import '@fontsource-variable/funnel-sans';
+import '@fontsource/instrument-serif/400.css';
+import '@fontsource/instrument-serif/400-italic.css';
+import '@fontsource-variable/manrope';
 import '../styles/web.css';
+import Icono from '../components/web/Icono.astro';
 import { cargarCatalogo, waUrl } from '../components/web/catalogo';
 
 interface Props { title: string; description: string; og?: string; jsonld?: object[] }
@@ -9,6 +11,13 @@ const { title, description, og, jsonld = [] } = Astro.props;
 const c = await cargarCatalogo();
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const wa = waUrl(c, `Hola, quiero información para reservar en ${c.hotel.nombre}.`);
+// Mapas de desplazamiento para el vidrio líquido: el borde del panel dobla la luz como un cristal grueso (solo Chromium; en el resto queda el desenfoque).
+const mapaBorde = encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" preserveAspectRatio="none"><defs><linearGradient id="x"><stop offset="0" stop-color="#f00"/><stop offset=".22" stop-color="#800"/><stop offset=".78" stop-color="#800"/><stop offset="1" stop-color="#000"/></linearGradient><linearGradient id="y" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f0"/><stop offset=".22" stop-color="#080"/><stop offset=".78" stop-color="#080"/><stop offset="1" stop-color="#000"/></linearGradient></defs><rect width="100" height="100" fill="#000"/><rect width="100" height="100" fill="url(#x)"/><rect width="100" height="100" fill="url(#y)" style="mix-blend-mode:screen"/></svg>`,
+);
+const mapaLupa = encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" preserveAspectRatio="none"><defs><linearGradient id="x"><stop offset="0" stop-color="#f00"/><stop offset="1" stop-color="#000"/></linearGradient><linearGradient id="y" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f0"/><stop offset="1" stop-color="#000"/></linearGradient></defs><rect width="100" height="100" fill="#000"/><rect width="100" height="100" fill="url(#x)"/><rect width="100" height="100" fill="url(#y)" style="mix-blend-mode:screen"/></svg>`,
+);
 ---
 <!doctype html>
 <html lang="es-EC">
@@ -17,7 +26,7 @@ const wa = waUrl(c, `Hola, quiero información para reservar en ${c.hotel.nombre
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#1f4f66" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:type" content="website" />
@@ -28,12 +37,27 @@ const wa = waUrl(c, `Hola, quiero información para reservar en ${c.hotel.nombre
     <meta property="og:url" content={canonical} />
     {og && <meta property="og:image" content={og} />}
     <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      if (/Chrome\//.test(navigator.userAgent)) document.documentElement.classList.add('refrac');
+    </script>
     {jsonld.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
   </head>
   <body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <filter id="refrac" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+        <feImage href={`data:image/svg+xml;charset=utf-8,${mapaBorde}`} x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="m" />
+        <feDisplacementMap in="SourceGraphic" in2="m" scale="14" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <filter id="lupa" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+        <feImage href={`data:image/svg+xml;charset=utf-8,${mapaLupa}`} x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="m" />
+        <feDisplacementMap in="SourceGraphic" in2="m" scale="-70" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </svg>
+    <a class="saltar" href="#contenido">Saltar al contenido</a>
     <slot />
-    <a class="wa-flotante" href={wa} target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
-      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" fill="currentColor"><path d="M5 3h14a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-8l-5 4v-4H5a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z"/></svg>
+    <a class="wa-flotante vidrio" href={wa} target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+      <Icono n="chat" tam={22} />
       <span>WhatsApp</span>
     </a>
     <script>

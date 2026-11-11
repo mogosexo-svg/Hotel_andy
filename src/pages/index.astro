@@ -5,6 +5,10 @@ import Nav from '../components/web/Nav.astro';
 import Hero from '../components/web/Hero.astro';
 import Reserva from '../components/web/Reserva.astro';
 import Habitaciones from '../components/web/Habitaciones.astro';
+import Intro from '../components/web/Intro.astro';
+import Galeria from '../components/web/Galeria.astro';
+import Resenas from '../components/web/Resenas.astro';
+import Ola from '../components/web/Ola.astro';
 import Piscina from '../components/web/Piscina.astro';
 import Practico from '../components/web/Practico.astro';
 import Donde from '../components/web/Donde.astro';
@@ -13,8 +17,10 @@ import Pie from '../components/web/Pie.astro';
 import { cargarCatalogo, desdeMinimo, dinero, hora } from '../components/web/catalogo';
 import { foto } from '../components/web/fotos';
 import { preguntas } from '../components/web/faq';
+import { cargarGoogle } from '../components/web/resenas';
 
 const c = await cargarCatalogo();
+const g = await cargarGoogle();
 const h = c.hotel;
 const og = await getImage({ src: foto('terraza-1').img, width: 1200, height: 630, fit: 'cover', format: 'jpg' });
 const ogUrl = new URL(og.src, Astro.site).href;
@@ -58,11 +64,15 @@ const faqLd = {
 ---
 <Web title={`${h.nombre}, hotel de playa en ${h.ciudad}`} description={descripcion} og={ogUrl} jsonld={[hotelLd, faqLd]}>
   <Nav nombre={h.nombre} />
-  <main>
+  <main id="contenido">
     <Hero c={c} />
-    <Reserva c={c} />
+    <Intro c={c} />
     <Habitaciones c={c} />
+    <Galeria />
+    <Reserva c={c} />
+    <Ola relleno class="ola-noche" />
     <Piscina c={c} />
+    <Resenas c={c} g={g} />
     <Practico c={c} />
     <Donde c={c} />
     <Faq c={c} />

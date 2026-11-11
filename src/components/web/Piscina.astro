@@ -1,33 +1,33 @@
 ---
 import Foto from './Foto.astro';
+import { titulo } from './serif';
 import { hora, type Catalogo } from './catalogo';
 interface Props { c: Catalogo }
 const { c } = Astro.props;
 const p = c.hotel.reglas.piscina;
-
 const a = p ? parseInt(p.abre) : 0;
 const z = p ? parseInt(p.cierra) : 0;
-// Tramos abiertos del día en %, cruzando la medianoche si hace falta.
 const pct = (h: number) => (h / 24) * 100;
 const tramos = (a < z ? [[a, z]] : [[a, 24], [0, z]]).filter(([x, y]) => y > x).map(([x, y]) => ({ left: pct(x), width: pct(y - x) }));
 ---
 {p && (
-<section id="piscina" class="seccion piscina">
-  <div class="container piscina-grid">
-    <div class="piscina-foto reveal">
-      <Foto nombre="piscina-noche-1" widths={[360, 540, 675]} sizes="(min-width: 960px) 420px, 90vw" />
+<section id="piscina" class="piscina">
+  <div class="piscina-grid">
+    <div class="piscina-foto rv" data-agua-caja>
+      <Foto nombre="piscina-noche-1" vel={false} widths={[360, 540, 675]} sizes="(min-width: 900px) 34vw, 80vw" />
+      <canvas class="hero-gl" data-agua="piscina" aria-hidden="true"></canvas>
     </div>
-    <div class="piscina-texto reveal">
-      <h2>La piscina sigue abierta cuando cae la noche</h2>
-      <p class="figura num" aria-label={`Cierra a la ${hora(p.cierra)}`}>{hora(p.cierra)}</p>
-      <p class="lead">Es techada y abre de {hora(p.abre)} a {hora(p.cierra)}.</p>
-      <figure class="dia">
+    <p class="piscina-hora serif num" aria-label={`Cierra a la ${hora(p.cierra)}`}>{hora(p.cierra)}</p>
+    <div class="piscina-texto">
+      <p class="etiqueta etiqueta-clara rv">Piscina techada</p>
+      <h2 class="gigante gigante-m rv" set:html={titulo('Sigue abierta cuando *cae la noche*')} />
+      <p class="lead lead-claro rv">Abre de {hora(p.abre)} a {hora(p.cierra)}.</p>
+      <figure class="dia rv">
         <div class="dia-barras" role="img" aria-label={`Abierta desde las ${hora(p.abre)} hasta la ${hora(p.cierra)}`}>
           {tramos.map((t) => <span style={`left:${t.left}%;width:${t.width}%`}></span>)}
         </div>
         <figcaption><span>00:00</span><span>12:00</span><span>24:00</span></figcaption>
       </figure>
-      <div class="agua" aria-hidden="true"><canvas data-agua></canvas></div>
     </div>
   </div>
 </section>

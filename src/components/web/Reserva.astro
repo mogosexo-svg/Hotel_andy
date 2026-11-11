@@ -1,70 +1,108 @@
 ---
+import { getImage } from 'astro:assets';
+import Icono from './Icono.astro';
+import Foto from './Foto.astro';
+import { foto, fotosDeTipo } from './fotos';
+import { titulo } from './serif';
 import { waUrl, type Catalogo } from './catalogo';
 interface Props { c: Catalogo }
 const { c } = Astro.props;
 const horas = c.hotel.reglas.prereserva_horas;
 const wa = waUrl(c, `Hola, quiero reservar en ${c.hotel.nombre}.`);
+// Miniatura por tipo para las tarjetas del paso 3 (id del tipo -> url).
+const minis: Record<string, string> = {};
+for (const t of c.tipos) {
+  const f = fotosDeTipo(t.clave)[0];
+  if (f) minis[t.id] = (await getImage({ src: foto(f).img, width: 520, format: 'webp' })).src;
+}
+const pasos = ['Fechas', 'Personas', 'Cuarto', 'Tus datos'];
 ---
-<section id="reservar" class="seccion reserva" data-reserva
+<section id="reservar" class="reserva" data-reserva
   data-url={import.meta.env.PUBLIC_SUPABASE_URL} data-key={import.meta.env.PUBLIC_SUPABASE_ANON_KEY}
-  data-tel={c.hotel.telefono.replace(/\D/g, '')} data-hotel={c.hotel.nombre}>
-  <div class="container reserva-grid">
-    <div class="reserva-intro reveal">
-      <h2>Mira qué hay libre</h2>
-      <p class="lead">Elige las fechas y cuántos son. El precio es por habitación, no por persona.</p>
-      {horas && <p class="nota">Tu pre-reserva queda guardada {horas} horas mientras confirmas por WhatsApp.</p>}
+  data-tel={c.hotel.telefono.replace(/\D/g, '')} data-hotel={c.hotel.nombre} data-minis={JSON.stringify(minis)}>
+  <Foto nombre="terraza-3" class="reserva-fondo" vel={false} widths={[640, 900]} sizes="100vw" />
+  <div class="reserva-grid">
+    <div class="reserva-intro">
+      <p class="etiqueta etiqueta-clara rv">Reserva directo</p>
+      <h2 class="gigante gigante-m rv" set:html={titulo('Elige tus *noches*')} />
+      <p class="lead lead-claro rv">Marca la entrada y la salida. {horas ? `Tu pre-reserva queda guardada ${horas} horas mientras confirmas por WhatsApp.` : ''}</p>
     </div>
 
-    <div class="panel clear reveal" aria-live="polite">
-      <form data-paso="buscar" class="form" novalidate>
-        <div class="campos">
-          <label>Entrada<input type="date" name="entrada" required /></label>
-          <label>Salida<input type="date" name="salida" required /></label>
-          <label>Personas<input type="number" name="personas" min="1" max="20" value="2" inputmode="numeric" required /></label>
-        </div>
-        <p class="error" data-error role="alert" hidden></p>
-        <button class="btn" type="submit">Ver disponibilidad</button>
-      </form>
+    <div class="r-panel vidrio vidrio-claro" aria-live="polite">
+      <ol class="r-prog" data-prog aria-label="Progreso de la reserva">
+        {pasos.map((p, i) => <li data-i={i + 1} class:list={[i === 0 && 'act']}><span class="r-n num">{i + 1}</span><span class="r-t">{p}</span></li>)}
+      </ol>
+      <div class="r-barra" aria-hidden="true"><i data-barra></i></div>
 
-      <div data-paso="resultados" hidden>
+      <section data-paso="fechas" class="r-paso">
+        <div class="r-elegido" data-pref hidden></div>
+        <div data-cal></div>
+        <p class="r-sel" data-sel aria-live="polite">Elige tu día de entrada.</p>
+        <p class="error" data-error role="alert" hidden></p>
+        <div class="r-pie"><button type="button" class="btn" data-sig><span>Continuar</span><Icono n="flecha" tam={18} /></button></div>
+      </section>
+
+      <section data-paso="personas" class="r-paso" hidden>
+        <h3 class="serif">¿Cuántas personas son?</h3>
+        <div class="stepper" role="group" aria-label="Personas">
+          <button type="button" class="r-mas" data-menos aria-label="Una persona menos"><Icono n="menos" /></button>
+          <output class="serif num" data-personas aria-live="polite">2</output>
+          <button type="button" class="r-mas" data-mas aria-label="Una persona más"><Icono n="mas" /></button>
+        </div>
+        <p class="nota">Cuenta a todos, también a los niños. Te mostramos los cuartos donde caben.</p>
+        <p class="error" data-error role="alert" hidden></p>
+        <div class="r-pie"><button type="button" class="btn btn-claro" data-volver="fechas">Volver</button><button type="button" class="btn" data-ver><span>Ver cuartos libres</span><Icono n="flecha" tam={18} /></button></div>
+      </section>
+
+      <section data-paso="resultados" class="r-paso" hidden>
         <p class="resumen" data-resumen></p>
         <ul class="tipos" data-lista></ul>
-        <button class="enlace" type="button" data-volver="buscar">Cambiar fechas</button>
-      </div>
+        <div class="r-pie"><button type="button" class="btn btn-claro" data-volver="personas">Cambiar fechas o personas</button></div>
+      </section>
 
-      <form data-paso="datos" class="form" hidden novalidate>
+      <form data-paso="datos" class="r-paso form" hidden novalidate>
         <p class="resumen" data-elegido></p>
         <div class="campos campos-2">
           <label>Tu nombre<input type="text" name="nombre" autocomplete="name" minlength="2" maxlength="100" required /></label>
           <label>Teléfono o WhatsApp<input type="tel" name="telefono" autocomplete="tel" inputmode="tel" required /></label>
         </div>
-        <label class="check"><input type="checkbox" name="mascota" /> Viajo con mascota</label>
+        <label class="check"><input type="checkbox" name="mascota" /> <span>Viajo con mascota</span></label>
         <label class="check"><input type="checkbox" name="consentimiento" required />
           <span>Acepto que guarden mis datos para gestionar esta reserva, según el <a href="/privacidad">aviso de privacidad</a>.</span></label>
         <p class="error" data-error role="alert" hidden></p>
-        <div class="acciones">
-          <button class="btn" type="submit">Pedir pre-reserva</button>
+        <div class="r-pie">
           <button class="btn btn-claro" type="button" data-volver="resultados">Volver</button>
+          <button class="btn" type="submit"><span>Pedir pre-reserva</span><Icono n="flecha" tam={18} /></button>
         </div>
       </form>
 
-      <div data-paso="listo" hidden>
-        <p class="resumen">Pre-reserva lista. Tu código es</p>
-        <p class="codigo num" data-codigo></p>
-        <p data-detalle></p>
-        <a class="btn" data-wa href={wa} target="_blank" rel="noopener">Confirmar por WhatsApp</a>
+      <section data-paso="listo" class="r-paso" hidden>
+        <div class="boleto">
+          <div class="boleto-sup">
+            <p class="etiqueta">Pre-reserva lista</p>
+            <p class="boleto-cod num" data-codigo></p>
+            <p class="boleto-det" data-detalle></p>
+          </div>
+          <div class="boleto-corte" aria-hidden="true"></div>
+          <div class="boleto-inf">
+            <p class="etiqueta">Tu cuarto queda guardado</p>
+            <p class="boleto-reloj num" data-reloj role="timer" aria-live="off">--:--:--</p>
+            <p class="nota" data-vence></p>
+          </div>
+        </div>
+        <a class="btn btn-grande" data-wa href={wa} target="_blank" rel="noopener"><Icono n="chat" tam={22} /><span>Confirmar por WhatsApp</span></a>
         <p class="nota">Si no se abre WhatsApp, escríbenos y dinos tu código.</p>
-      </div>
+      </section>
 
-      <div data-paso="caido" hidden>
+      <section data-paso="caido" class="r-paso" hidden>
         <p class="resumen">Ahora mismo no podemos mostrar la disponibilidad.</p>
         <p>Escríbenos por WhatsApp y te respondemos con lo que hay libre.</p>
-        <a class="btn" href={wa} target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
-      </div>
+        <a class="btn btn-grande" href={wa} target="_blank" rel="noopener"><Icono n="chat" tam={22} /><span>Escríbenos por WhatsApp</span></a>
+      </section>
 
       <noscript>
         <p class="resumen">Para ver la disponibilidad necesitas activar JavaScript, o escríbenos.</p>
-        <a class="btn" href={wa} target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+        <a class="btn" href={wa} target="_blank" rel="noopener"><span>Escríbenos por WhatsApp</span></a>
       </noscript>
     </div>
   </div>

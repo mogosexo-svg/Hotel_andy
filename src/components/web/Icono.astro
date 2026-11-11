@@ -1,0 +1,6 @@
+---
+import { ico } from './iconos';
+interface Props { n: string; tam?: number }
+const { n, tam = 22 } = Astro.props;
+---
+<Fragment set:html={ico(n, tam)} />
