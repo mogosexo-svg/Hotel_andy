@@ -84,6 +84,7 @@ Storage: bucket privado `hotel`, ruta `<hotel_id>/<comprobantes|danos|facturas|p
 | `registrar_pago(p_reserva uuid, p_monto_centavos int, p_medio medio_pago, p_comprobante_path text = null)` | duena, recepcion | Inserta el pago; una prereserva pasa a `confirmada`. Devuelve `uuid` del pago. |
 | `cancelar_reserva(p_reserva uuid, p_motivo text = null)` | duena, recepcion | prereserva/confirmada → `cancelada`. |
 | `empezar_limpieza(p_habitacion uuid)` | todos | Por limpiar → Limpiando. |
+| `deshacer_limpieza(p_habitacion uuid)` | todos | Limpiando → Por limpiar (deshace "Empezar"; desde otro estado falla: "Ese cuarto no se está limpiando"). No toca stock. |
 | `marcar_listo(p_habitacion uuid)` | todos | Limpiando → Libre y descuenta el kit del tipo (toallas × personas de la última estadía) en la misma transacción. Cierra la alerta `por_limpiar`. |
 | `reportar_dano(p_habitacion uuid, p_nota text, p_foto_path text = null)` | todos | Reporte + cuarto → En arreglo + alerta. Devuelve `uuid` del reporte. |
 | `liberar_mantenimiento(p_habitacion uuid)` | duena | En arreglo → Libre; cierra reportes y alerta. |
@@ -93,7 +94,7 @@ Storage: bucket privado `hotel`, ruta `<hotel_id>/<comprobantes|danos|facturas|p
 | `anular_factura(p_compra uuid, p_motivo text = null)` | duena | Revierte el stock de cada línea. |
 | `registrar_consumo(p_producto uuid, p_cantidad numeric, p_reserva uuid = null, p_medio medio_pago = null)` | duena, recepcion | Exactamente uno: al cuarto (reserva confirmada/en curso) o pagado ya. Exige precio de venta. Descuenta stock. Devuelve `uuid`. |
 | `cuadre_dia(p_hotel uuid, p_fecha date = hoy)` | duena, recepcion | `{fecha, total_centavos, costo_centavos, margen_centavos, sin_costo, por_producto:[{producto, categoria, cantidad, total_centavos, margen_centavos}], por_categoria:[{categoria, total_centavos}], por_medio:[{medio: efectivo|transferencia|al_cuarto, total_centavos}]}` |
-| `resumen_inicio(p_hotel uuid)` | duena, recepcion | `{cuartos, ocupados, ocupacion_pct, por_limpiar, limpiando, en_arreglo, llegadas_hoy:[{reserva_id, codigo, habitacion, huesped, personas, estado}], salidas_hoy:[…], insumos_bajos:[{producto_id, nombre, stock, minimo, unidad}], dinero_mes_centavos}` (pagos + consumos cobrados del mes). |
+| `resumen_inicio(p_hotel uuid)` | duena, recepcion | `{cuartos, ocupados, ocupacion_pct, por_limpiar, limpiando, en_arreglo, llegadas_hoy:[{reserva_id, codigo, habitacion, huesped, personas, estado}], salidas_hoy:[{reserva_id, codigo, habitacion, huesped, personas, estado}], insumos_bajos:[{producto_id, nombre, stock, minimo, unidad}], dinero_mes_centavos}` (pagos + consumos cobrados del mes). |
 | `ocupacion_ingresos(p_hotel uuid, p_dias int = 30)` | duena, recepcion | Filas `{dia, canal, cuartos_ocupados, cuartos_totales, ingresos_centavos}`: una por día × canal (directo, booking, airbnb), ingreso = total de la reserva repartido por noche. |
 
 CRUD directo con supabase-js (RLS): `reservas` (crear/mover/editar desde el calendario; el total se calcula solo si no se manda), `huespedes`, `categorias`, `productos` (sin `stock`), `alertas` (marcar `resuelta_en`), y la configuración de la dueña (`tarifas`, `temporadas.fechas`, `kit_por_tipo`, `hoteles`, `config`, `usuarios_hotel`, `nfc_destinos`, `calendarios_ical`).
