@@ -12,6 +12,7 @@ import { Paleta } from './ui/Paleta';
 import { Login } from './screens/Login';
 import { Inicio } from './screens/Inicio';
 import { Mapa } from './screens/Mapa';
+import { Reservas } from './screens/reservas/Reservas';
 import { Limpieza } from './screens/Limpieza';
 import { Inventario } from './screens/Inventario';
 import { paginaDeHash, paginasDe, type Pagina } from './nav';
@@ -172,6 +173,7 @@ function Shell() {
       <main className="contenido" id="contenido">
         {pagina === 'inicio' && <Inicio ir={ir} />}
         {pagina === 'cuartos' && <Mapa />}
+        {pagina === 'reservas' && <Reservas />}
         {pagina === 'limpieza' && <Limpieza />}
         {pagina === 'inventario' && <Inventario />}
       </main>
