@@ -537,7 +537,7 @@ button.card:hover {
   --n: var(--ocupado);
 }
 .n-sin_minimo {
-  --n: var(--ink-3);
+  --n: var(--line-strong);
 }
 .n-sin_contar {
   --n: var(--line-strong);

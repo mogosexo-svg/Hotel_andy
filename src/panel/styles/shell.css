@@ -187,7 +187,7 @@
     display: none;
   }
   .nav__punto {
-    right: -0.8rem;
+    right: -0.5rem;
   }
   .nav__pie {
     display: grid;
@@ -374,6 +374,12 @@ kbd {
   background: transparent;
   color: var(--ink);
   outline: none;
+}
+.paleta__campo input:focus-visible {
+  outline: none;
+}
+.paleta__campo:focus-within {
+  box-shadow: inset 0 -2px 0 var(--brand);
 }
 .paleta__lista {
   max-height: 50dvh;
