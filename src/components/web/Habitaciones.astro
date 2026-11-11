@@ -62,7 +62,7 @@ const spans = ['s7', 's5', 's4', 's4', 's4', 's5', 's7'];
               <ul class="v-inc">{incluye.map(([ic, tx]) => <li><Icono n={ic} tam={18} /><span>{tx}</span></li>)}</ul>
               <div class="v-pie">
                 {t.desde_centavos != null && <p class="v-precio">Desde <strong class="serif num">{dinero(t.desde_centavos)}</strong> la noche</p>}
-                <a class="btn btn-blanco" href="#reservar" data-reservar={t.id} data-nombre={t.nombre}><span>Reservar este cuarto</span><Icono n="flecha" tam={18} /></a>
+                <a class="btn" href="#reservar" data-reservar={t.id} data-nombre={t.nombre}><span>Reservar este cuarto</span><Icono n="flecha" tam={18} /></a>
               </div>
             </div>
           </template>

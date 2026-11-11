@@ -17,11 +17,11 @@ const tramos = (a < z ? [[a, z]] : [[a, 24], [0, z]]).filter(([x, y]) => y > x).
       <Foto nombre="piscina-noche-1" vel={false} widths={[360, 540, 675]} sizes="(min-width: 900px) 34vw, 80vw" />
       <canvas class="hero-gl" data-agua="piscina" aria-hidden="true"></canvas>
     </div>
-    <p class="piscina-hora serif num" aria-label={`Cierra a la ${hora(p.cierra)}`}>{hora(p.cierra)}</p>
+    <p class="piscina-hora serif num" aria-hidden="true">{hora(p.cierra)}</p>
     <div class="piscina-texto">
-      <p class="etiqueta etiqueta-clara rv">Piscina techada</p>
+      <p class="etiqueta rv">Piscina techada</p>
       <h2 class="gigante gigante-m rv" set:html={titulo('Sigue abierta cuando *cae la noche*')} />
-      <p class="lead lead-claro rv">Abre de {hora(p.abre)} a {hora(p.cierra)}.</p>
+      <p class="lead rv">Abre de {hora(p.abre)} a {hora(p.cierra)}.</p>
       <figure class="dia rv">
         <div class="dia-barras" role="img" aria-label={`Abierta desde las ${hora(p.abre)} hasta la ${hora(p.cierra)}`}>
           {tramos.map((t) => <span style={`left:${t.left}%;width:${t.width}%`}></span>)}

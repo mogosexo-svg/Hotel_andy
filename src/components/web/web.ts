@@ -13,7 +13,7 @@ const entra = new IntersectionObserver((es) => es.forEach((e) => {
   const n = el.dataset.n;
   if (n != null && !reduce) contar(el, Number(n), Number(el.dataset.dec ?? 0));
 }), { rootMargin: '0px 0px -8% 0px' });
-$$('.rv, .foto, .ola, [data-n]').forEach((el) => entra.observe(el));
+$$('.rv, .foto, .ola, [data-n], .dia').forEach((el) => entra.observe(el));
 
 function contar(el: HTMLElement, fin: number, dec: number) {
   const f = new Intl.NumberFormat('es-EC', { minimumFractionDigits: dec, maximumFractionDigits: dec });
@@ -25,6 +25,9 @@ function contar(el: HTMLElement, fin: number, dec: number) {
   };
   requestAnimationFrame(paso);
 }
+
+// El mapa aparece cuando carga; mientras tanto (o si falla) se ve el fondo con el nombre del hotel.
+document.querySelector<HTMLIFrameElement>('[data-mapa]')?.addEventListener('load', (e) => (e.target as HTMLElement).classList.add('on'));
 
 // El WhatsApp flotante se aparta mientras se llena la reserva para no tapar los botones.
 const wa = document.querySelector('.wa-flotante');

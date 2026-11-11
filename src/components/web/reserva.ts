@@ -216,6 +216,12 @@ if (root) {
     if (!f.get('consentimiento')) return error(datos, 'Necesitamos tu permiso para guardar tus datos (aviso de privacidad).');
     error(datos, '');
     ocupado(datos, true);
+    const enviar = datos.querySelector<HTMLButtonElement>('[type=submit]')!;
+    const rotulo = enviar.querySelector('span')!;
+    const antes = rotulo.textContent;
+    enviar.classList.add('cargando');
+    rotulo.textContent = 'Guardando tu cuarto…';
+    datos.setAttribute('aria-busy', 'true');
     try {
       const p = await rpc<Pre>('crear_prereserva', {
         p_tipo_id: elegido.tipo_id, p_entrada: consulta.entrada, p_salida: consulta.salida, p_personas: consulta.personas,
@@ -232,6 +238,9 @@ if (root) {
       else ir('caido');
     } finally {
       ocupado(datos, false);
+      enviar.classList.remove('cargando');
+      rotulo.textContent = antes;
+      datos.removeAttribute('aria-busy');
     }
   });
 

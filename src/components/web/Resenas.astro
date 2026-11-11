@@ -1,5 +1,6 @@
 ---
 import Icono from './Icono.astro';
+import Foto from './Foto.astro';
 import { titulo } from './serif';
 import type { Catalogo } from './catalogo';
 import type { Google } from './resenas';
@@ -13,13 +14,22 @@ const inicial = (s: string) => s.trim().charAt(0).toUpperCase();
 ---
 <section id="resenas" class="resenas">
   <div class="res-cab">
-    <p class="etiqueta rv">Lo que dicen los huéspedes</p>
-    <h2 class="gigante rv" set:html={titulo('Reseñas *reales*')} />
-    <div class="res-notas rv">
-      <p><strong class="serif num">{coma(b.calificacion)}</strong><span>Booking, {b.resenas} reseñas</span></p>
-      {g && <p><strong class="serif num">{coma(g.nota)}</strong><span>Google, {g.total} reseñas</span></p>}
+    <div class="res-texto-cab">
+      <p class="etiqueta rv">Lo que dicen los huéspedes</p>
+      <h2 class="gigante gigante-m rv" set:html={titulo('Reseñas *reales*')} />
+      <p class="lead rv">La nota viene de Booking, de huéspedes que se alojaron en el hotel.</p>
     </div>
-    <a class="enlace rv" href={g?.mapas ?? busca} target="_blank" rel="noopener">{g ? 'Reseñas de Google' : 'Ver reseñas en Google'} <Icono n="flecha" tam={16} /></a>
+    <div class="res-foto">
+      <Foto nombre="terraza-3" widths={[480, 800, 1100]} sizes="(min-width: 900px) 56vw, 92vw" />
+      <a class="btn btn-vidrio vidrio res-google" href={g?.mapas ?? busca} target="_blank" rel="noopener"><span>{g ? 'Reseñas de Google' : 'Ver reseñas en Google'}</span><Icono n="flecha" tam={16} /></a>
+      <div class="res-tarjeta vidrio rv">
+        <div class="res-notas">
+          <p><strong class="serif num" data-n={b.calificacion} data-dec="1">{coma(b.calificacion)}</strong><span>Booking, {b.resenas} reseñas</span></p>
+          {g && <p><strong class="serif num">{coma(g.nota)}</strong><span>Google, {g.total} reseñas</span></p>}
+        </div>
+        <div class="res-medidor" role="img" aria-label={`${coma(b.calificacion)} de 10 en Booking`}><i style={`--v:${b.calificacion / 10}`}></i></div>
+      </div>
+    </div>
   </div>
   {lista.length > 0 && (
     <div class="res-marq" data-marq>

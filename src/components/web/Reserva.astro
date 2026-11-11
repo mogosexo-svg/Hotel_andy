@@ -20,12 +20,12 @@ const pasos = ['Fechas', 'Personas', 'Cuarto', 'Tus datos'];
 <section id="reservar" class="reserva" data-reserva
   data-url={import.meta.env.PUBLIC_SUPABASE_URL} data-key={import.meta.env.PUBLIC_SUPABASE_ANON_KEY}
   data-tel={c.hotel.telefono.replace(/\D/g, '')} data-hotel={c.hotel.nombre} data-minis={JSON.stringify(minis)}>
-  <Foto nombre="terraza-3" class="reserva-fondo" vel={false} widths={[640, 900]} sizes="100vw" />
+  <Foto nombre="terraza-1" class="reserva-fondo" vel={false} widths={[640, 980]} sizes="max(100vw, 120svh)" />
   <div class="reserva-grid">
     <div class="reserva-intro">
-      <p class="etiqueta etiqueta-clara rv">Reserva directo</p>
+      <p class="etiqueta rv">Reserva directo</p>
       <h2 class="gigante gigante-m rv" set:html={titulo('Elige tus *noches*')} />
-      <p class="lead lead-claro rv">Marca la entrada y la salida. {horas ? `Tu pre-reserva queda guardada ${horas} horas mientras confirmas por WhatsApp.` : ''}</p>
+      <p class="lead rv">Marca la entrada y la salida. {horas ? `Tu pre-reserva queda guardada ${horas} horas mientras confirmas por WhatsApp.` : ''}</p>
     </div>
 
     <div class="r-panel vidrio vidrio-claro" aria-live="polite">

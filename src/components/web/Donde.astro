@@ -14,8 +14,8 @@ const mapa = `https://www.google.com/maps?q=${encodeURIComponent(busqueda)}&outp
     <h2 class="gigante gigante-m rv" set:html={titulo(`${c.hotel.ciudad}, *frente al mar*`)} />
   </div>
   <div class="mapa rv">
-    <div class="mapa-vacio" aria-hidden="true"><Icono n="pin" tam={44} /></div>
-    <iframe src={mapa} title={`Mapa de ubicación de ${c.hotel.nombre}`} loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <div class="mapa-vacio" aria-hidden="true"><Icono n="pin" tam={44} /><strong>{c.hotel.nombre}</strong><span>{c.hotel.ciudad}, {c.hotel.provincia}</span></div>
+    <iframe data-mapa src={mapa} title={`Mapa de ubicación de ${c.hotel.nombre}`} loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     <a class="btn btn-vidrio vidrio" href={ruta} target="_blank" rel="noopener"><Icono n="pin" tam={18} /><span>Cómo llegar</span></a>
   </div>
 </section>
