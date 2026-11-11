@@ -1,13 +1,14 @@
 import type { Rol } from './lib/estados';
 import type { IconoNombre } from './ui/Icon';
 
-export type Pagina = 'inicio' | 'cuartos' | 'limpieza' | 'inventario';
+export type Pagina = 'inicio' | 'cuartos' | 'limpieza' | 'inventario' | 'config';
 
 export const PAGINAS: { id: Pagina; texto: string; icono: IconoNombre; roles: Rol[] }[] = [
   { id: 'inicio', texto: 'Inicio', icono: 'inicio', roles: ['duena', 'recepcion'] },
   { id: 'cuartos', texto: 'Cuartos', icono: 'cuartos', roles: ['duena', 'recepcion'] },
   { id: 'limpieza', texto: 'Limpieza', icono: 'limpiando', roles: ['duena', 'recepcion', 'limpieza'] },
   { id: 'inventario', texto: 'Insumos', icono: 'inventario', roles: ['duena', 'recepcion'] },
+  { id: 'config', texto: 'Ajustes', icono: 'ajustes', roles: ['duena'] },
 ];
 
 export const paginasDe = (rol: Rol) => PAGINAS.filter((p) => p.roles.includes(rol));

@@ -1,0 +1,516 @@
+/* Ajustes del hotel (solo dueña). Sobre los tokens y componentes base del panel. */
+.cfg {
+  display: grid;
+  gap: var(--s-5);
+  align-items: start;
+}
+
+/* ---------- Menú de secciones: chips en móvil, columna en escritorio ---------- */
+.cfg-menu ul {
+  display: flex;
+  gap: var(--s-2);
+  margin: 0 calc(var(--gutter) * -1);
+  padding: 0 var(--gutter) var(--s-1);
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.cfg-menu__item {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+  padding: 0 var(--s-4);
+  border: 1.5px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 650;
+  white-space: nowrap;
+  transition: background-color var(--d-1) var(--ease);
+}
+.cfg-menu__item:hover {
+  background: var(--surface-2);
+}
+.cfg-menu__item[aria-current='page'] {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-brand);
+}
+@media (min-width: 1024px) {
+  .cfg {
+    grid-template-columns: 14rem minmax(0, 46rem);
+    gap: var(--s-6);
+  }
+  .cfg-menu {
+    position: sticky;
+    top: var(--s-5);
+  }
+  .cfg-menu ul {
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    gap: var(--s-1);
+  }
+  .cfg-menu__item {
+    width: 100%;
+    border: 0;
+    border-radius: var(--r-md);
+    background: transparent;
+    font-size: var(--t-base);
+  }
+  .cfg-menu__item:hover {
+    background: var(--surface-2);
+  }
+  .cfg-menu__item[aria-current='page'] {
+    background: var(--brand-soft);
+    color: var(--brand);
+  }
+}
+
+/* ---------- Secciones ---------- */
+.cfg-cuerpo {
+  min-width: 0;
+  animation: pantalla-in var(--d-2) var(--ease);
+}
+.cfg-seccion {
+  display: grid;
+  gap: var(--s-4);
+  align-content: start;
+}
+.cfg-intro h2 {
+  font-size: var(--t-xl);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+.cfg-intro p {
+  margin-top: var(--s-2);
+  color: var(--ink-2);
+  max-width: 62ch;
+}
+.cfg-card {
+  display: grid;
+  gap: var(--s-3);
+  align-content: start;
+  padding: var(--s-4);
+}
+@media (min-width: 700px) {
+  .cfg-card {
+    padding: var(--s-5);
+  }
+}
+.cfg-card__titulo {
+  font-size: var(--t-lg);
+  font-weight: 700;
+}
+.cfg-card--suave {
+  background: var(--surface-2);
+  box-shadow: none;
+}
+.cfg-nota {
+  color: var(--ink-2);
+  max-width: 62ch;
+}
+.cfg-nota--aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-md);
+  background: var(--limpiando-tinte);
+  color: var(--limpiando-tinta);
+  font-weight: 550;
+}
+.cfg-nota--aviso .ico {
+  margin-top: 0.15rem;
+}
+.cfg-enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--brand);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.cfg-ayuda {
+  color: var(--ink-2);
+}
+.cfg-vista {
+  color: var(--brand);
+  font-weight: 700;
+}
+.cfg-form {
+  display: grid;
+  gap: var(--s-4);
+}
+
+/* ---------- Renglones: etiqueta, valor, acciones ---------- */
+.cfg-lista {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cfg-renglon {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-1) var(--s-3);
+  padding: var(--s-4) 0;
+  border-top: 1px solid var(--line);
+}
+.cfg-renglon:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.cfg-renglon__txt {
+  display: grid;
+  grid-column: 1;
+}
+.cfg-renglon__et {
+  font-weight: 650;
+}
+.cfg-renglon__ay {
+  color: var(--ink-2);
+  font-size: var(--t-sm);
+}
+.cfg-renglon__val {
+  grid-column: 1;
+  font-size: var(--t-lg);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.cfg-renglon__val.is-vacio {
+  color: var(--ink-3);
+  font-weight: 600;
+}
+.cfg-renglon__acc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+/* Con dos botones no caben al lado del texto en el celular: pasan debajo. */
+.cfg-renglon__acc:has(> :nth-child(2)) {
+  grid-column: 1 / -1;
+  grid-row: auto;
+}
+.cfg-renglon__acc:empty {
+  display: none;
+}
+@media (min-width: 700px) {
+  .cfg-renglon {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr) auto;
+    gap: var(--s-4);
+  }
+  .cfg-renglon__acc,
+  .cfg-renglon__acc:has(> :nth-child(2)) {
+    grid-column: 3;
+    grid-row: auto;
+  }
+  .cfg-renglon__val {
+    grid-column: 2;
+    font-size: var(--t-base);
+  }
+}
+.cfg-pie {
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+.cfg-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-base);
+  font-weight: 650;
+}
+.cfg-estado.is-activo {
+  color: var(--libre-tinta);
+}
+.cfg-estado.is-inactivo {
+  color: var(--mantenimiento-tinta);
+}
+
+/* ---------- Precios ---------- */
+.cfg-precios {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cfg-precio {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2);
+  align-items: center;
+  padding: var(--s-3) 0;
+  border-top: 1px solid var(--line);
+}
+.cfg-precio:first-child {
+  border-top: 0;
+}
+.cfg-precio__tipo {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  font-weight: 650;
+}
+.cfg-precio__tipo small {
+  color: var(--ink-3);
+  font-size: var(--t-sm);
+  font-weight: 500;
+}
+.cfg-precios:not(.cfg-precios--dos) .cfg-precio {
+  grid-template-columns: 1fr minmax(9.5rem, auto);
+}
+.cfg-precios:not(.cfg-precios--dos) .cfg-precio__tipo {
+  grid-column: auto;
+}
+@media (min-width: 700px) {
+  .cfg-precios--dos .cfg-precio {
+    grid-template-columns: minmax(0, 1fr) 11rem 11rem;
+  }
+  .cfg-precios--dos .cfg-precio__tipo {
+    grid-column: auto;
+    display: grid;
+    gap: 0;
+  }
+}
+.cfg-pbtn {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  min-height: 3.75rem;
+  padding: var(--s-2) var(--s-4);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  text-align: left;
+  transition:
+    background-color var(--d-1) var(--ease),
+    border-color var(--d-1) var(--ease),
+    transform var(--d-1) var(--ease);
+}
+.cfg-pbtn:hover {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.cfg-pbtn:active {
+  transform: scale(0.98);
+}
+.cfg-pbtn__sub {
+  color: var(--ink-2);
+  font-size: var(--t-sm);
+  font-weight: 550;
+  line-height: 1.2;
+}
+.cfg-pbtn__val {
+  font-size: var(--t-lg);
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+.cfg-pbtn.is-vacio {
+  border-style: dashed;
+}
+.cfg-pbtn.is-vacio .cfg-pbtn__val {
+  color: var(--brand);
+  font-size: var(--t-base);
+  font-weight: 650;
+}
+.cfg-vacio {
+  display: grid;
+  gap: var(--s-3);
+  justify-items: start;
+  padding: var(--s-4);
+  border-radius: var(--r-md);
+  background: var(--brand-soft);
+  color: var(--ink);
+}
+.cfg-vacio > .ico {
+  color: var(--brand);
+}
+.cfg-vacio div {
+  display: grid;
+  gap: var(--s-1);
+}
+.cfg-vacio span {
+  color: var(--ink-2);
+}
+
+/* ---------- Temporada alta ---------- */
+.cfg-rango {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-4) 0;
+  border-top: 1px solid var(--line);
+}
+.cfg-rango:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.cfg-rango__txt {
+  display: grid;
+}
+.cfg-rango__txt strong {
+  font-size: var(--t-lg);
+  font-weight: 700;
+}
+.cfg-rango__txt span {
+  color: var(--ink-2);
+}
+.cfg-rango__acc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+@media (min-width: 700px) {
+  .cfg-rango {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+}
+
+/* ---------- Campos ---------- */
+.cfg-dinero,
+.cfg-sufijo {
+  position: relative;
+}
+.cfg-dinero > span,
+.cfg-sufijo > span {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-2);
+  font-weight: 650;
+  pointer-events: none;
+}
+.cfg-dinero > span {
+  left: var(--s-4);
+}
+.cfg-dinero .input {
+  padding-left: 2.25rem;
+}
+.cfg-sufijo > span {
+  right: var(--s-4);
+}
+.cfg-sufijo .input {
+  padding-right: 5rem;
+}
+.cfg-opciones {
+  display: grid;
+  gap: var(--s-2);
+}
+.cfg-opcion {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 3.5rem;
+  padding: var(--s-3) var(--s-4);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  cursor: pointer;
+  transition:
+    background-color var(--d-1) var(--ease),
+    border-color var(--d-1) var(--ease);
+}
+.cfg-opcion:hover {
+  border-color: var(--ink-3);
+}
+.cfg-opcion input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.cfg-opcion__cuerpo {
+  display: grid;
+}
+.cfg-opcion__cuerpo span {
+  color: var(--ink-2);
+  font-size: var(--t-sm);
+}
+.cfg-opcion .ico {
+  opacity: 0;
+  color: var(--brand);
+}
+.cfg-opcion:has(input:checked) {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.cfg-opcion:has(input:checked) .ico {
+  opacity: 1;
+}
+.cfg-opcion:has(input:focus-visible) {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* ---------- Placas NFC ---------- */
+.cfg-placas {
+  display: grid;
+  gap: var(--s-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 700px) {
+  .cfg-placas {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.cfg-placa {
+  display: grid;
+  gap: var(--s-2);
+  align-content: start;
+  padding: var(--s-4);
+}
+.cfg-placa.is-apagada {
+  background: var(--surface-2);
+  box-shadow: none;
+}
+.cfg-placa__cab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+.cfg-placa__cab h3 {
+  font-size: var(--t-lg);
+  font-weight: 700;
+}
+.cfg-placa__toques strong {
+  font-size: var(--t-xl);
+  font-weight: 750;
+}
+.cfg-placa__toques span {
+  color: var(--ink-2);
+}
+.cfg-placa__url {
+  display: grid;
+  color: var(--ink);
+  font-size: var(--t-sm);
+  overflow-wrap: anywhere;
+}
+.cfg-placa__url span {
+  color: var(--ink-2);
+  font-weight: 650;
+}
+.cfg-placa__acc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-top: var(--s-2);
+}
