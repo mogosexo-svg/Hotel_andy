@@ -1,0 +1,394 @@
+{
+  "_fuente": "docs/respuestas-cliente-2026-11-10.md (respuestas de la dueña, 10 nov 2026). Los campos _verificar son dudas abiertas: ver docs/REQUERIMIENTOS.md § Pendientes.",
+  "hotel": {
+    "nombre": "Hotel Andy",
+    "ciudad": "Atacames",
+    "provincia": "Esmeraldas",
+    "pais": "EC",
+    "estrellas": 3,
+    "zona_horaria": "America/Guayaquil",
+    "moneda": "USD",
+    "idioma": "es-EC",
+    "dominio": "hotelandyatacames.org",
+    "telefono": "+593 6276 0674",
+    "_verificar_telefono": "Formato raro para Ecuador (fijo Esmeraldas = +593 6 xxx xxxx, celular = +593 9x xxx xxxx). Confirmar y saber si tiene WhatsApp.",
+    "check_in": "13:30",
+    "check_out": "11:30",
+    "booking": {
+      "calificacion": 8.7,
+      "resenas": 238
+    },
+    "url_vieja": "https://hotel-andy.ecuadorhotel24.com/es/"
+  },
+  "tipos_habitacion": {
+    "doble_sencilla": {
+      "nombre": "Doble sencilla",
+      "max_personas": 2,
+      "precio_baja": 35,
+      "precio_alta": 45
+    },
+    "doble_deluxe": {
+      "nombre": "Doble deluxe",
+      "max_personas": 2,
+      "precio_baja": 50,
+      "precio_alta": 55
+    },
+    "triple": {
+      "nombre": "Triple",
+      "max_personas": 3,
+      "precio_baja": 50,
+      "precio_alta": 65
+    },
+    "triple_deluxe": {
+      "nombre": "Triple deluxe",
+      "max_personas": 3,
+      "precio_baja": 60,
+      "precio_alta": 70
+    },
+    "cuadruple": {
+      "nombre": "Cuádruple",
+      "max_personas": 4,
+      "precio_baja": 70,
+      "precio_alta": 90,
+      "_verificar": "La dueña dejó 'Ejemplo: cuadruple' en la 101. Confirmar que la 101 es cuádruple a $70/$90."
+    },
+    "familiar": {
+      "nombre": "Familiar",
+      "max_personas": 5,
+      "precio_baja": 85,
+      "precio_alta": 110
+    },
+    "suite": {
+      "nombre": "Suite",
+      "max_personas": 7,
+      "precio_baja": 130,
+      "precio_alta": 160
+    }
+  },
+  "habitaciones": [
+    {
+      "numero": "101",
+      "piso": 1,
+      "tipo": "cuadruple"
+    },
+    {
+      "numero": "102",
+      "piso": 1,
+      "tipo": "doble_deluxe"
+    },
+    {
+      "numero": "103",
+      "piso": 1,
+      "tipo": "doble_sencilla"
+    },
+    {
+      "numero": "104",
+      "piso": 1,
+      "tipo": "doble_sencilla"
+    },
+    {
+      "numero": "105",
+      "piso": 1,
+      "tipo": "triple"
+    },
+    {
+      "numero": "106",
+      "piso": 1,
+      "tipo": "doble_sencilla"
+    },
+    {
+      "numero": "201",
+      "piso": 2,
+      "tipo": "doble_deluxe"
+    },
+    {
+      "numero": "202",
+      "piso": 2,
+      "tipo": "doble_deluxe"
+    },
+    {
+      "numero": "203",
+      "piso": 2,
+      "tipo": "doble_sencilla"
+    },
+    {
+      "numero": "204",
+      "piso": 2,
+      "tipo": "doble_sencilla"
+    },
+    {
+      "numero": "205",
+      "piso": 2,
+      "tipo": "triple"
+    },
+    {
+      "numero": "206",
+      "piso": 2,
+      "tipo": "triple"
+    },
+    {
+      "numero": "301",
+      "piso": 3,
+      "tipo": "doble_deluxe"
+    },
+    {
+      "numero": "302",
+      "piso": 3,
+      "tipo": "doble_deluxe"
+    },
+    {
+      "numero": "303",
+      "piso": 3,
+      "tipo": "doble_sencilla"
+    },
+    {
+      "numero": "304",
+      "piso": 3,
+      "tipo": "familiar"
+    },
+    {
+      "numero": "305",
+      "piso": 3,
+      "tipo": "triple"
+    },
+    {
+      "numero": "401",
+      "piso": 4,
+      "tipo": "triple_deluxe"
+    },
+    {
+      "numero": "402",
+      "piso": 4,
+      "tipo": "doble_deluxe"
+    },
+    {
+      "numero": "403",
+      "piso": 4,
+      "tipo": "doble_sencilla"
+    },
+    {
+      "numero": "404",
+      "piso": 4,
+      "tipo": "familiar"
+    },
+    {
+      "numero": "405",
+      "piso": 4,
+      "tipo": "triple"
+    },
+    {
+      "numero": "500",
+      "piso": 5,
+      "tipo": "suite"
+    }
+  ],
+  "_resumen_habitaciones": "23 habitaciones, 65 plazas. 7 doble sencilla, 6 doble deluxe, 5 triple, 1 triple deluxe, 1 cuádruple, 2 familiar, 1 suite. Sin ascensor: pisos 4 y 5 por escaleras.",
+  "insumos": [
+    {
+      "id": "papel",
+      "nombre": "Papel higiénico",
+      "unidad": "rollo",
+      "consumo": {
+        "por": "limpieza",
+        "cantidad": 2
+      },
+      "minimo": 12,
+      "stock": 350,
+      "categoria": "bano",
+      "se_vende": false
+    },
+    {
+      "id": "jabon",
+      "nombre": "Jabón",
+      "unidad": "unidad",
+      "consumo": {
+        "por": "limpieza",
+        "cantidad": 2
+      },
+      "minimo": 10,
+      "stock": 120,
+      "categoria": "bano",
+      "se_vende": false
+    },
+    {
+      "id": "shampoo",
+      "nombre": "Shampoo (recarga de dispensador)",
+      "unidad": "recarga",
+      "consumo": {
+        "por": "manual"
+      },
+      "minimo": 10,
+      "stock": null,
+      "_verificar": "Usan un dispensador por habitación, no unidades sueltas. Preguntar el tamaño de la recarga y cada cuánto se rellena. Hasta saberlo, se descuenta a mano.",
+      "categoria": "bano",
+      "se_vende": false
+    },
+    {
+      "id": "toallas",
+      "nombre": "Toallas",
+      "unidad": "juego",
+      "consumo": {
+        "por": "persona",
+        "cantidad": 1
+      },
+      "minimo": 8,
+      "stock": null,
+      "reutilizable": true,
+      "_verificar": "Falta el stock. Son lavables: confirmar si lavan en el hotel y cuántos juegos hay por cuarto.",
+      "categoria": "lenceria",
+      "se_vende": false
+    },
+    {
+      "id": "sabanas",
+      "nombre": "Sábanas",
+      "unidad": "juego",
+      "consumo": {
+        "por": "limpieza",
+        "cantidad": 1
+      },
+      "minimo": 6,
+      "stock": null,
+      "reutilizable": true,
+      "_verificar": "Falta el stock. Mismo caso que las toallas.",
+      "categoria": "lenceria",
+      "se_vende": false
+    },
+    {
+      "id": "cloro",
+      "nombre": "Cloro de piscina",
+      "unidad": "kg",
+      "consumo": {
+        "por": "dia",
+        "cantidad": 0.5
+      },
+      "minimo": 4,
+      "stock": 4,
+      "_alerta": "Ya está en el mínimo: el primer día salta el aviso. Alcanza para unos 8 días.",
+      "categoria": "piscina",
+      "se_vende": false
+    }
+  ],
+  "_insumos_descartados": "Agua de cortesía: el hotel no la maneja.",
+  "reglas": {
+    "anticipo": {
+      "porcentaje": 50,
+      "medio": "transferencia"
+    },
+    "prereserva_horas": 2,
+    "cancelacion": {
+      "politica": "flexible_caso_a_caso",
+      "bot": "No promete reembolso ni plazos: pasa el caso a la dueña."
+    },
+    "ninos": {
+      "politica": "precio_fijo_por_habitacion",
+      "nota": "No se cobra por persona; manda la capacidad máxima del cuarto."
+    },
+    "mascotas": {
+      "aceptadas": true,
+      "cargo_adicional": null,
+      "_verificar": "Monto del cargo por mascota."
+    },
+    "desayuno": false,
+    "parqueadero": true,
+    "ascensor": false,
+    "piscina": {
+      "abre": "08:00",
+      "cierra": "01:00",
+      "_verificar": "Cierre a la 01:00 (madrugada): confirmar que no es un error."
+    },
+    "temporadas": {
+      "_verificar": "Fechas exactas de temporada alta y feriados (calendario 2026–2027 de Ecuador)."
+    }
+  },
+  "cuenta_transferencia": "VER data/hotel.private.json (no está en el repo)",
+  "canales_precio": {
+    "directo": {
+      "usa": "tipos_habitacion.precio_baja / precio_alta",
+      "temporadas": true,
+      "donde": "web, WhatsApp, bot, recepción, walk-in"
+    },
+    "booking": {
+      "temporadas": false,
+      "precio_fijo_por_tipo": null,
+      "_verificar": "Booking usa un precio fijo que no cambia por temporada. Pedir el monto por tipo de cuarto."
+    },
+    "airbnb": {
+      "temporadas": null,
+      "precio_fijo_por_tipo": null,
+      "_verificar": "Decidir con la dueña: ¿precio directo por temporada o fijo como Booking? Recordar la comisión del 15,5 %."
+    },
+    "_fuente": "docs/mensajes-recepcionista-2026-11-10.md"
+  },
+  "productos_venta": {
+    "_estado": "APROBADO (11 nov 2026): CRUD de productos y categorías gestionado por el hotel, registro de consumo y cuadre del día. Contabilidad formal fuera de alcance.",
+    "productos": [
+      {
+        "id": "cerveza",
+        "nombre": "Cerveza",
+        "categoria": "bebidas",
+        "se_vende": true,
+        "precio_compra": null,
+        "precio_venta": null,
+        "stock": null,
+        "minimo": null
+      },
+      {
+        "id": "agua",
+        "nombre": "Agua",
+        "categoria": "bebidas",
+        "se_vende": true,
+        "precio_compra": null,
+        "precio_venta": null,
+        "stock": null,
+        "minimo": null
+      },
+      {
+        "id": "powerade",
+        "nombre": "Powerade",
+        "categoria": "bebidas",
+        "se_vende": true,
+        "precio_compra": null,
+        "precio_venta": null,
+        "stock": null,
+        "minimo": null
+      }
+    ],
+    "_verificar": "Ellos mismos completan precios y stock desde el CRUD. Seed solo con estos 3 de ejemplo."
+  },
+  "_inventario_actual": {
+    "_verificar": "El recepcionista dice que ya 'cargan productos' en algo que no avisa. ¿Qué es (Excel, cuaderno, otro programa)? Si es digital, importar sus datos."
+  },
+  "categorias": [
+    {
+      "id": "bano",
+      "nombre": "Baño y amenidades",
+      "icono": "🧻"
+    },
+    {
+      "id": "lenceria",
+      "nombre": "Lencería",
+      "icono": "🛏️"
+    },
+    {
+      "id": "limpieza",
+      "nombre": "Limpieza",
+      "icono": "🧽"
+    },
+    {
+      "id": "piscina",
+      "nombre": "Piscina",
+      "icono": "🏊"
+    },
+    {
+      "id": "bebidas",
+      "nombre": "Bebidas",
+      "icono": "🥤"
+    },
+    {
+      "id": "snacks",
+      "nombre": "Snacks",
+      "icono": "🍫"
+    }
+  ],
+  "_categorias_nota": "Iniciales sugeridas. El hotel las crea, edita y borra desde el panel (CRUD)."
+}
