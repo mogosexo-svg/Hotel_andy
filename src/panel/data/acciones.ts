@@ -6,7 +6,7 @@ import { useToast } from '../ui/Toast';
 import { mensajeError } from '../lib/errores';
 
 export interface CuentaReserva {
-  total_centavos: number;
+  total_centavos: number | null;
   pagado_centavos: number;
   consumos_pendientes: { id: string; producto: string; cantidad: number; total_centavos: number }[];
   consumos_pendientes_centavos: number;
@@ -20,7 +20,7 @@ interface CuartoRef {
 
 /** Acciones sobre cuartos: optimistas cuando la base lo permite, con el error de la base tal cual. */
 export function useAcciones() {
-  const { rol, hotelId } = usePerfil();
+  const { hotelId } = usePerfil();
   const { cambiarLocal, refrescar } = useCuartos();
   const toast = useToast();
 
@@ -35,26 +35,16 @@ export function useAcciones() {
         fallo(error);
         return false;
       }
-      // Solo recepción y dueña pueden escribir el estado directo: ahí sí hay Deshacer.
-      toast.avisar(
-        `Empezaste el cuarto ${c.numero}`,
-        rol === 'limpieza'
-          ? undefined
-          : {
-              deshacer: async () => {
-                const rev = cambiarLocal(c.id, 'por_limpiar');
-                const { error: e } = await supabase
-                  .from('habitaciones')
-                  .update({ estado: 'por_limpiar' })
-                  .eq('id', c.id)
-                  .eq('estado', 'limpiando');
-                if (e) {
-                  rev();
-                  fallo(e);
-                }
-              },
-            },
-      );
+      toast.avisar(`Empezaste el cuarto ${c.numero}`, {
+        deshacer: async () => {
+          const rev = cambiarLocal(c.id, 'por_limpiar');
+          const { error: e } = await supabase.rpc('deshacer_limpieza', { p_habitacion: c.id });
+          if (e) {
+            rev();
+            fallo(e);
+          }
+        },
+      });
       return true;
     }
 
@@ -147,5 +137,5 @@ export function useAcciones() {
     }
 
     return { empezar, listo, liberar, danio, checkIn, checkOut, cuenta };
-  }, [rol, hotelId, cambiarLocal, refrescar, toast]);
+  }, [hotelId, cambiarLocal, refrescar, toast]);
 }

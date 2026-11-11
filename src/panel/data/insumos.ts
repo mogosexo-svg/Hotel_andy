@@ -418,16 +418,27 @@ export function useInsumos() {
       return true;
     }
 
-    /** Devuelve null si salió bien, o el mensaje de la base. */
-    async function registrarConsumo(productoId: string, cantidad: number, destino: { reserva: string } | { medio: Medio }): Promise<string | null> {
-      const { error: e } = await supabase.rpc('registrar_consumo', {
+    /** Devuelve el id de la venta, o el mensaje de la base. */
+    async function registrarConsumo(productoId: string, cantidad: number, destino: { reserva: string } | { medio: Medio }): Promise<{ id: string } | { error: string }> {
+      const { data, error: e } = await supabase.rpc('registrar_consumo', {
         p_producto: productoId,
         p_cantidad: cantidad,
         ...('reserva' in destino ? { p_reserva: destino.reserva } : { p_medio: destino.medio }),
       });
-      if (e) return mensajeError(e);
+      if (e) return { error: mensajeError(e) };
       void cargar();
-      return null;
+      return { id: data };
+    }
+
+    async function anularConsumo(id: string): Promise<boolean> {
+      const { error: e } = await supabase.rpc('anular_consumo', { p_consumo: id });
+      if (e) {
+        fallo(e);
+        return false;
+      }
+      void cargar();
+      toast.avisar('Venta anulada: el stock volvió');
+      return true;
     }
 
     async function cuadre(fecha: string): Promise<Cuadre | null> {
@@ -449,6 +460,7 @@ export function useInsumos() {
       cargarFactura,
       anularFactura,
       registrarConsumo,
+      anularConsumo,
       cuadre,
     };
   }, [hotelId, toast, cargar]);

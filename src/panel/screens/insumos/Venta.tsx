@@ -5,7 +5,7 @@ import { useToast } from '../../ui/Toast';
 import { useCuartos } from '../../data/cuartos';
 import type { InsumosApi, Medio, Prod } from '../../data/insumos';
 import { BuscadorProducto, Campo, HojaEstable } from './piezas';
-import { parseCantidad, parseDinero } from './logica';
+import { coincide, parseCantidad, parseDinero } from './logica';
 import { dinero, numero } from '../../lib/format';
 
 /** RF-62: producto + cantidad → al cuarto o pagado ya. Dos toques cuando la cantidad es 1. */
@@ -18,6 +18,7 @@ export function Venta({ api, inicial, onCerrar }: { api: InsumosApi; inicial?: s
   const [alCuarto, setAlCuarto] = useState(false);
   const [precio, setPrecio] = useState('');
   const [guardandoPrecio, setGuardandoPrecio] = useState(false);
+  const [filtro, setFiltro] = useState('');
   const [trabajando, setTrabajando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const p: Prod | undefined = lista.find((x) => x.id === productoId);
@@ -32,15 +33,19 @@ export function Venta({ api, inicial, onCerrar }: { api: InsumosApi; inicial?: s
       .sort((a, b) => a.cuarto.localeCompare(b.cuarto, 'es', { numeric: true }));
   }, [cuartos, enCurso, llegaHoy]);
 
+  const reservasFiltradas = reservas.filter((r) => r.cuarto.startsWith(filtro.trim()) || coincide(r.huesped ?? '', filtro));
+
   async function vender(destino: { reserva: string } | { medio: Medio }, cuando: string) {
     if (!p) return setError('Elige qué se vendió.');
     if (n == null || n <= 0) return setError('Escribe cuántos. Ejemplo: 2');
     setError(null);
     setTrabajando(true);
-    const fallo = await api.registrarConsumo(p.id, n, destino);
+    const r = await api.registrarConsumo(p.id, n, destino);
     setTrabajando(false);
-    if (fallo) return setError(fallo);
-    toast.avisar(`${numero(n)} ${p.nombre} · ${dinero(Math.round(n * (p.venta ?? 0)))} · ${cuando}`);
+    if ('error' in r) return setError(r.error);
+    toast.avisar(`${numero(n)} ${p.nombre} · ${dinero(Math.round(n * (p.venta ?? 0)))} · ${cuando}`, {
+      deshacer: () => void api.anularConsumo(r.id),
+    });
     onCerrar();
   }
 
@@ -100,8 +105,21 @@ export function Venta({ api, inicial, onCerrar }: { api: InsumosApi; inicial?: s
                 {reservas.length === 0 ? (
                   <p className="ins-ayuda">Ahora no hay huéspedes con reserva en curso o confirmada para cargarles la cuenta.</p>
                 ) : (
+                  <>
+                    {reservas.length > 5 && (
+                      <input
+                        className="input"
+                        type="search"
+                        enterKeyHint="search"
+                        autoComplete="off"
+                        aria-label="Buscar por número de cuarto o nombre"
+                        placeholder="Número de cuarto o nombre"
+                        value={filtro}
+                        onChange={(e) => setFiltro(e.target.value)}
+                      />
+                    )}
                   <ul className="ins-reservas">
-                    {reservas.map((r) => (
+                    {reservasFiltradas.map((r) => (
                       <li key={r.id}>
                         <button type="button" className="ins-reserva" disabled={trabajando} onClick={() => void vender({ reserva: r.id }, `al cuarto ${r.cuarto}`)}>
                           <strong>Cuarto {r.cuarto}</strong>
@@ -110,7 +128,9 @@ export function Venta({ api, inicial, onCerrar }: { api: InsumosApi; inicial?: s
                         </button>
                       </li>
                     ))}
+                    {reservasFiltradas.length === 0 && <li className="ins-ayuda">No hay un cuarto o huésped con eso.</li>}
                   </ul>
+                  </>
                 )}
                 <Boton variante="ghost" onClick={() => setAlCuarto(false)}>
                   Mejor otra forma de pago
