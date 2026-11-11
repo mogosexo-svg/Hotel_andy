@@ -84,4 +84,4 @@ La sesión principal **dirige, no programa**. Fable es caro: úsalo para decidir
 - Secretos en `.env` (gitignored) y en los secretos de Supabase. `.env.example` sí va al repo.
 
 ## Si el contenedor es nuevo
-Las skills y plugins viven en `~/.claude`, fuera del repo. Si `/hallmark` o `/impeccable` no existen, reinstalar según `docs/DEATH_NOTE.md`. Para que sloplint pueda abrir el navegador: `npm i -g puppeteer-core` y `ln -sf /opt/pw-browsers/chromium /usr/bin/chromium`.
+Las skills y plugins viven en `~/.claude`, fuera del repo. Si `/hallmark`, `/impeccable`, `/ponytail` o `/plan` no existen: `bash scripts/instalar-skills.sh` y reinicia la sesión (los plugins cargan al iniciar).
