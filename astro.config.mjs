@@ -5,5 +5,5 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://hotelandyatacames.org',
   output: 'static',
-  integrations: [react(), sitemap()],
+  integrations: [react(), sitemap({ filter: (p) => !p.includes('/panel') })],
 });

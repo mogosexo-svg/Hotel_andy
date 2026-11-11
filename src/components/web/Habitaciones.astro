@@ -1,0 +1,43 @@
+---
+import Foto from './Foto.astro';
+import { FOTO_DE_TIPO } from './fotos';
+import { dinero, type Catalogo } from './catalogo';
+interface Props { c: Catalogo }
+const { c } = Astro.props;
+---
+<section id="habitaciones" class="seccion">
+  <div class="container">
+    <div class="cab reveal">
+      <h2>Elige tu cuarto</h2>
+      <p class="lead">{c.tipos.length} tipos de habitación, para dos personas o para toda la familia. Precio por cuarto.</p>
+    </div>
+    <ul class="cuartos">
+      {c.tipos.map((t) => {
+        const f = FOTO_DE_TIPO[t.clave];
+        return (
+          <li class="cuarto reveal">
+            {f ? (
+              <div class="cuarto-foto">
+                <Foto nombre={f} widths={[400, 640, 960]} sizes="(min-width: 960px) 30vw, (min-width: 600px) 45vw, 92vw" />
+              </div>
+            ) : (
+              <div class="cuarto-foto cuarto-sin" role="img" aria-label={`Foto de ${t.nombre} próximamente`}>
+                <span>Foto próximamente</span>
+              </div>
+            )}
+            <div class="cuarto-info">
+              <h3>{t.nombre}</h3>
+              <p>Hasta {t.max_personas} personas{t.cuartos > 0 ? `, ${t.cuartos} ${t.cuartos === 1 ? 'cuarto' : 'cuartos'}` : ''}</p>
+              {t.descripcion && <p class="cuarto-desc">{t.descripcion}</p>}
+              <div class="cuarto-pie">
+                {t.desde_centavos != null && <p class="precio-desde">Desde <strong class="num">{dinero(t.desde_centavos)}</strong> la noche</p>}
+                <a class="enlace" href="#reservar" aria-label={`Ver disponibilidad de ${t.nombre}`}>Ver disponibilidad</a>
+              </div>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+    <p class="nota">Las fotos son de cuartos del hotel y pueden no ser exactamente el tipo que reservas. No hay ascensor.</p>
+  </div>
+</section>

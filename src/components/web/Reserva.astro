@@ -1,0 +1,71 @@
+---
+import { waUrl, type Catalogo } from './catalogo';
+interface Props { c: Catalogo }
+const { c } = Astro.props;
+const horas = c.hotel.reglas.prereserva_horas;
+const wa = waUrl(c, `Hola, quiero reservar en ${c.hotel.nombre}.`);
+---
+<section id="reservar" class="seccion reserva" data-reserva
+  data-url={import.meta.env.PUBLIC_SUPABASE_URL} data-key={import.meta.env.PUBLIC_SUPABASE_ANON_KEY}
+  data-tel={c.hotel.telefono.replace(/\D/g, '')} data-hotel={c.hotel.nombre}>
+  <div class="container reserva-grid">
+    <div class="reserva-intro reveal">
+      <h2>Mira qué hay libre</h2>
+      <p class="lead">Elige las fechas y cuántos son. El precio es por habitación, no por persona.</p>
+      {horas && <p class="nota">Tu pre-reserva queda guardada {horas} horas mientras confirmas por WhatsApp.</p>}
+    </div>
+
+    <div class="panel clear reveal" aria-live="polite">
+      <form data-paso="buscar" class="form" novalidate>
+        <div class="campos">
+          <label>Entrada<input type="date" name="entrada" required /></label>
+          <label>Salida<input type="date" name="salida" required /></label>
+          <label>Personas<input type="number" name="personas" min="1" max="20" value="2" inputmode="numeric" required /></label>
+        </div>
+        <p class="error" data-error role="alert" hidden></p>
+        <button class="btn" type="submit">Ver disponibilidad</button>
+      </form>
+
+      <div data-paso="resultados" hidden>
+        <p class="resumen" data-resumen></p>
+        <ul class="tipos" data-lista></ul>
+        <button class="enlace" type="button" data-volver="buscar">Cambiar fechas</button>
+      </div>
+
+      <form data-paso="datos" class="form" hidden novalidate>
+        <p class="resumen" data-elegido></p>
+        <div class="campos campos-2">
+          <label>Tu nombre<input type="text" name="nombre" autocomplete="name" minlength="2" maxlength="100" required /></label>
+          <label>Teléfono o WhatsApp<input type="tel" name="telefono" autocomplete="tel" inputmode="tel" required /></label>
+        </div>
+        <label class="check"><input type="checkbox" name="mascota" /> Viajo con mascota</label>
+        <label class="check"><input type="checkbox" name="consentimiento" required />
+          <span>Acepto que guarden mis datos para gestionar esta reserva, según el <a href="/privacidad">aviso de privacidad</a>.</span></label>
+        <p class="error" data-error role="alert" hidden></p>
+        <div class="acciones">
+          <button class="btn" type="submit">Pedir pre-reserva</button>
+          <button class="btn btn-claro" type="button" data-volver="resultados">Volver</button>
+        </div>
+      </form>
+
+      <div data-paso="listo" hidden>
+        <p class="resumen">Pre-reserva lista. Tu código es</p>
+        <p class="codigo num" data-codigo></p>
+        <p data-detalle></p>
+        <a class="btn" data-wa href={wa} target="_blank" rel="noopener">Confirmar por WhatsApp</a>
+        <p class="nota">Si no se abre WhatsApp, escríbenos y dinos tu código.</p>
+      </div>
+
+      <div data-paso="caido" hidden>
+        <p class="resumen">Ahora mismo no podemos mostrar la disponibilidad.</p>
+        <p>Escríbenos por WhatsApp y te respondemos con lo que hay libre.</p>
+        <a class="btn" href={wa} target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+      </div>
+
+      <noscript>
+        <p class="resumen">Para ver la disponibilidad necesitas activar JavaScript, o escríbenos.</p>
+        <a class="btn" href={wa} target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+      </noscript>
+    </div>
+  </div>
+</section>
