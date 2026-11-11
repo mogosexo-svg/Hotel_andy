@@ -6,7 +6,7 @@ import './styles/screens.css';
 import { SesionProvider, useSesion, usePerfil } from './data/sesion';
 import { CuartosProvider, useCuartos } from './data/cuartos';
 import { ToastProvider } from './ui/Toast';
-import { Aviso, Boton, Skeleton } from './ui/kit';
+import { Aviso, Boton, Hoja, Skeleton } from './ui/kit';
 import { Icon } from './ui/Icon';
 import { Paleta } from './ui/Paleta';
 import { Login } from './screens/Login';
@@ -75,11 +75,13 @@ function Shell() {
   const paginas = useMemo(() => paginasDe(perfil.rol), [perfil.rol]);
   const [pagina, setPagina] = useState<Pagina>(() => paginaDeHash(window.location.hash, perfil.rol));
   const [paleta, setPaleta] = useState(false);
+  const [masAbierto, setMasAbierto] = useState(false);
 
   const ir = useCallback(
     (p: Pagina) => {
       if (window.location.hash !== `#/${p}`) window.history.pushState(null, '', `#/${p}`);
       setPagina(p);
+      setMasAbierto(false);
       window.scrollTo({ top: 0 });
     },
     [],
@@ -106,6 +108,10 @@ function Shell() {
   const porLimpiar = cuartos.filter((c) => c.estado === 'por_limpiar').length;
   const puedeBuscar = perfil.rol !== 'limpieza';
   const solo = paginas.length === 1;
+  // En móvil caben 5 pestañas con toques de 48 px: con más, 4 principales + "Más".
+  const principales = paginas.length > 5 ? 4 : paginas.length;
+  const extras = paginas.slice(principales);
+  const extraActiva = extras.some((p) => p.id === pagina);
 
   return (
     <div className={`shell ${solo ? 'shell--solo' : ''}`}>
@@ -128,8 +134,8 @@ function Shell() {
         <nav className="nav" aria-label="Secciones">
           <p className="marca nav__marca">Hotel Andy</p>
           <ul>
-            {paginas.map((p) => (
-              <li key={p.id}>
+            {paginas.map((p, i) => (
+              <li key={p.id} className={i >= principales ? 'nav__extra' : undefined}>
                 <a
                   href={`#/${p.id}`}
                   className="nav__item"
@@ -151,6 +157,22 @@ function Shell() {
                 </a>
               </li>
             ))}
+            {extras.length > 0 && (
+              <li className="nav__mas">
+                <button
+                  type="button"
+                  className="nav__item"
+                  aria-current={extraActiva ? 'page' : undefined}
+                  aria-haspopup="dialog"
+                  onClick={() => setMasAbierto(true)}
+                >
+                  <span className="nav__ico">
+                    <Icon name="mas" />
+                  </span>
+                  <span>Más</span>
+                </button>
+              </li>
+            )}
           </ul>
           <div className="nav__pie">
             {puedeBuscar && (
@@ -179,6 +201,29 @@ function Shell() {
         {pagina === 'inventario' && <Inventario />}
         {pagina === 'config' && <Config />}
       </main>
+
+      {masAbierto && (
+        <Hoja titulo="Más" onCerrar={() => setMasAbierto(false)}>
+          <ul className="mas-lista">
+            {extras.map((p) => (
+              <li key={p.id}>
+                <a
+                  href={`#/${p.id}`}
+                  className="mas-lista__item"
+                  aria-current={pagina === p.id ? 'page' : undefined}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    ir(p.id);
+                  }}
+                >
+                  <Icon name={p.icono} />
+                  {p.texto}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </Hoja>
+      )}
 
       {paleta && (
         <Paleta

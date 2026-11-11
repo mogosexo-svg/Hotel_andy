@@ -133,8 +133,56 @@
   background: var(--por-limpiar-tinta);
 }
 
+@media (max-width: 380px) {
+  .nav__item {
+    font-size: 0.9375rem;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* "Más": con 6 secciones, las últimas van en una hoja (solo móvil) */
+.nav__extra {
+  display: none;
+}
+button.nav__item {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+}
+.mas-lista {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mas-lista__item {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 3.5rem;
+  padding: 0 var(--s-4);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: var(--t-lg);
+  font-weight: 650;
+  text-decoration: none;
+}
+.mas-lista__item[aria-current='page'] {
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
 /* Escritorio: barra lateral */
 @media (min-width: 1024px) {
+  .nav__extra {
+    display: block;
+  }
+  .nav__mas {
+    display: none;
+  }
   .shell {
     padding-bottom: 0;
     padding-left: var(--side-w);
