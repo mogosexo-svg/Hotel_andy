@@ -1,0 +1,92 @@
+/* Sistema de diseño del panel · Hotel Andy
+   Paleta tranquila de arena y tinta; el color vive SOLO en los estados y en la acción principal. */
+@import '@fontsource-variable/figtree';
+
+:root {
+  color-scheme: light;
+
+  /* Superficies */
+  --bg: #f5f2ea;
+  --surface: #ffffff;
+  --surface-2: #eeeadf;
+  --line: #e0dbcd;
+  --line-strong: #c9c3b1;
+
+  /* Tinta (contraste sobre --bg: 14.2 / 7.1 / 4.9) */
+  --ink: #1a2a2e;
+  --ink-2: #435257;
+  --ink-3: #5b696d;
+
+  /* Marca: mar profundo, solo para acción principal y navegación activa */
+  --brand: #0d5666;
+  --brand-hover: #0a4452;
+  --brand-soft: #dcebee;
+  --on-brand: #ffffff;
+
+  /* Estados: fuerte (íconos, bordes), tinte (fondo), tinta (texto) */
+  --libre: #1f7a4d;
+  --libre-tinte: #ddf1e4;
+  --libre-tinta: #12533a;
+  --ocupado: #c2362d;
+  --ocupado-tinte: #fbe1de;
+  --ocupado-tinta: #8a2019;
+  --por-limpiar: #d4700f;
+  --por-limpiar-tinte: #fde7cf;
+  --por-limpiar-tinta: #85470a;
+  --limpiando: #9a7500;
+  --limpiando-tinte: #faefb8;
+  --limpiando-tinta: #5f4a00;
+  --mantenimiento: #4a5057;
+  --mantenimiento-tinte: #e2e4e6;
+  --mantenimiento-tinta: #30353b;
+
+  /* Datos (series de gráficos, validadas con dataviz) */
+  --serie-1: #2a78d6;
+  --serie-2: #6250d6;
+  --serie-3: #e87ba4;
+  --grid: #e7e2d4;
+
+  /* Tipografía */
+  --font: 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --t-base: 1.125rem; /* 18 px: mínimo del cuerpo */
+  --t-sm: 1rem; /* 16 px: solo etiquetas secundarias y datos densos */
+  --t-lg: 1.375rem;
+  --t-xl: 1.75rem;
+  --t-2xl: 2.25rem;
+  --t-num: clamp(2.75rem, 11vw, 3.75rem);
+
+  /* Espacio (escala de 4) */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --gutter: 1rem;
+
+  /* Forma y profundidad */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --touch: 3rem; /* 48 px */
+  --shadow-1: 0 1px 2px rgb(26 42 46 / 0.06), 0 2px 8px rgb(26 42 46 / 0.04);
+  --shadow-2: 0 2px 4px rgb(26 42 46 / 0.08), 0 12px 32px rgb(26 42 46 / 0.12);
+  --shadow-sheet: 0 -8px 40px rgb(26 42 46 / 0.18);
+
+  /* Movimiento */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --d-1: 150ms;
+  --d-2: 250ms;
+  --d-3: 400ms;
+
+  --nav-h: 4.5rem;
+  --side-w: 15rem;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 2rem;
+    --t-num: 3.5rem;
+  }
+}

@@ -1,12 +1,17 @@
+---
+import App from '../../panel/App';
+---
+
 <!doctype html>
 <html lang="es-EC">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#f5f2ea" />
     <title>Panel · Hotel Andy</title>
   </head>
-  <body>
-    <h1>Panel</h1>
+  <body style="margin:0;background:#f5f2ea">
+    <App client:only="react" />
   </body>
 </html>
