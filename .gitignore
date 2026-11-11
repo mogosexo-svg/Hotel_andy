@@ -6,3 +6,4 @@ dist/
 !.env.example
 *.private.json
 supabase/.temp/
+.claude/worktrees/
