@@ -378,7 +378,8 @@ button.card:hover {
   z-index: 80;
   left: var(--s-4);
   right: var(--s-4);
-  bottom: calc(var(--nav-h) + var(--s-4) + env(safe-area-inset-bottom));
+  /* Móvil: arriba, bajo la cabecera, para no tapar el botón fijo de las hojas ni la barra inferior. */
+  top: calc(3.75rem + var(--s-2) + env(safe-area-inset-top));
   display: grid;
   gap: var(--s-2);
   justify-items: center;
@@ -386,6 +387,7 @@ button.card:hover {
 }
 @media (min-width: 1024px) {
   .toasts {
+    top: auto;
     bottom: var(--s-5);
     left: calc(var(--side-w) + var(--s-5));
     justify-items: start;
@@ -427,13 +429,27 @@ button.card:hover {
 @keyframes toast-in {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(-16px);
   }
 }
 @keyframes toast-out {
   to {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(-8px);
+  }
+}
+@media (min-width: 1024px) {
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+  }
+  @keyframes toast-out {
+    to {
+      opacity: 0;
+      transform: translateY(8px);
+    }
   }
 }
 

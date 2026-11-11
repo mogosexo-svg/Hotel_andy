@@ -29,7 +29,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const api = useMemo<ToastApi>(() => {
     const poner = (t: Omit<ToastItem, 'id'>, ms: number) => {
       const id = ++seq.current;
-      setItems((l) => [...l.slice(-2), { ...t, id }]);
+      // Móvil: un aviso a la vez (el nuevo reemplaza al anterior). Escritorio: hasta 3.
+      const max = window.matchMedia('(min-width: 1024px)').matches ? 3 : 1;
+      setItems((l) => [...l.slice(Math.max(0, l.length - (max - 1))), { ...t, id }]);
       window.setTimeout(() => quitar(id), ms);
     };
     return {
