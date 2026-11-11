@@ -12,6 +12,16 @@ export function dinero(centavos: number | null | undefined): string {
   return `${neg ? '-' : ''}$${enteros}${cents ? ',' + String(cents).padStart(2, '0') : ''}`;
 }
 
+/** Centavos → texto editable: 150 → "1,50"; 200 → "2"; null → "". */
+export function centavosATexto(c: number | null | undefined): string {
+  if (c == null) return '';
+  const r = c % 100;
+  return r ? `${Math.floor(c / 100)},${String(r).padStart(2, '0')}` : String(c / 100);
+}
+
+/** Minúsculas sin tildes, para buscar. */
+export const sinTildes = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
 /** Número con coma decimal: 0,5 · 12 */
 export function numero(n: number): string {
   return String(Math.round(n * 100) / 100).replace('.', ',');

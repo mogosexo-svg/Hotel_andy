@@ -1,4 +1,7 @@
 /** Lógica pura de insumos y ventas: parseo de lo que se teclea, totales y validaciones. */
+import { centavosATexto, sinTildes } from '../../lib/format';
+
+export { centavosATexto };
 
 /** "0,5" o "0.5" → 0.5. Vacío o inválido → null. Hasta 3 decimales (el cloro va en 0,5 kg). */
 export function parseCantidad(texto: string): number | null {
@@ -12,14 +15,6 @@ export function parseDinero(texto: string): number | null {
   const t = texto.trim().replace(/^\$/, '').replace(',', '.');
   if (!/^\d+(\.\d{1,2})?$/.test(t)) return null;
   return Math.round(Number(t) * 100);
-}
-
-/** Centavos → texto editable: 150 → "1,50"; 200 → "2". */
-export function centavosATexto(c: number | null | undefined): string {
-  if (c == null) return '';
-  const e = Math.floor(c / 100);
-  const r = c % 100;
-  return r ? `${e},${String(r).padStart(2, '0')}` : String(e);
 }
 
 /** Cantidad → texto editable con coma: 0.5 → "0,5". */
@@ -75,8 +70,6 @@ export function validarFactura(b: BorradorFactura): { error: string } | { lineas
   }
   return { lineas: out };
 }
-
-const sinTildes = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 /** Búsqueda de productos sin importar tildes ni mayúsculas. */
 export function coincide(nombre: string, q: string): boolean {

@@ -82,7 +82,7 @@ export function montoACentavos(texto: string): number | null {
   const c = Math.round(parseFloat(s) * 100);
   return c > 0 ? c : null;
 }
-export const centavosATexto = (c: number) => (c % 100 ? (c / 100).toFixed(2).replace('.', ',') : String(c / 100));
+export { centavosATexto } from '../../lib/format';
 export const anticipoSugerido = (total: number | null, porcentaje: number): number | null =>
   total == null ? null : Math.round((total * porcentaje) / 100);
 
@@ -106,4 +106,4 @@ export function validarReserva(b: BorradorReserva, hoy: string): string | null {
   return null;
 }
 
-export const sinTildes = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+export { sinTildes } from '../../lib/format';

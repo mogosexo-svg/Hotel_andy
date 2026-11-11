@@ -19,12 +19,7 @@ export function dolaresACentavos(texto: string, opts: { max?: number; permitirCe
   return ok(centavos);
 }
 
-/** 3500 → "35" · 3550 → "35,50" (para rellenar el campo). */
-export function centavosAInput(c: number): string {
-  const e = Math.floor(c / 100);
-  const r = c % 100;
-  return r ? `${e},${String(r).padStart(2, '0')}` : String(e);
-}
+export { centavosATexto as centavosAInput } from '../../lib/format';
 
 /* ───────────── Fechas y rangos de temporada ───────────── */
 

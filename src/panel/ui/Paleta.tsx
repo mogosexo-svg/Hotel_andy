@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Icon, type IconoNombre } from './Icon';
 import { useCuartos } from '../data/cuartos';
 import { ESTADOS } from '../lib/estados';
+import { sinTildes } from '../lib/format';
 import type { Pagina } from '../nav';
 import { pedirAccionInsumos } from '../data/insumos';
 
@@ -13,7 +14,6 @@ interface Resultado {
   ir: () => void;
 }
 
-const sinTildes = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 /** Ctrl+K: busca cuartos y salta a cualquier pantalla. */
 export function Paleta({
