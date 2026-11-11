@@ -161,7 +161,7 @@ function NotaDanio({ habitacionId }: { habitacionId: string }) {
   );
 }
 
-function FormSalida({
+export function FormSalida({
   numero,
   reservaId,
   onAtras,
