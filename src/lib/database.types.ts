@@ -1292,6 +1292,20 @@ export type Database = {
         Args: { p_compra: string; p_motivo?: string };
         Returns: undefined;
       };
+      calendario_publico: {
+        Args: {
+          p_desde: string;
+          p_hasta: string;
+          p_hotel?: string;
+          p_personas: number;
+        };
+        Returns: {
+          cuartos_libres: number;
+          desde_centavos: number;
+          dia: string;
+          temporada_alta: boolean;
+        }[];
+      };
       cancelar_reserva: {
         Args: { p_motivo?: string; p_reserva: string };
         Returns: undefined;

@@ -362,32 +362,32 @@
     {
       "id": "bano",
       "nombre": "Baño y amenidades",
-      "icono": "🧻"
+      "icono": "bano"
     },
     {
       "id": "lenceria",
       "nombre": "Lencería",
-      "icono": "🛏️"
+      "icono": "lenceria"
     },
     {
       "id": "limpieza",
       "nombre": "Limpieza",
-      "icono": "🧽"
+      "icono": "limpieza"
     },
     {
       "id": "piscina",
       "nombre": "Piscina",
-      "icono": "🏊"
+      "icono": "piscina"
     },
     {
       "id": "bebidas",
       "nombre": "Bebidas",
-      "icono": "🥤"
+      "icono": "bebidas"
     },
     {
       "id": "snacks",
       "nombre": "Snacks",
-      "icono": "🍫"
+      "icono": "snacks"
     }
   ],
   "_categorias_nota": "Iniciales sugeridas. El hotel las crea, edita y borra desde el panel (CRUD)."

@@ -10,12 +10,12 @@ values ('00000000-0000-4000-8000-0000000a0d1e', 'hotel-andy', 'Hotel Andy', 'Ata
 insert into config (hotel_id) values ('00000000-0000-4000-8000-0000000a0d1e');
 
 insert into categorias (hotel_id, clave, nombre, icono, orden) values
-  ('00000000-0000-4000-8000-0000000a0d1e', 'bano', 'Baño y amenidades', '🧻', 1),
-  ('00000000-0000-4000-8000-0000000a0d1e', 'lenceria', 'Lencería', '🛏️', 2),
-  ('00000000-0000-4000-8000-0000000a0d1e', 'limpieza', 'Limpieza', '🧽', 3),
-  ('00000000-0000-4000-8000-0000000a0d1e', 'piscina', 'Piscina', '🏊', 4),
-  ('00000000-0000-4000-8000-0000000a0d1e', 'bebidas', 'Bebidas', '🥤', 5),
-  ('00000000-0000-4000-8000-0000000a0d1e', 'snacks', 'Snacks', '🍫', 6);
+  ('00000000-0000-4000-8000-0000000a0d1e', 'bano', 'Baño y amenidades', 'bano', 1),
+  ('00000000-0000-4000-8000-0000000a0d1e', 'lenceria', 'Lencería', 'lenceria', 2),
+  ('00000000-0000-4000-8000-0000000a0d1e', 'limpieza', 'Limpieza', 'limpieza', 3),
+  ('00000000-0000-4000-8000-0000000a0d1e', 'piscina', 'Piscina', 'piscina', 4),
+  ('00000000-0000-4000-8000-0000000a0d1e', 'bebidas', 'Bebidas', 'bebidas', 5),
+  ('00000000-0000-4000-8000-0000000a0d1e', 'snacks', 'Snacks', 'snacks', 6);
 
 insert into tipos_habitacion (hotel_id, clave, nombre, max_personas, orden) values
   ('00000000-0000-4000-8000-0000000a0d1e', 'doble_sencilla', 'Doble sencilla', 2, 1),

@@ -1,4 +1,4 @@
--- ⚠️⚠️⚠️  DEMO · DATOS FICTICIOS · NUNCA EN PRODUCCIÓN  ⚠️⚠️⚠️
+-- AVISO  DEMO · DATOS FICTICIOS · NUNCA EN PRODUCCIÓN
 -- Usuarios de prueba y ~30 días de reservas, limpiezas, compras y consumos inventados para que el panel
 -- y los gráficos tengan datos en desarrollo. No está en config.toml: se aplica a mano, solo en local:
 --   psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -f supabase/seed.demo.sql

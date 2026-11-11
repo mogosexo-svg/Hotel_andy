@@ -51,7 +51,7 @@ El resto de tablas (pagos, compras, consumos, movimientos, mensajes, toques NFC)
 | `huespedes` | `nombre`, `documento`, `telefono` (normalizado `+593…`), `procedencia`, `consentimiento_en`, `acepta_campanas`. | Borrar un huésped deja sus reservas con `huesped_id` null (LOPDP). |
 | `reservas` | `codigo`, `habitacion_id`, `huesped_id`, `entrada`, `salida` (`[)`), `personas`, `mascota`, `estado`, `fuente`, `canal`, `total_centavos`, `vence_en`, check-in/out (`_en`, `_por`), `ical_uid`. | **Realtime.** EXCLUDE `sin_cruces`. Canal y total se congelan al crear. |
 | `pagos` | `reserva_id`, `monto_centavos`, `medio` (`efectivo`/`transferencia`), `comprobante_path`. | |
-| `categorias` | `nombre`, `icono`, `orden`. | No se borra con productos (FK → `23503`). |
+| `categorias` | `nombre`, `icono`, `orden`. `icono` es una clave, no un emoji: `bano`, `lenceria`, `limpieza`, `piscina`, `bebidas`, `snacks` (las categorías nuevas pueden usar otra clave). | No se borra con productos (FK → `23503`). |
 | `productos` | Insumos y venta: `unidad`, `stock` (null = sin contar), `minimo`, `se_vende`, `precio_compra_centavos`, `precio_venta_centavos`, `consumo_diario`, `activo`. | **Realtime.** `stock` no se edita: trigger lo rechaza. Borrar = `activo = false`. |
 | `kit_por_tipo` | `tipo_id` × `producto_id` → `cantidad`, `por` (`limpieza`/`persona`). | |
 | `movimientos_insumo` | Historial de stock: `tipo` (compra, limpieza, venta, merma, conteo, anulacion, consumo_diario), `cantidad` con signo, `stock_resultante`. | Solo inserción. Su trigger cambia `productos.stock` y las alertas. |
@@ -72,6 +72,7 @@ Storage: bucket privado `hotel`, ruta `<hotel_id>/<comprobantes|danos|facturas|p
 |---|---|
 | `catalogo_publico(p_hotel text = 'hotel-andy')` | `jsonb` `{hotel: {nombre, ciudad, provincia, telefono, dominio, check_in, check_out, booking:{calificacion, resenas}, reglas}, tipos: [{id, clave, nombre, max_personas, descripcion, cuartos, desde_centavos}]}`. `desde` = temporada base, canal directo. |
 | `consultar_disponibilidad(p_entrada date, p_salida date, p_personas int, p_hotel text = 'hotel-andy')` | Filas `{tipo_id, clave, nombre, max_personas, cuartos_libres, noches, total_centavos}` ordenadas por total. Solo tipos con cuartos libres (no en arreglo) y tarifa. Libera vencidas antes. Valida: entrada ≥ hoy, 1–30 noches, 1–20 personas. |
+| `calendario_publico(p_desde date, p_hasta date, p_personas int, p_hotel text = 'hotel-andy')` | Filas `{dia, cuartos_libres, desde_centavos, temporada_alta}`, una por día de `[p_desde, p_hasta)`. Libres = activos, no en arreglo, capacidad ≥ personas, sin reserva activa esa noche (pre-reservas vencidas se ignoran). `desde_centavos` = tarifa directa más barata entre tipos con libres (null si no hay). Valida: `p_desde` ≥ hoy − 1, 1–92 días, 1–20 personas. |
 | `crear_prereserva(p_tipo_id uuid, p_entrada date, p_salida date, p_personas int, p_nombre text, p_telefono text, p_consentimiento boolean, p_mascota boolean = false, p_hotel text = 'hotel-andy')` | `jsonb` `{codigo, vence_en, total_centavos, entrada, salida, noches}`. Exige consentimiento. Vence a las `reglas.prereserva_horas` (2 h). Tope: 2 pre-reservas activas por teléfono y 10 de la web por hotel. Asigna el primer cuarto libre del tipo. |
 
 ## RPC del panel (`authenticated`; cada una valida rol y hotel)
