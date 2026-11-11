@@ -1351,6 +1351,7 @@ export type Database = {
         }[];
       };
       cuenta_reserva: { Args: { p_reserva: string }; Returns: Json };
+      deshacer_limpieza: { Args: { p_habitacion: string }; Returns: undefined };
       empezar_limpieza: { Args: { p_habitacion: string }; Returns: undefined };
       liberar_mantenimiento: {
         Args: { p_habitacion: string };
