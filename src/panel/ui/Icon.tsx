@@ -35,6 +35,7 @@ const P = {
   mover: 'M5 9l-3 3 3 3M19 9l3 3-3 3M2 12h20',
   caja: 'M3 8h18v12H3zM3 8l2-4h14l2 4M10 12h4',
   comando: 'M9 6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3z',
+  ajustes: 'M4 7h9M17 7h3M4 17h3M11 17h9M15 4v6M9 14v6',
   check: 'M5 12.5l4.5 4.5L19 7.5',
   factura: 'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h3',
   atras: 'M15 6l-6 6 6 6',

@@ -15,6 +15,7 @@ import { Mapa } from './screens/Mapa';
 import { Reservas } from './screens/reservas/Reservas';
 import { Limpieza } from './screens/Limpieza';
 import { Inventario } from './screens/Inventario';
+import { Config } from './screens/config/Config';
 import { paginaDeHash, paginasDe, type Pagina } from './nav';
 import { ROL_PALABRA } from './lib/estados';
 
@@ -176,6 +177,7 @@ function Shell() {
         {pagina === 'reservas' && <Reservas />}
         {pagina === 'limpieza' && <Limpieza />}
         {pagina === 'inventario' && <Inventario />}
+        {pagina === 'config' && <Config />}
       </main>
 
       {paleta && (
