@@ -7,7 +7,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "test:db": "bash scripts/test-db.sh",
-    "test": "vitest run"
+    "test": "vitest run src"
   },
   "packageManager": "pnpm@10.28.0",
   "dependencies": {

@@ -60,7 +60,8 @@
 .tarjeta--ocupacion .tarjeta__linea {
   color: #cfe5ea;
 }
-.tarjeta--ocupacion .card__pie {
+.tarjeta--ocupacion .card__pie,
+.tarjeta--ocupacion .tarjeta__cifra > :first-child {
   color: #fff;
 }
 .ocupacion__barra {
