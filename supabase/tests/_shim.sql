@@ -40,6 +40,11 @@ begin
   create function auth.uid() returns uuid language sql stable as $f$ select (auth.jwt() ->> 'sub')::uuid $f$;
   create function auth.role() returns text language sql stable as $f$ select auth.jwt() ->> 'role' $f$;
   grant execute on all functions in schema auth to anon, authenticated, service_role;
+  -- Supabase da a anon/authenticated/service_role todo sobre public por defecto; se replica para que RLS sea lo que se prueba.
+  grant usage on schema public to anon, authenticated, service_role;
+  alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
+  alter default privileges in schema public grant all on functions to anon, authenticated, service_role;
+  alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
 end $$;
 
 do $$
@@ -48,12 +53,6 @@ begin
     create publication supabase_realtime;
   end if;
 end $$;
-
--- Supabase da a anon/authenticated/service_role todo sobre public por defecto; lo replicamos para que RLS sea lo que se prueba.
-grant usage on schema public to anon, authenticated, service_role;
-alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
-alter default privileges in schema public grant all on functions to anon, authenticated, service_role;
-alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
 
 -- Helpers de test: tests.como('correo') entra como ese usuario; tests.anon() como visitante; tests.salir() vuelve a postgres.
 create schema if not exists tests;
