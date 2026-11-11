@@ -1,20 +1,21 @@
 ---
+import Icono from './Icono.astro';
+import { titulo } from './serif';
 import type { Catalogo } from './catalogo';
 interface Props { c: Catalogo }
 const { c } = Astro.props;
 const busqueda = `${c.hotel.nombre} ${c.hotel.ciudad}`;
 const ruta = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(busqueda)}`;
+const mapa = `https://www.google.com/maps?q=${encodeURIComponent(busqueda)}&output=embed`;
 ---
-<section id="donde" class="seccion">
-  <div class="container donde-grid">
-    <div class="reveal">
-      <h2>{c.hotel.ciudad}, {c.hotel.provincia}</h2>
-      <p class="lead">A pasos de la playa, con parqueadero.</p>
-      <a class="btn btn-claro" href={ruta} target="_blank" rel="noopener">Cómo llegar</a>
-    </div>
-    <div class="mapa reveal">
-      <button type="button" class="btn" data-mapa data-busqueda={busqueda}>Ver el mapa</button>
-      <p class="nota">Mapa de Google, se carga al tocar.</p>
-    </div>
+<section id="donde" class="donde">
+  <div class="donde-cab">
+    <p class="etiqueta rv">Cómo llegar</p>
+    <h2 class="gigante gigante-m rv" set:html={titulo(`${c.hotel.ciudad}, *frente al mar*`)} />
+  </div>
+  <div class="mapa rv">
+    <div class="mapa-vacio" aria-hidden="true"><Icono n="pin" tam={44} /></div>
+    <iframe src={mapa} title={`Mapa de ubicación de ${c.hotel.nombre}`} loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <a class="btn btn-vidrio vidrio" href={ruta} target="_blank" rel="noopener"><Icono n="pin" tam={18} /><span>Cómo llegar</span></a>
   </div>
 </section>

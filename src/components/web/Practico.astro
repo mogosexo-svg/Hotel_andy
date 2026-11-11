@@ -1,31 +1,31 @@
 ---
-import Foto from './Foto.astro';
+import Icono from './Icono.astro';
+import { titulo } from './serif';
 import { hora, type Catalogo } from './catalogo';
 interface Props { c: Catalogo }
 const { c } = Astro.props;
 const r = c.hotel.reglas;
-const filas: [string, string][] = [
-  ['Entrada', `Desde las ${hora(c.hotel.check_in)}`],
-  ['Salida', `Hasta las ${hora(c.hotel.check_out)}`],
-  r.ascensor === false ? ['Ascensor', 'No hay, se sube por escaleras'] : null,
-  r.parqueadero != null ? ['Parqueadero', r.parqueadero ? 'Sí' : 'No'] : null,
-  r.mascotas?.aceptadas ? ['Mascotas', r.mascotas.cargo_adicional == null ? 'Aceptadas con cargo, consulta el valor por WhatsApp' : 'Aceptadas con cargo'] : null,
-  r.desayuno != null ? ['Desayuno', r.desayuno ? 'Incluido' : 'No incluido'] : null,
-  r.anticipo ? ['Para confirmar', `Anticipo del ${r.anticipo.porcentaje} % por ${r.anticipo.medio}`] : null,
-].filter((x): x is [string, string] => !!x);
+const filas = [
+  ['reloj', 'Entrada', `Desde las ${hora(c.hotel.check_in)}`],
+  ['reloj', 'Salida', `Hasta las ${hora(c.hotel.check_out)}`],
+  r.ascensor === false ? ['escalera', 'Ascensor', 'No hay, se sube por escaleras'] : null,
+  r.parqueadero != null ? ['auto', 'Parqueadero', r.parqueadero ? 'Sí' : 'No'] : null,
+  r.mascotas?.aceptadas ? ['perro', 'Mascotas', r.mascotas.cargo_adicional == null ? 'Aceptadas con cargo, consulta el valor por WhatsApp' : 'Aceptadas con cargo'] : null,
+  r.desayuno != null ? ['taza', 'Desayuno', r.desayuno ? 'Incluido' : 'No incluido'] : null,
+  r.anticipo ? ['tarjeta', 'Para confirmar', `Anticipo del ${r.anticipo.porcentaje} % por ${r.anticipo.medio}`] : null,
+].filter((x): x is string[] => !!x);
 ---
-<section id="practico" class="seccion practico">
-  <div class="container practico-grid">
-    <div class="practico-fotos reveal">
-      <Foto nombre="terraza-2" widths={[360, 540, 900]} sizes="(min-width: 960px) 300px, 60vw" />
-      <Foto nombre="terraza-3" widths={[360, 540, 900]} sizes="(min-width: 960px) 300px, 60vw" />
-    </div>
-    <div class="reveal">
-      <h2>Lo práctico, antes de reservar</h2>
-      <p class="lead">La terraza con vista al mar es de todos los huéspedes. Esto es lo que conviene saber.</p>
-      <dl class="reglas">
-        {filas.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
-      </dl>
+<section id="practico" class="practico">
+  <div class="prac-cab">
+    <p class="etiqueta rv">Antes de reservar</p>
+    <h2 class="gigante gigante-m rv" set:html={titulo('Lo *práctico*')} />
+  </div>
+  <div class="marq" data-marq aria-hidden="true">
+    <div class="marq-pista">
+      {[0, 1].map(() => filas.map(([ic, k, v]) => <span class="marq-chip"><Icono n={ic} tam={20} /><b>{k}</b> {v}</span>))}
     </div>
   </div>
+  <dl class="reglas">
+    {filas.map(([ic, k, v]) => <div class="rv"><dt><Icono n={ic} tam={20} />{k}</dt><dd>{v}</dd></div>)}
+  </dl>
 </section>

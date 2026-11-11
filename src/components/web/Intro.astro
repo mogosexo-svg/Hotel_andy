@@ -1,0 +1,31 @@
+---
+import Foto from './Foto.astro';
+import { titulo } from './serif';
+import type { Catalogo } from './catalogo';
+interface Props { c: Catalogo }
+const { c } = Astro.props;
+const cuartos = c.tipos.reduce((n, t) => n + t.cuartos, 0);
+const b = c.hotel.booking;
+const p = c.hotel.reglas.piscina;
+const frase = `${cuartos} habitaciones, una terraza *frente al mar* y una piscina abierta hasta la ${p ? p.cierra.slice(0, 5) : 'noche'}.`;
+const cifras: { n: number; txt: string; dec?: number; sub: string }[] = [
+  { n: b.calificacion, dec: 1, txt: String(b.calificacion).replace('.', ','), sub: 'nota en Booking' },
+  { n: b.resenas, txt: String(b.resenas), sub: 'reseñas de huéspedes' },
+  { n: cuartos, txt: String(cuartos), sub: 'habitaciones' },
+];
+---
+<section id="hotel" class="intro">
+  <div class="intro-grid">
+    <h2 class="gigante gigante-m intro-h rv" set:html={titulo(frase)} />
+    <Foto nombre="terraza-2" class="intro-a par" widths={[400, 700, 900]} sizes="(min-width: 900px) 30vw, 70vw" />
+    <Foto nombre="terraza-3" class="intro-b par" widths={[300, 500, 700]} sizes="(min-width: 900px) 20vw, 50vw" />
+  </div>
+  <dl class="cifras">
+    {cifras.map((x) => (
+      <div class="rv">
+        <dt class="etiqueta">{x.sub}</dt>
+        <dd class="serif num" data-n={x.n} data-dec={x.dec ?? 0}>{x.txt}</dd>
+      </div>
+    ))}
+  </dl>
+</section>

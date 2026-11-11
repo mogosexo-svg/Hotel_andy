@@ -1,0 +1,18 @@
+---
+import Foto from './Foto.astro';
+import { titulo } from './serif';
+// Se desplaza en horizontal mientras se baja. Tamaños distintos a propósito: ritmo editorial, no cuadrícula.
+const tiras: [string, string][] = [
+  ['terraza-3', 'g-a'], ['piscina-noche-2', 'g-b'], ['comedor-terraza-1', 'g-c'],
+  ['hab-matrimonial-3', 'g-d'], ['terraza-2', 'g-e'], ['hab-dos-camas-sofa-1', 'g-f'],
+];
+---
+<section class="galeria" data-galeria aria-label="Galería del hotel">
+  <div class="g-pegado">
+    <h2 class="gigante g-tit rv" set:html={titulo('Un hotel para quedarse a *mirar*')} />
+    <div class="g-pista" data-pista>
+      {tiras.map(([n, k]) => <Foto nombre={n} class={`g-foto ${k}`} widths={[400, 700, 1000]} sizes="(min-width: 900px) 34vw, 70vw" />)}
+    </div>
+    <div class="lente" data-lente aria-hidden="true"></div>
+  </div>
+</section>
