@@ -210,7 +210,7 @@ export function FormSalida({
       <dl className="datos datos--cuenta">
         <div>
           <dt>Hospedaje</dt>
-          <dd>{dinero(cuenta.total_centavos)}</dd>
+          <dd>{cuenta.total_centavos == null ? 'Por definir' : dinero(cuenta.total_centavos)}</dd>
         </div>
         <div>
           <dt>Ya pagó</dt>
@@ -226,7 +226,7 @@ export function FormSalida({
         ))}
         <div className="datos__total">
           <dt>Falta cobrar</dt>
-          <dd>{dinero(cuenta.saldo_centavos)}</dd>
+          <dd>{cuenta.total_centavos == null ? 'Por definir' : dinero(cuenta.saldo_centavos)}</dd>
         </div>
       </dl>
 

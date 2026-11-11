@@ -21,7 +21,7 @@ type Pestana = 'insumos' | 'facturas' | 'cuadre';
 function textoAlerta(a: AlertaStock): string {
   const t = a.mensaje.replace(/^[^\p{L}\p{N}]+/u, '');
   const resto = t.includes(': ') ? t.slice(t.indexOf(': ') + 2) : t;
-  return (resto.charAt(0).toUpperCase() + resto.slice(1)).replace(/(\d)\.(\d)/g, '$1,$2');
+  return resto.charAt(0).toUpperCase() + resto.slice(1);
 }
 
 export function Inventario() {

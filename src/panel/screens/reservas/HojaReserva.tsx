@@ -177,7 +177,7 @@ export function HojaReserva({ id, cuartos, reservas, parchar, refrescar, onCerra
               )}
               <div className="datos__total">
                 <dt>Falta cobrar</dt>
-                <dd>{cuenta.total_centavos == null ? '—' : dinero(cuenta.saldo_centavos)}</dd>
+                <dd>{cuenta.total_centavos == null ? 'Por definir' : dinero(cuenta.saldo_centavos)}</dd>
               </div>
             </dl>
           )}
