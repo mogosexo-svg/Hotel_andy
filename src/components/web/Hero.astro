@@ -1,0 +1,36 @@
+---
+import Foto from './Foto.astro';
+import { desdeMinimo, dinero, waUrl, type Catalogo } from './catalogo';
+interface Props { c: Catalogo }
+const { c } = Astro.props;
+const cuartos = c.tipos.reduce((n, t) => n + t.cuartos, 0);
+const desde = desdeMinimo(c);
+const p = c.hotel.reglas.piscina;
+const frase = [
+  cuartos ? `${cuartos} habitaciones` : null,
+  'terraza con vista al mar',
+  p ? `piscina abierta hasta la ${p.cierra.slice(0, 5)}` : 'piscina',
+];
+const lead = `${frase.slice(0, -1).join(', ')} y ${frase.at(-1)}.`.replace(/^./, (m) => m.toUpperCase());
+const b = c.hotel.booking;
+---
+<section class="hero">
+  <div class="hero-luz" aria-hidden="true"><canvas data-agua></canvas></div>
+  <div class="container hero-cuerpo">
+    <div class="hero-texto">
+      <h1>{c.hotel.ciudad}, a pasos de la playa</h1>
+      <p class="lead">{lead}</p>
+      <div class="acciones">
+        <a class="btn" href="#reservar">Reservar</a>
+        <a class="btn btn-claro" href={waUrl(c, `Hola, quiero información para reservar en ${c.hotel.nombre}.`)} target="_blank" rel="noopener">Escribir por WhatsApp</a>
+      </div>
+      <dl class="datos">
+        <div><dt class="visually-hidden">Calificación en Booking</dt><dd><strong class="num">{String(b.calificacion).replace('.', ',')}</strong> en Booking, <span class="num">{b.resenas}</span> reseñas</dd></div>
+        {desde != null && <div><dt class="visually-hidden">Precio</dt><dd>Desde <strong class="num">{dinero(desde)}</strong> la noche</dd></div>}
+      </dl>
+    </div>
+    <figure class="hero-foto">
+      <Foto nombre="terraza-1" eager widths={[480, 720, 980]} sizes="(min-width: 960px) 600px, 100vw" />
+    </figure>
+  </div>
+</section>

@@ -1,0 +1,9 @@
+---
+import { Picture } from 'astro:assets';
+import { foto } from './fotos';
+interface Props { nombre: string; sizes: string; widths?: number[]; eager?: boolean; class?: string }
+const { nombre, sizes, widths = [400, 640, 960], eager = false, class: clase } = Astro.props;
+const { img, alt } = foto(nombre);
+---
+<Picture src={img} alt={alt} formats={['avif', 'webp']} widths={widths} sizes={sizes} class={clase}
+  loading={eager ? 'eager' : 'lazy'} fetchpriority={eager ? 'high' : 'auto'} decoding={eager ? 'sync' : 'async'} />

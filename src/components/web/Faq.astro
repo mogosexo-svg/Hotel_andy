@@ -1,0 +1,20 @@
+---
+import { preguntas } from './faq';
+import type { Catalogo } from './catalogo';
+interface Props { c: Catalogo }
+const { c } = Astro.props;
+const items = preguntas(c);
+---
+<section id="preguntas" class="seccion">
+  <div class="container faq-grid">
+    <h2 class="reveal">Preguntas frecuentes</h2>
+    <div class="faq reveal">
+      {items.map((x) => (
+        <details>
+          <summary>{x.q}</summary>
+          <p>{x.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

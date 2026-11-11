@@ -1,0 +1,39 @@
+---
+import Web from '../layouts/Web.astro';
+import Nav from '../components/web/Nav.astro';
+import Pie from '../components/web/Pie.astro';
+import { cargarCatalogo, waUrl } from '../components/web/catalogo';
+
+const c = await cargarCatalogo();
+const h = c.hotel;
+const wa = waUrl(c, 'Hola, quiero pedir que borren mis datos del sistema del hotel.');
+---
+<Web title={`Aviso de privacidad, ${h.nombre}`} description={`Qué datos guarda ${h.nombre}, para qué, y cómo pedir que los borremos.`}>
+  <Nav nombre={h.nombre} inicio={false} />
+  <main class="legal">
+    <div class="container legal-col">
+      <h1>Aviso de privacidad</h1>
+      <p class="lead">Este aviso explica qué datos personales guarda {h.nombre} cuando pides una reserva, según la Ley Orgánica de Protección de Datos Personales del Ecuador.</p>
+
+      <h2>Quién es el responsable</h2>
+      <p>{h.nombre}, {h.ciudad}, {h.provincia}, Ecuador. Teléfono {h.telefono}.</p>
+
+      <h2>Qué datos guardamos</h2>
+      <p>Tu nombre y tu teléfono, las fechas y el tipo de cuarto que pediste, cuántas personas son y si viajas con mascota. Si escribes por WhatsApp, guardamos también esa conversación. No pedimos datos de tarjeta: esta web no cobra.</p>
+
+      <h2>Para qué los usamos</h2>
+      <p>Solo para atender tu reserva: guardarte el cuarto, contactarte para confirmarla y recibirte en el hotel. No vendemos ni compartimos tus datos con otras empresas para publicidad.</p>
+
+      <h2>Por qué podemos guardarlos</h2>
+      <p>Porque tú nos das tu permiso al marcar la casilla del formulario de reserva. Sin ese permiso no se crea la pre-reserva.</p>
+
+      <h2>Cuánto tiempo</h2>
+      <p>Mientras tu reserva esté activa y el tiempo que el hotel necesite para atender reclamos o cumplir con la ley. Si una pre-reserva no se confirma, el cuarto se libera solo.</p>
+
+      <h2>Tus derechos y cómo pedir que se borren</h2>
+      <p>Puedes pedir ver, corregir o borrar tus datos, o retirar tu permiso, cuando quieras. Escríbenos por WhatsApp con tu nombre y el teléfono que usaste y los borramos.</p>
+      <p><a class="btn" href={wa} target="_blank" rel="noopener">Pedir que borren mis datos</a></p>
+    </div>
+  </main>
+  <Pie c={c} cierre={false} />
+</Web>

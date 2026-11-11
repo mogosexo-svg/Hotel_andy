@@ -1,0 +1,20 @@
+---
+import type { Catalogo } from './catalogo';
+interface Props { c: Catalogo }
+const { c } = Astro.props;
+const busqueda = `${c.hotel.nombre} ${c.hotel.ciudad}`;
+const ruta = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(busqueda)}`;
+---
+<section id="donde" class="seccion">
+  <div class="container donde-grid">
+    <div class="reveal">
+      <h2>{c.hotel.ciudad}, {c.hotel.provincia}</h2>
+      <p class="lead">A pasos de la playa, con parqueadero.</p>
+      <a class="btn btn-claro" href={ruta} target="_blank" rel="noopener">Cómo llegar</a>
+    </div>
+    <div class="mapa reveal">
+      <button type="button" class="btn" data-mapa data-busqueda={busqueda}>Ver el mapa</button>
+      <p class="nota">Mapa de Google, se carga al tocar.</p>
+    </div>
+  </div>
+</section>
