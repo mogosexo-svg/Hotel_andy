@@ -3,6 +3,7 @@ import { Icon, type IconoNombre } from './Icon';
 import { useCuartos } from '../data/cuartos';
 import { ESTADOS } from '../lib/estados';
 import type { Pagina } from '../nav';
+import { pedirAccionInsumos } from '../data/insumos';
 
 interface Resultado {
   id: string;
@@ -50,7 +51,13 @@ export function Paleta({
           abrirCuarto(c.id);
         },
       }));
-    return [...cu, ...pag];
+    const ins: Resultado[] = paginas.some((p) => p.id === 'inventario')
+      ? [
+          { id: 'a-venta', icono: 'dinero' as IconoNombre, texto: 'Registrar una venta', ir: () => (onIr('inventario'), pedirAccionInsumos('venta')) },
+          { id: 'a-compra', icono: 'factura' as IconoNombre, texto: 'Cargar compra desde la factura', ir: () => (onIr('inventario'), pedirAccionInsumos('compra')) },
+        ].filter((a) => !n || sinTildes(a.texto).includes(n))
+      : [];
+    return [...cu, ...ins, ...pag];
   }, [q, cuartos, paginas, onIr, abrirCuarto]);
 
   function elegir(r: Resultado | undefined) {
