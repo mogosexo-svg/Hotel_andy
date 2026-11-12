@@ -18,6 +18,9 @@ const P: Record<string, string> = {
   taza: '<path d="M5 9h10v5a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4Z"/><path d="M15 10.5h1.5a2 2 0 0 1 0 4H15M8 4v2M11 4v2M3.5 20.5h13"/>',
   reloj: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
   tarjeta: '<rect x="3.5" y="6" width="17" height="12" rx="2.5"/><path d="M3.5 10.5h17M7 15h3"/>',
+  wifi: '<path d="M3 9.5a14 14 0 0 1 18 0M6 13a9.5 9.5 0 0 1 12 0M9 16.5a5 5 0 0 1 6 0"/><circle cx="12" cy="19.5" r=".8"/>',
+  aire: '<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.8 12 7l2.5-2.2M9.5 19.2 12 17l2.5 2.2"/>',
+  sol: '<circle cx="12" cy="12" r="3.8"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/>',
   ola: '<path d="M3 9c2.5-2.5 4.5-2.5 7 0s4.5 2.5 7 0 2.5-2 4-1M3 15c2.5-2.5 4.5-2.5 7 0s4.5 2.5 7 0 2.5-2 4-1"/>',
 };
 export const ico = (n: string, tam = 22) =>

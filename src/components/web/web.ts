@@ -43,35 +43,57 @@ document.addEventListener('pointermove', (e) => {
   b.style.setProperty('--y', `${e.clientY - r.top}px`);
 });
 
-// Galería: el scroll vertical empuja la pista en horizontal.
+// Galería: carrusel con scroll-snap nativo (el scroll vertical de la página nunca se toca). Avanza solo y se pausa al interactuar.
 const gal = document.querySelector<HTMLElement>('[data-galeria]');
-const pista = document.querySelector<HTMLElement>('[data-pista]');
-if (gal && pista && !reduce) {
+if (gal) {
+  const pista = gal.querySelector<HTMLElement>('[data-pista]')!;
+  const items = [...pista.children] as HTMLElement[];
+  const puntos = gal.querySelector<HTMLElement>('[data-g-puntos]')!;
+  const dots = [...puntos.children] as HTMLElement[];
+  let k = 0;
+  let quieto = 0; // bits: 1 cursor, 2 foco, 4 toque reciente, 8 fuera de pantalla
+  let timer = 0;
+  const marcar = () => {
+    items.forEach((it, n) => it.classList.toggle('act', n === k));
+    dots.forEach((d, n) => { d.className = n < k ? 'hecha' : n === k && !reduce ? 'act' : n === k ? 'hecha' : ''; });
+    puntos.classList.toggle('quieto', quieto !== 0);
+  };
+  const ir = (n: number, suave = true) => {
+    k = (n + items.length) % items.length;
+    const it = items[k];
+    pista.scrollTo({ left: it.offsetLeft - (pista.clientWidth - it.clientWidth) / 2, behavior: suave && !reduce ? 'smooth' : 'auto' });
+    marcar();
+  };
+  // Al arrastrar o usar el scroll horizontal, el activo es el más cercano al centro.
   let raf = 0;
-  const mover = () => {
-    raf = 0;
-    const r = gal.getBoundingClientRect();
-    const p = Math.min(1, Math.max(0, -r.top / (r.height - innerHeight)));
-    pista.style.setProperty('--max', `${Math.max(0, pista.scrollWidth - innerWidth)}px`);
-    pista.style.setProperty('--p', p.toFixed(4));
-  };
-  addEventListener('scroll', () => { raf ||= requestAnimationFrame(mover); }, { passive: true });
-  addEventListener('resize', mover);
-  mover();
-
-  // Lente de vidrio que sigue al cursor (en táctil, al tocar).
-  const lente = document.querySelector<HTMLElement>('[data-lente]');
-  const pegado = gal.querySelector<HTMLElement>('.g-pegado')!;
-  const lugar = (e: PointerEvent) => {
-    const r = pegado.getBoundingClientRect();
-    lente!.style.transform = `translate3d(${e.clientX - r.left}px, ${e.clientY - r.top}px, 0)`;
-  };
-  if (lente) {
-    pegado.addEventListener('pointermove', (e) => { lugar(e); lente.classList.add('on'); });
-    pegado.addEventListener('pointerdown', (e) => { lugar(e); lente.classList.add('on'); });
-    pegado.addEventListener('pointerleave', () => lente.classList.remove('on'));
-    pegado.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') lente.classList.remove('on'); });
-  }
+  pista.addEventListener('scroll', () => {
+    raf ||= requestAnimationFrame(() => {
+      raf = 0;
+      const c = pista.scrollLeft + pista.clientWidth / 2;
+      const n = items.reduce((m, it, i) => (Math.abs(it.offsetLeft + it.clientWidth / 2 - c) < Math.abs(items[m].offsetLeft + items[m].clientWidth / 2 - c) ? i : m), 0);
+      if (n !== k) { k = n; marcar(); }
+    });
+  }, { passive: true });
+  gal.querySelector('[data-g-prev]')!.addEventListener('click', () => { toque(); ir(k - 1); });
+  gal.querySelector('[data-g-next]')!.addEventListener('click', () => { toque(); ir(k + 1); });
+  pista.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); toque(); ir(k + 1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); toque(); ir(k - 1); }
+  });
+  const bit = (b: number, on: boolean) => { quieto = on ? quieto | b : quieto & ~b; puntos.classList.toggle('quieto', quieto !== 0); };
+  const toque = () => { bit(4, true); clearTimeout(timer); timer = window.setTimeout(() => bit(4, false), 6000); };
+  gal.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') bit(1, true); });
+  gal.addEventListener('pointerleave', () => bit(1, false));
+  gal.addEventListener('pointerdown', toque);
+  gal.addEventListener('focusin', () => bit(2, true));
+  gal.addEventListener('focusout', () => bit(2, false));
+  new IntersectionObserver(([e]) => bit(8, !e.isIntersecting), { threshold: 0.3 }).observe(gal);
+  dots.forEach((d, n) => {
+    d.firstElementChild!.addEventListener('animationend', () => { if (n === k) ir(k + 1); });
+  });
+  dots.forEach((d, n) => d.addEventListener('click', () => { toque(); ir(n); }));
+  bit(8, true);
+  ir(0, false);
 }
 
 // Agua: se descarga después de que la imagen del hero ya se ve, y solo si el visitante lo permite.

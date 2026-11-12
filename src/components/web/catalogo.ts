@@ -6,6 +6,8 @@ export interface Reglas {
   desayuno?: boolean;
   parqueadero?: boolean;
   ascensor?: boolean;
+  wifi?: boolean;
+  aire_acondicionado?: boolean;
   ninos?: { politica: string; nota: string };
   piscina?: { abre: string; cierra: string };
 }

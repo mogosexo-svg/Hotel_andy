@@ -5,6 +5,8 @@ export interface Opciones {
   maxNoches: number;
   cargar: (desde: string, hasta: string) => Promise<Map<string, Dia> | null>;
   alCambiar: (ini: string, fin: string) => void;
+  /** Texto de la leyenda para los días sin cuartos. */
+  lleno?: () => string;
 }
 
 const MS = 864e5;
@@ -29,6 +31,7 @@ export function crearCalendario(host: HTMLElement, o: Opciones) {
   let foco = o.hoy;
   let datos = new Map<string, Dia>();
   let sinDatos = false;
+  let gen = 0; // descarta respuestas de antes de un cambio de filtro
   const celdas = new Map<string, HTMLButtonElement>();
 
   const nMeses = () => (ancho.matches ? 2 : 1);
@@ -41,7 +44,9 @@ export function crearCalendario(host: HTMLElement, o: Opciones) {
 
   async function cargarDatos() {
     if (sinDatos) return;
+    const mine = gen;
     const m = await o.cargar(mes < o.hoy ? o.hoy : mes, suma(sumaMes(mes, nMeses()), -1));
+    if (mine !== gen) return;
     if (!m) { sinDatos = true; return; }
     m.forEach((v, k) => datos.set(k, v));
     construir();
@@ -135,7 +140,7 @@ export function crearCalendario(host: HTMLElement, o: Opciones) {
     leyenda.className = 'cal-leyenda';
     const hayAlta = [...datos.values()].some((x) => x.alta);
     const hayPrecio = [...datos.values()].some((x) => x.desde != null);
-    leyenda.innerHTML = `${hayPrecio ? '<span>El número pequeño es el precio desde, por noche</span>' : ''}${hayAlta ? '<span><i></i>Temporada alta</span>' : ''}${[...datos.values()].some((x) => x.libres === 0) ? '<span>Tachado: sin cuartos</span>' : ''}`;
+    leyenda.innerHTML = `${hayPrecio ? '<span>El número pequeño es el precio desde, por noche</span>' : ''}${hayAlta ? '<span><i></i>Temporada alta</span>' : ''}${[...datos.values()].some((x) => x.libres === 0) ? `<span>${o.lleno?.() ?? 'Tachado: sin cuartos'}</span>` : ''}`;
     host.replaceChildren(frag, leyenda);
     clases();
   }
@@ -166,6 +171,10 @@ export function crearCalendario(host: HTMLElement, o: Opciones) {
   cargarDatos();
   return {
     valor: () => ({ ini, fin }),
-    recargar: () => { datos = new Map(); sinDatos = false; construir(); cargarDatos(); },
+    recargar: (reiniciar = false) => {
+      gen++; datos = new Map(); sinDatos = false;
+      if (reiniciar && (ini || fin)) { ini = ''; fin = ''; o.alCambiar('', ''); }
+      construir(); cargarDatos();
+    },
   };
 }

@@ -1,19 +1,11 @@
 ---
 import Icono from './Icono.astro';
 import { titulo } from './serif';
-import { hora, type Catalogo } from './catalogo';
+import { puntos } from './practico';
+import type { Catalogo } from './catalogo';
 interface Props { c: Catalogo }
 const { c } = Astro.props;
-const r = c.hotel.reglas;
-const filas = [
-  ['reloj', 'Entrada', `Desde las ${hora(c.hotel.check_in)}`],
-  ['reloj', 'Salida', `Hasta las ${hora(c.hotel.check_out)}`],
-  r.ascensor === false ? ['escalera', 'Ascensor', 'No hay, se sube por escaleras'] : null,
-  r.parqueadero != null ? ['auto', 'Parqueadero', r.parqueadero ? 'Sí' : 'No'] : null,
-  r.mascotas?.aceptadas ? ['perro', 'Mascotas', r.mascotas.cargo_adicional == null ? 'Aceptadas con cargo, consulta el valor por WhatsApp' : 'Aceptadas con cargo'] : null,
-  r.desayuno != null ? ['taza', 'Desayuno', r.desayuno ? 'Incluido' : 'No incluido'] : null,
-  r.anticipo ? ['tarjeta', 'Para confirmar', `Anticipo del ${r.anticipo.porcentaje} % por ${r.anticipo.medio}`] : null,
-].filter((x): x is string[] => !!x);
+const filas = puntos(c);
 ---
 <section id="practico" class="practico">
   <div class="prac-cab">

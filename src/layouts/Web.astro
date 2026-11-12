@@ -15,9 +15,6 @@ const wa = waUrl(c, `Hola, quiero información para reservar en ${c.hotel.nombre
 const mapaBorde = encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" preserveAspectRatio="none"><defs><linearGradient id="x"><stop offset="0" stop-color="#f00"/><stop offset=".22" stop-color="#800"/><stop offset=".78" stop-color="#800"/><stop offset="1" stop-color="#000"/></linearGradient><linearGradient id="y" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f0"/><stop offset=".22" stop-color="#080"/><stop offset=".78" stop-color="#080"/><stop offset="1" stop-color="#000"/></linearGradient></defs><rect width="100" height="100" fill="#000"/><rect width="100" height="100" fill="url(#x)"/><rect width="100" height="100" fill="url(#y)" style="mix-blend-mode:screen"/></svg>`,
 );
-const mapaLupa = encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" preserveAspectRatio="none"><defs><linearGradient id="x"><stop offset="0" stop-color="#f00"/><stop offset="1" stop-color="#000"/></linearGradient><linearGradient id="y" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f0"/><stop offset="1" stop-color="#000"/></linearGradient></defs><rect width="100" height="100" fill="#000"/><rect width="100" height="100" fill="url(#x)"/><rect width="100" height="100" fill="url(#y)" style="mix-blend-mode:screen"/></svg>`,
-);
 ---
 <!doctype html>
 <html lang="es-EC">
@@ -48,10 +45,6 @@ const mapaLupa = encodeURIComponent(
       <filter id="refrac" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
         <feImage href={`data:image/svg+xml;charset=utf-8,${mapaBorde}`} x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="m" />
         <feDisplacementMap in="SourceGraphic" in2="m" scale="14" xChannelSelector="R" yChannelSelector="G" />
-      </filter>
-      <filter id="lupa" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
-        <feImage href={`data:image/svg+xml;charset=utf-8,${mapaLupa}`} x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="m" />
-        <feDisplacementMap in="SourceGraphic" in2="m" scale="-70" xChannelSelector="R" yChannelSelector="G" />
       </filter>
     </svg>
     <a class="saltar" href="#contenido">Saltar al contenido</a>

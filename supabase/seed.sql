@@ -5,7 +5,7 @@ begin;
 
 insert into hoteles (id, slug, nombre, ciudad, provincia, pais, estrellas, zona_horaria, moneda, idioma, dominio, telefono,
   check_in, check_out, booking_calificacion, booking_resenas, reglas)
-values ('00000000-0000-4000-8000-0000000a0d1e', 'hotel-andy', 'Hotel Andy', 'Atacames', 'Esmeraldas', 'EC', 3, 'America/Guayaquil', 'USD', 'es-EC', 'hotelandyatacames.org', '+593 6276 0674', '13:30', '11:30', 8.7, 238, '{"anticipo":{"porcentaje":50,"medio":"transferencia"},"prereserva_horas":2,"cancelacion":{"politica":"flexible_caso_a_caso","bot":"No promete reembolso ni plazos: pasa el caso a la dueña."},"ninos":{"politica":"precio_fijo_por_habitacion","nota":"No se cobra por persona; manda la capacidad máxima del cuarto."},"mascotas":{"aceptadas":true,"cargo_adicional":null},"desayuno":false,"parqueadero":true,"ascensor":false,"piscina":{"abre":"08:00","cierra":"01:00"}}'::jsonb);
+values ('00000000-0000-4000-8000-0000000a0d1e', 'hotel-andy', 'Hotel Andy', 'Atacames', 'Esmeraldas', 'EC', 3, 'America/Guayaquil', 'USD', 'es-EC', 'hotelandyatacames.org', '+593 6276 0674', '13:30', '11:30', 8.7, 238, '{"anticipo":{"porcentaje":50,"medio":"transferencia"},"prereserva_horas":2,"cancelacion":{"politica":"flexible_caso_a_caso","bot":"No promete reembolso ni plazos: pasa el caso a la dueña."},"ninos":{"politica":"precio_fijo_por_habitacion","nota":"No se cobra por persona; manda la capacidad máxima del cuarto."},"mascotas":{"aceptadas":true,"cargo_adicional":0},"wifi":true,"aire_acondicionado":true,"desayuno":false,"parqueadero":true,"ascensor":false,"piscina":{"abre":"08:00","cierra":"01:00"}}'::jsonb);
 
 insert into config (hotel_id) values ('00000000-0000-4000-8000-0000000a0d1e');
 

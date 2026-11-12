@@ -285,9 +285,10 @@
     },
     "mascotas": {
       "aceptadas": true,
-      "cargo_adicional": null,
-      "_verificar": "Monto del cargo por mascota."
+      "cargo_adicional": 0
     },
+    "wifi": true,
+    "aire_acondicionado": true,
     "desayuno": false,
     "parqueadero": true,
     "ascensor": false,

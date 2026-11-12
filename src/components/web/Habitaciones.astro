@@ -4,24 +4,17 @@ import Foto from './Foto.astro';
 import Icono from './Icono.astro';
 import { foto, fotosDeTipo } from './fotos';
 import { titulo } from './serif';
-import { dinero, hora, type Catalogo } from './catalogo';
+import { dinero, type Catalogo } from './catalogo';
+import { resumenCuarto } from './practico';
 interface Props { c: Catalogo }
 const { c } = Astro.props;
-const r = c.hotel.reglas;
-const incluye: [string, string][] = [
-  ['reloj', `Entrada desde las ${hora(c.hotel.check_in)}, salida hasta las ${hora(c.hotel.check_out)}`],
-  r.piscina ? ['ola', `Piscina de ${hora(r.piscina.abre)} a ${hora(r.piscina.cierra)}`] : null,
-  r.parqueadero ? ['auto', 'Parqueadero'] : null,
-  r.ascensor === false ? ['escalera', 'Sin ascensor, se sube por escaleras'] : null,
-  r.desayuno === false ? ['taza', 'Desayuno no incluido'] : null,
-  r.mascotas?.aceptadas ? ['perro', 'Mascotas con cargo adicional'] : null,
-].filter((x): x is [string, string] => !!x);
+const incluye = resumenCuarto(c);
 const spans = ['s7', 's5', 's4', 's4', 's4', 's5', 's7'];
 ---
 <section id="habitaciones" class="cuartos-sec">
   <div class="cab">
     <p class="etiqueta rv">Habitaciones</p>
-    <h2 class="gigante rv" set:html={titulo('Elige tu *cuarto*')} />
+    <h2 class="gigante gigante-m rv" set:html={titulo('Elige la habitación de tu *preferencia*')} />
     <p class="lead rv">{c.tipos.length} tipos, para dos personas o para toda la familia. El precio es por habitación, no por persona.</p>
   </div>
   <ul class="cuartos">
@@ -62,7 +55,7 @@ const spans = ['s7', 's5', 's4', 's4', 's4', 's5', 's7'];
               <ul class="v-inc">{incluye.map(([ic, tx]) => <li><Icono n={ic} tam={18} /><span>{tx}</span></li>)}</ul>
               <div class="v-pie">
                 {t.desde_centavos != null && <p class="v-precio">Desde <strong class="serif num">{dinero(t.desde_centavos)}</strong> la noche</p>}
-                <a class="btn" href="#reservar" data-reservar={t.id} data-nombre={t.nombre}><span>Reservar este cuarto</span><Icono n="flecha" tam={18} /></a>
+                <a class="btn" href="#reservar" data-reservar={t.id} data-nombre={t.nombre} data-max={t.max_personas}><span>Reservar este cuarto</span><Icono n="flecha" tam={18} /></a>
               </div>
             </div>
           </template>

@@ -25,7 +25,7 @@ if (root) {
   const q = <T extends HTMLElement>(s: string) => root.querySelector<T>(s)!;
   const datos = q<HTMLFormElement>('form[data-paso=datos]');
   let personas = 2;
-  let pref: { id: string; nombre: string } | null = null;
+  let pref: { id: string; nombre: string; max: number } | null = null;
   let consulta = { entrada: '', salida: '', personas: 0 };
   let elegido: Fila | null = null;
   let reloj = 0;
@@ -84,12 +84,13 @@ if (root) {
       cargar: async (desde, hasta) => {
         try {
           const f = await rpc<{ dia: string; cuartos_libres: number; desde_centavos: number | null; temporada_alta: boolean }[]>(
-            'calendario_publico', { p_desde: desde, p_hasta: hasta, p_personas: personas });
+            'calendario_publico', { p_desde: desde, p_hasta: hasta, p_personas: pref ? Math.min(personas, pref.max) : personas, p_tipo: pref?.id });
           return new Map<string, Dia>(f.map((x) => [x.dia, { libres: x.cuartos_libres, desde: x.desde_centavos, alta: x.temporada_alta }]));
         } catch {
           return null; // sin la RPC o con la red caída el calendario sigue sirviendo, solo sin precios
         }
       },
+      lleno: () => (pref ? `Tachado: sin ${pref.nombre}` : 'Tachado: sin cuartos'),
       alCambiar: (ini, fin) => {
         error(fechas, '');
         sel.textContent = !ini ? 'Elige tu día de entrada.' : !fin ? `Entrada el ${dia(ini)}. Ahora elige tu día de salida.`
@@ -138,14 +139,26 @@ if (root) {
     chip.replaceChildren();
     if (!pref) return;
     const s = document.createElement('span');
-    s.textContent = `Cuarto elegido: ${pref.nombre}`;
+    s.textContent = 'Disponibilidad de: ';
+    const n = document.createElement('strong');
+    n.textContent = pref.nombre;
+    s.append(n);
     const b = document.createElement('button');
     b.type = 'button';
-    b.textContent = 'Quitar';
-    b.addEventListener('click', () => { pref = null; mostrarPref(); });
+    b.textContent = 'Quitar filtro';
+    b.addEventListener('click', () => { pref = null; mostrarPref(); cal?.recargar(false); });
     chip.append(s, b);
   };
-  addEventListener('tipo-elegido', (e) => { pref = (e as CustomEvent<{ id: string; nombre: string }>).detail; mostrarPref(); });
+  // Desde el visor: el calendario pasa a mostrar solo la disponibilidad y el precio de ese tipo.
+  addEventListener('tipo-elegido', (e) => {
+    pref = (e as CustomEvent<{ id: string; nombre: string; max: number }>).detail;
+    mostrarPref();
+    const nuevo = !cal;
+    montar();
+    ir('fechas');
+    if (!nuevo) cal!.recargar(true); // uno nuevo ya carga con el filtro puesto
+    q('.r-panel').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  });
 
   // Paso 3: cuartos libres
   function pintar(filas: Fila[]) {

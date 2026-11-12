@@ -42,6 +42,8 @@ const hotelLd = {
   petsAllowed: !!r.mascotas?.aceptadas,
   amenityFeature: [
     ...(r.piscina ? [{ '@type': 'LocationFeatureSpecification', name: 'Piscina techada', value: true }] : []),
+    ...(r.wifi ? [{ '@type': 'LocationFeatureSpecification', name: 'Wifi', value: true }] : []),
+    ...(r.aire_acondicionado ? [{ '@type': 'LocationFeatureSpecification', name: 'Aire acondicionado', value: true }] : []),
     ...(r.parqueadero ? [{ '@type': 'LocationFeatureSpecification', name: 'Parqueadero', value: true }] : []),
   ],
   aggregateRating: { '@type': 'AggregateRating', ratingValue: h.booking.calificacion, bestRating: 10, reviewCount: h.booking.resenas },
@@ -67,6 +69,7 @@ const faqLd = {
   <main id="contenido">
     <Hero c={c} />
     <Intro c={c} />
+    <Donde c={c} />
     <Habitaciones c={c} />
     <Galeria />
     <Reserva c={c} />
@@ -75,8 +78,6 @@ const faqLd = {
     <Resenas c={c} g={g} />
     <Ola class="ola-sep" />
     <Practico c={c} />
-    <Ola class="ola-sep" />
-    <Donde c={c} />
     <Faq c={c} />
   </main>
   <Pie c={c} />

@@ -1298,6 +1298,7 @@ export type Database = {
           p_hasta: string;
           p_hotel?: string;
           p_personas: number;
+          p_tipo?: string;
         };
         Returns: {
           cuartos_libres: number;
