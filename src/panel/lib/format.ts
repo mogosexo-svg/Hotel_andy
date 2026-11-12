@@ -72,3 +72,8 @@ export function unidadPlural(unidad: string, n: number): string {
 export function sinEmoji(t: string): string {
   return t.replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, '').replace(/\s{2,}/g, ' ').trim();
 }
+
+/** 'YYYY-MM-DD' → "jueves 12 de noviembre". */
+export function fechaLarga(dia: string): string {
+  return new Intl.DateTimeFormat('es-EC', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(dia + 'T12:00:00Z'));
+}

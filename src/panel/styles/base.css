@@ -12,7 +12,10 @@ body:has(.panel) {
 }
 .panel {
   min-height: 100dvh;
-  background: var(--bg);
+  background:
+    radial-gradient(64rem 30rem at 88% -12%, rgb(93 184 238 / 0.2), transparent 70%),
+    radial-gradient(48rem 26rem at -8% 8%, rgb(205 231 250 / 0.55), transparent 70%), var(--bg);
+  background-attachment: fixed;
   color: var(--ink);
   font: 400 var(--t-base) / 1.5 var(--font);
   font-variant-numeric: tabular-nums;
@@ -212,10 +215,10 @@ body:has(.panel) {
 /* ---------- Tarjeta ---------- */
 .card {
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 1px solid rgb(255 255 255 / 0.9);
   border-radius: var(--r-lg);
   padding: var(--s-5);
-  box-shadow: var(--shadow-1);
+  box-shadow: var(--shadow-card), 0 0 0 1px var(--line);
 }
 a.card,
 button.card {

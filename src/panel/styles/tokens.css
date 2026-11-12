@@ -7,7 +7,7 @@
   color-scheme: light;
 
   /* Superficies: todo blanco; la separación son líneas frías y sombras suaves */
-  --bg: #ffffff;
+  --bg: #f4f9fd; /* celeste muy claro: las tarjetas blancas flotan sobre él */
   --surface: #ffffff;
   --surface-2: #f3f6f9; /* solo hover, pistas de barras y skeleton */
   --line: #e4eaf0;
@@ -78,13 +78,14 @@
   --gutter: 1rem;
 
   /* Forma y profundidad */
-  --r-sm: 8px;
-  --r-md: 10px;
-  --r-lg: 12px;
-  --r-hoja: 16px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 22px;
+  --r-hoja: 26px;
   --touch: 3rem; /* 48 px */
-  --shadow-1: 0 1px 2px rgb(10 27 46 / 0.04);
-  --shadow-2: 0 1px 3px rgb(10 27 46 / 0.06), 0 8px 24px rgb(10 27 46 / 0.08);
+  --shadow-1: 0 1px 2px rgb(10 27 46 / 0.04), 0 4px 14px rgb(26 111 176 / 0.06);
+  --shadow-2: 0 1px 3px rgb(10 27 46 / 0.06), 0 12px 32px rgb(26 111 176 / 0.14);
+  --shadow-card: 0 1px 2px rgb(10 27 46 / 0.04), 0 10px 30px rgb(26 111 176 / 0.09);
   --shadow-sheet: 0 -10px 50px rgb(10 27 46 / 0.16);
 
   /* Movimiento */
@@ -95,7 +96,7 @@
   --d-3: 400ms;
 
   --nav-h: 4.5rem;
-  --side-w: 15.5rem;
+  --side-w: 6.5rem;
 }
 
 /* Si la persona pide menos transparencia, el vidrio pasa a blanco opaco (contraste primero) */

@@ -3,12 +3,15 @@ import { supabase } from '../../lib/supabase';
 import type { Database } from '../../lib/database.types';
 import { usePerfil } from '../data/sesion';
 import { useCuartos } from '../data/cuartos';
-import { dinero, fechaCorta, hoyEC, saludo } from '../lib/format';
+import { hoyEC, saludo } from '../lib/format';
 import { nivelStock } from '../lib/stock';
 import type { Pagina } from '../nav';
-import { Aviso, BarraStock, Contador, ErrorCarga, Skeleton } from '../ui/kit';
+import { Aviso, BarraStock, ErrorCarga, Skeleton } from '../ui/kit';
 import { Icon } from '../ui/Icon';
 import { GraficoOcupacion, GraficoCanales } from './graficos';
+import { HojaCuarto } from './HojaCuarto';
+import { cargarTemporadas } from '../data/config';
+import { Fichas, MedidorOcupacion, TarjetaHoy, TarjetaIngresos, TarjetaPisos, type DiaIngreso, type Ficha } from './inicio/Widgets';
 
 interface Movimiento {
   reserva_id: string;
@@ -44,6 +47,7 @@ export function Inicio({ ir }: { ir: (p: Pagina) => void }) {
   const { tick } = useCuartos();
   const [resumen, setResumen] = useState<Resumen | null>(null);
   const [serie, setSerie] = useState<FilaIngreso[] | null>(null);
+  const [temporada, setTemporada] = useState<string | null>(null);
   const [error, setError] = useState(false);
 
   const cargar = useCallback(async () => {
@@ -61,6 +65,17 @@ export function Inicio({ ir }: { ir: (p: Pagina) => void }) {
     void cargar().catch(() => setError(true));
   }, [cargar, tick]);
 
+  // La temporada de hoy es un dato de apoyo: si no se puede leer, la tarjeta simplemente no la muestra.
+  useEffect(() => {
+    const hoy = hoyEC();
+    cargarTemporadas(hotelId)
+      .then((ts) => {
+        const t = ts.find((x) => !x.esBase && x.rangos.some((r) => r.desde <= hoy && hoy <= r.hasta)) ?? ts.find((x) => x.esBase);
+        setTemporada(t?.nombre ?? null);
+      })
+      .catch(() => setTemporada(null));
+  }, [hotelId]);
+
   const hoy = hoyEC();
   const primer = nombre.split(' ')[0];
 
@@ -71,7 +86,7 @@ export function Inicio({ ir }: { ir: (p: Pagina) => void }) {
           <h1>
             {saludo()}, {primer}
           </h1>
-          <p className="pantalla__sub">{fechaCorta(hoy)} · así está el hotel ahora</p>
+          <p className="pantalla__sub">Así está el hotel ahora</p>
         </div>
       </header>
 
@@ -80,68 +95,46 @@ export function Inicio({ ir }: { ir: (p: Pagina) => void }) {
       ) : !resumen || !serie ? (
         <InicioSkeleton />
       ) : (
-        <InicioDatos r={resumen} serie={serie} ir={ir} />
+        <InicioDatos r={resumen} serie={serie} ir={ir} hoy={hoy} temporada={temporada} />
       )}
     </section>
   );
 }
 
-function InicioDatos({ r, serie, ir }: { r: Resumen; serie: FilaIngreso[]; ir: (p: Pagina) => void }) {
+function InicioDatos({ r, serie, ir, hoy, temporada }: { r: Resumen; serie: FilaIngreso[]; ir: (p: Pagina) => void; hoy: string; temporada: string | null }) {
+  const { cuartos, cuartoAbierto, abrirCuarto } = useCuartos();
   const libres = Math.max(0, r.cuartos - r.ocupados - r.por_limpiar - r.limpiando - r.en_arreglo);
   const hayDatos = useMemo(() => serie.some((f) => f.cuartos_ocupados > 0 || f.ingresos_centavos > 0), [serie]);
+  const dias = useMemo<DiaIngreso[]>(() => {
+    const m = new Map<string, number>();
+    serie.forEach((f) => m.set(f.dia, (m.get(f.dia) ?? 0) + f.ingresos_centavos));
+    return [...m.entries()].sort((a, b) => a[0].localeCompare(b[0])).map(([dia, centavos]) => ({ dia, centavos }));
+  }, [serie]);
+  const fichas: Ficha[] = [
+    { id: 'limpiar', icono: 'por_limpiar', clase: 'e-por_limpiar', titulo: 'Por limpiar', n: r.por_limpiar, sub: r.por_limpiar === 1 ? 'cuarto esperando' : 'cuartos esperando', pagina: 'limpieza' },
+    { id: 'limpiando', icono: 'limpiando', clase: 'e-limpiando', titulo: 'Limpiando', n: r.limpiando, sub: r.limpiando === 1 ? 'cuarto ahora' : 'cuartos ahora', pagina: 'limpieza' },
+    { id: 'arreglo', icono: 'mantenimiento', clase: 'e-mantenimiento', titulo: 'En arreglo', n: r.en_arreglo, sub: r.en_arreglo === 1 ? 'cuarto fuera de servicio' : 'cuartos fuera de servicio', pagina: 'cuartos' },
+    { id: 'stock', icono: 'inventario', clase: 'e-stock', titulo: 'Se está acabando', n: r.insumos_bajos.length, sub: r.insumos_bajos.length === 1 ? 'insumo por reponer' : 'insumos por reponer', pagina: 'inventario' },
+  ];
+  const abierto = cuartos.find((c) => c.id === cuartoAbierto) ?? null;
+
   return (
-    <div className="inicio">
-      <div className="card kpis">
-        <button type="button" className="kpi" onClick={() => ir('cuartos')}>
-          <span className="card__titulo">Ocupación de hoy</span>
-          <span className="tarjeta__cifra">
-            <Contador valor={r.ocupados} />
-            <span className="tarjeta__de">de {r.cuartos} cuartos</span>
-          </span>
-          <span className="ocupacion__barra" aria-hidden="true">
-            <i style={{ ['--pct' as string]: r.cuartos ? r.ocupados / r.cuartos : 0 }} />
-          </span>
-          <span className="kpi__fila">
-            <span className="tarjeta__linea">
-              {Math.round(r.ocupacion_pct)} % ocupado · {libres} {libres === 1 ? 'libre' : 'libres'}
-            </span>
-            <span className="kpi__ir">
-              <span className="kpi__txt">Ver los cuartos</span> <Icon name="siguiente" size="sm" />
-            </span>
-          </span>
-        </button>
+    <>
+    <div className="inicio bento">
+      <TarjetaHoy hoy={hoy} llegadas={r.llegadas_hoy.length} salidas={r.salidas_hoy.length} temporada={temporada} ir={ir} />
+      <TarjetaPisos cuartos={cuartos} abrirCuarto={abrirCuarto} ir={ir} />
+      <MedidorOcupacion pct={r.ocupacion_pct} ocupados={r.ocupados} total={r.cuartos} libres={libres} ir={ir} />
+      <Fichas fichas={fichas} ir={ir} />
+      <TarjetaIngresos dias={dias} dineroMes={r.dinero_mes_centavos} />
 
-        <button type="button" className="kpi" onClick={() => ir('limpieza')}>
-          <span className="card__titulo">Por limpiar</span>
-          <span className="tarjeta__cifra">
-            <Contador valor={r.por_limpiar} />
-            <span className="tarjeta__de">{r.limpiando ? `${r.limpiando} limpiando ahora` : r.por_limpiar ? 'esperando' : 'todo limpio'}</span>
-          </span>
-          <span className="kpi__fila">
-            <span className="tarjeta__linea" />
-            <span className="kpi__ir">
-              <span className="kpi__txt">Ver limpieza</span> <Icon name="siguiente" size="sm" />
-            </span>
-          </span>
-        </button>
-
-        <div className="kpi">
-          <span className="card__titulo">Dinero del mes</span>
-          <span className="tarjeta__cifra">
-            <Contador valor={r.dinero_mes_centavos} formato={(n) => dinero(Math.round(n / 100) * 100)} />
-          </span>
-          <span className="tarjeta__linea">Pagos y consumos cobrados</span>
-        </div>
-      </div>
-
-      <div className="card tarjeta tarjeta--mov">
+      <div className="card b-card b-mov">
         <div className="mov">
           <Lista titulo="Llegan hoy" icono="llega" items={r.llegadas_hoy} vacio="Nadie llega hoy" />
           <Lista titulo="Salen hoy" icono="sale" items={r.salidas_hoy} vacio="Nadie sale hoy" />
         </div>
       </div>
 
-      <button type="button" className="card tarjeta tarjeta--insumos" onClick={() => ir('inventario')}>
+      <button type="button" className="card b-card tarjeta tarjeta--insumos b-insumos" onClick={() => ir('inventario')}>
         <span className="card__titulo">Se está acabando</span>
         {r.insumos_bajos.length === 0 ? (
           <span className="tarjeta__ok">
@@ -168,7 +161,7 @@ function InicioDatos({ r, serie, ir }: { r: Resumen; serie: FilaIngreso[]; ir: (
         </span>
       </button>
 
-      <div className="card tarjeta tarjeta--grafico">
+      <div className="card b-card tarjeta tarjeta--grafico b-ocup">
         <h2 className="card__titulo">Cuartos ocupados por día</h2>
         <p className="grafico__sub">Últimos 30 días</p>
         {hayDatos ? (
@@ -178,12 +171,14 @@ function InicioDatos({ r, serie, ir }: { r: Resumen; serie: FilaIngreso[]; ir: (
         )}
       </div>
 
-      <div className="card tarjeta tarjeta--grafico tarjeta--canales">
+      <div className="card b-card tarjeta tarjeta--grafico tarjeta--canales b-canales">
         <h2 className="card__titulo">Ingresos por canal</h2>
         <p className="grafico__sub">Últimos 30 días</p>
         {hayDatos ? <GraficoCanales serie={serie} /> : <p className="tarjeta__linea">Todavía no hay ingresos que mostrar.</p>}
       </div>
     </div>
+    {abierto && <HojaCuarto cuarto={abierto} onCerrar={() => abrirCuarto(null)} />}
+    </>
   );
 }
 
@@ -214,13 +209,12 @@ function Lista({ titulo, icono, items, vacio }: { titulo: string; icono: 'llega'
 
 function InicioSkeleton() {
   return (
-    <div className="inicio" aria-busy="true" aria-label="Cargando el resumen">
-      <Skeleton h="12rem" r="20px" />
-      <Skeleton h="12rem" r="20px" />
-      <Skeleton h="9rem" r="20px" />
-      <Skeleton h="12rem" r="20px" />
-      <Skeleton h="14rem" r="20px" />
-      <Skeleton h="14rem" r="20px" />
+    <div className="inicio bento" aria-busy="true" aria-label="Cargando el resumen">
+      <Skeleton h="13rem" r="22px" />
+      <Skeleton h="28rem" r="22px" />
+      <Skeleton h="15rem" r="22px" />
+      <Skeleton h="15rem" r="22px" />
+      <Skeleton h="15rem" r="22px" />
     </div>
   );
 }
