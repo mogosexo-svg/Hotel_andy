@@ -98,7 +98,7 @@ export function Limpieza() {
                 {(f.llega_hoy || f.proxima_llegada) && (
                   <p className={`tarea__llega ${f.llega_hoy ? 'is-hoy' : ''}`}>
                     <Icon name="reloj" size="sm" />
-                    {f.llega_hoy ? 'Llega un huésped hoy: apúrate' : `Próxima llegada ${fechaCorta(f.proxima_llegada)}`}
+                    {f.llega_hoy ? 'Llega un huésped hoy' : `Próxima llegada ${fechaCorta(f.proxima_llegada)}`}
                   </p>
                 )}
                 {trabajando ? (
