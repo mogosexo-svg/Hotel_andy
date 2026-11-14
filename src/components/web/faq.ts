@@ -10,9 +10,9 @@ export function preguntas(c: Catalogo): { q: string; a: string }[] {
       q: '¿Aceptan mascotas?',
       a: r.mascotas.cargo_adicional === 0 ? 'Sí, las mascotas son bienvenidas y no tienen cargo.' : 'Sí, se aceptan mascotas. Escríbenos por WhatsApp para saber el cargo.',
     },
-    (r.wifi || r.aire_acondicionado) && {
+    (r.wifi || r.aire_acondicionado || r.agua_caliente) && {
       q: '¿Qué incluyen los cuartos?',
-      a: `${[r.wifi && 'Wifi', r.aire_acondicionado && 'aire acondicionado'].filter(Boolean).join(' y ')} en todos los cuartos, sin costo extra. El precio es por habitación, no por persona.`.replace(/^./, (x) => x.toUpperCase()),
+      a: `${new Intl.ListFormat('es').format([r.wifi && 'wifi', r.aire_acondicionado && 'aire acondicionado', r.agua_caliente && 'agua caliente'].filter((x): x is string => !!x))} en todos los cuartos, sin costo extra. El precio es por habitación, no por persona.`.replace(/^./, (x) => x.toUpperCase()),
     },
     r.desayuno === false && { q: '¿Incluye desayuno?', a: 'No, el desayuno no está incluido.' },
     r.anticipo && r.prereserva_horas ? {

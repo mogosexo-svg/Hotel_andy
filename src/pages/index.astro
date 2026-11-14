@@ -44,6 +44,7 @@ const hotelLd = {
     ...(r.piscina ? [{ '@type': 'LocationFeatureSpecification', name: 'Piscina techada', value: true }] : []),
     ...(r.wifi ? [{ '@type': 'LocationFeatureSpecification', name: 'Wifi', value: true }] : []),
     ...(r.aire_acondicionado ? [{ '@type': 'LocationFeatureSpecification', name: 'Aire acondicionado', value: true }] : []),
+    ...(r.agua_caliente ? [{ '@type': 'LocationFeatureSpecification', name: 'Agua caliente', value: true }] : []),
     ...(r.parqueadero ? [{ '@type': 'LocationFeatureSpecification', name: 'Parqueadero', value: true }] : []),
   ],
   aggregateRating: { '@type': 'AggregateRating', ratingValue: h.booking.calificacion, bestRating: 10, reviewCount: h.booking.resenas },

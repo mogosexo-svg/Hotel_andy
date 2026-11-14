@@ -289,6 +289,7 @@
     },
     "wifi": true,
     "aire_acondicionado": true,
+    "agua_caliente": true,
     "desayuno": false,
     "parqueadero": true,
     "ascensor": false,

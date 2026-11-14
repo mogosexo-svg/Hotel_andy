@@ -8,6 +8,7 @@ export interface Reglas {
   ascensor?: boolean;
   wifi?: boolean;
   aire_acondicionado?: boolean;
+  agua_caliente?: boolean;
   ninos?: { politica: string; nota: string };
   piscina?: { abre: string; cierra: string };
 }

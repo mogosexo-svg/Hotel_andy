@@ -1,5 +1,5 @@
 {
-  "_nota": "Fotos entregadas por el cliente el 11 nov 2026 (máx. 1200 px de ancho: no usar a sangre completa en escritorio). 'tipo_sugerido' es una suposición del director por número de camas: confirmar con la dueña qué cuarto es cada foto.",
+  "_nota": "Fotos entregadas por el cliente el 11 nov 2026 (máx. 1200 px de ancho: no usar a sangre completa en escritorio). 'tipo_sugerido' es una suposición del director por número de camas: el recepcionista revisó la web el 13 nov 2026 y corrigió familiar y cuádruple; el resto lo dio por bueno. La triple quedó sin foto.",
   "hero": "terraza-1",
   "fotos": [
     { "archivo": "terraza-1", "alt": "Terraza del Hotel Andy con mesas blancas y vista al mar de Atacames", "ancho": 980, "alto": 900 },
@@ -11,11 +11,11 @@
     { "archivo": "hab-matrimonial-2", "alt": "Habitación con cama matrimonial, aire acondicionado y minibar", "ancho": 1200, "alto": 900, "tipo_sugerido": "doble_deluxe" },
     { "archivo": "hab-matrimonial-3", "alt": "Habitación con cama matrimonial, minibar y balcón", "ancho": 1200, "alto": 900, "tipo_sugerido": "doble_deluxe" },
     { "archivo": "hab-doble-1", "alt": "Habitación doble con cama matrimonial", "ancho": 964, "alto": 900, "tipo_sugerido": "doble_sencilla" },
-    { "archivo": "hab-triple-1", "alt": "Habitación con tres camas, minibar y televisión", "ancho": 1200, "alto": 900, "tipo_sugerido": "triple" },
+    { "archivo": "hab-triple-1", "alt": "Habitación con tres camas, minibar y televisión", "ancho": 1200, "alto": 900, "tipo_sugerido": "familiar" },
     { "archivo": "hab-triple-2", "alt": "Habitación amplia con tres camas y aire acondicionado", "ancho": 1200, "alto": 900, "tipo_sugerido": "triple_deluxe" },
-    { "archivo": "hab-dos-camas-sofa-1", "alt": "Habitación amplia con dos camas, sofá y balcón", "ancho": 1280, "alto": 825, "tipo_sugerido": "familiar" },
+    { "archivo": "hab-dos-camas-sofa-1", "alt": "Habitación amplia con dos camas, sofá y balcón", "ancho": 1280, "alto": 825, "tipo_sugerido": "cuadruple" },
     { "archivo": "sala-1", "alt": "Sala con sillón, televisión y mesa de vidrio", "ancho": 980, "alto": 900, "tipo_sugerido": "suite" },
     { "archivo": "comedor-terraza-1", "alt": "Comedor con salida a la terraza privada", "ancho": 1200, "alto": 900, "tipo_sugerido": "suite" }
   ],
-  "_faltan": ["piscina de día", "fachada", "baño", "cuádruple", "logo"]
+  "_faltan": ["piscina de día", "fachada", "baño", "triple", "logo"]
 }
