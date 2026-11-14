@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Icon, type IconoNombre } from '../../ui/Icon';
-import { ESTADO_RESERVA, type EstadoReserva } from './logica';
+import { ESTADO_RESERVA, fuenteTexto, type EstadoReserva, type Fuente } from './logica';
 
 export const ICONO_RESERVA: Record<EstadoReserva, IconoNombre> = {
   prereserva: 'reloj',
@@ -16,6 +16,19 @@ export function ChipReserva({ estado }: { estado: EstadoReserva }) {
     <span className={`chip rv-e-${estado}`}>
       <Icon name={ICONO_RESERVA[estado]} />
       {ESTADO_RESERVA[estado]}
+    </span>
+  );
+}
+
+const ICONO_CANAL: Partial<Record<Fuente, IconoNombre>> = { whatsapp: 'chat', telefono: 'telefono', web: 'globo', walk_in: 'llave' };
+
+/** De dónde vino la reserva: ícono (o la letra B / A para Booking y Airbnb) con su nombre al pasar el cursor. */
+export function MarcaCanal({ fuente }: { fuente: Fuente }) {
+  const texto = fuenteTexto(fuente);
+  const icono = ICONO_CANAL[fuente];
+  return (
+    <span className={`rv-canal ${icono ? '' : 'rv-canal--letra'}`} title={texto} role="img" aria-label={texto}>
+      {icono ? <Icon name={icono} size="sm" /> : fuente === 'booking' ? 'B' : 'A'}
     </span>
   );
 }
@@ -61,10 +74,13 @@ export function useAhora(ms = 30_000): Date {
   return t;
 }
 
-export type Ancho = 'movil' | 'media' | 'ancha';
-/** movil < 700 px (lista por día) · media < 1024 (7 días) · ancha (14 días). */
+export type Ancho = 'movil' | 'media' | 'ancha' | 'amplia';
+/** movil < 700 px (lista por día) · media < 1024 (7 días) · ancha < 1280 (hasta 14) · amplia (hasta 30). */
 export function useAncho(): Ancho {
-  const calc = (): Ancho => (window.innerWidth < 700 ? 'movil' : window.innerWidth < 1024 ? 'media' : 'ancha');
+  const calc = (): Ancho => {
+    const w = window.innerWidth;
+    return w < 700 ? 'movil' : w < 1024 ? 'media' : w < 1280 ? 'ancha' : 'amplia';
+  };
   const [a, setA] = useState<Ancho>(calc);
   useEffect(() => {
     const on = () => setA(calc());

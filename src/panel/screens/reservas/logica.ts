@@ -46,6 +46,55 @@ export function barra(entrada: string, salida: string, desde: string, n: number)
   return { col: a + 1, span: b - a, recortaIzq: ini < 0, recortaDer: fin > n };
 }
 
+/** Reserva en la línea de tiempo: cada día son 2 columnas (mañana y tarde). Entra a la tarde y sale a la mañana. */
+export interface Tramo {
+  /** Línea de cuadrícula donde empieza (1 = borde izquierdo del primer día). */
+  inicio: number;
+  /** Línea de cuadrícula donde termina. */
+  fin: number;
+  recortaIzq: boolean;
+  recortaDer: boolean;
+}
+/** Una cancelada no ocupa; una que sale la mañana del primer día ocupa solo media columna. */
+export function tramo(entrada: string, salida: string, desde: string, n: number, estado?: EstadoReserva): Tramo | null {
+  if (estado === 'cancelada') return null;
+  const ini = diasEntre(desde, entrada);
+  const fin = diasEntre(desde, salida);
+  if (fin <= ini || fin < 0 || ini >= n) return null;
+  return {
+    inicio: ini < 0 ? 1 : 2 * ini + 2,
+    fin: fin > n ? 2 * n + 1 : 2 * fin + 2,
+    recortaIzq: ini < 0,
+    recortaDer: fin > n,
+  };
+}
+
+/** Cuartos libres cada noche de `dias` (una cancelada no ocupa). */
+export function libresPorNoche(reservas: { habitacionId: string; entrada: string; salida: string; estado: EstadoReserva }[], totalCuartos: number, dias: string[]): number[] {
+  return dias.map((d) => {
+    const ocupados = new Set<string>();
+    for (const r of reservas) if (r.estado !== 'cancelada' && r.entrada <= d && d < r.salida) ocupados.add(r.habitacionId);
+    return totalCuartos - ocupados.size;
+  });
+}
+
+/** Cuántas reservas llegan y cuántas salen ese día. */
+export function movimientos(reservas: { entrada: string; salida: string; estado: EstadoReserva }[], dia: string): { llegan: number; salen: number } {
+  let llegan = 0;
+  let salen = 0;
+  for (const r of reservas) {
+    if (r.estado === 'cancelada') continue;
+    if (r.entrada === dia) llegan++;
+    if (r.salida === dia) salen++;
+  }
+  return { llegan, salen };
+}
+
+/** ¿Cae el día en alguno de los rangos (extremos incluidos)? */
+export const enRangos = (dia: string, rangos: { desde: string; hasta: string }[]) => rangos.some((r) => r.desde <= dia && dia <= r.hasta);
+/** sábado o domingo */
+export const esFinde = (iso: string) => [0, 6].includes(new Date(t(iso) + 12 * 3_600_000).getUTCDay());
+
 /* ---------- Palabras ---------- */
 export const ESTADO_RESERVA: Record<EstadoReserva, string> = {
   prereserva: 'Pre-reserva',

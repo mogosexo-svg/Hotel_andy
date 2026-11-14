@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import '../../styles/reservas.css';
 import { useCuartos } from '../../data/cuartos';
-import { useReservas } from '../../data/reservas';
+import { useReservas, useTemporadaAlta } from '../../data/reservas';
 import { fechaCorta, hoyEC } from '../../lib/format';
 import { Aviso, Boton, ErrorCarga, Skeleton } from '../../ui/kit';
 import { Icon } from '../../ui/Icon';
@@ -15,6 +15,7 @@ import { ChipReserva, useAhora, useAncho } from './piezas';
 
 type Pestana = 'calendario' | 'huespedes';
 const LEYENDA: EstadoReserva[] = ['prereserva', 'confirmada', 'en_curso', 'finalizada'];
+const OPCIONES = { movil: [14], media: [7], ancha: [7, 14], amplia: [7, 14, 30] } as const;
 
 export function Reservas() {
   const hoy = hoyEC();
@@ -27,7 +28,11 @@ export function Reservas() {
   const [abierta, setAbierta] = useState<{ id: string; pagar?: boolean } | null>(null);
   const ahora = useAhora();
 
-  const n = ancho === 'media' ? 7 : 14;
+  const [vista, setVista] = useState(14);
+  const [dir, setDir] = useState<1 | -1>(1);
+  const opciones: readonly number[] = OPCIONES[ancho];
+  const n = opciones.includes(vista) ? vista : opciones[opciones.length - 1];
+  const alta = useTemporadaAlta();
   const dias = useMemo(() => rangoDias(desde, n), [desde, n]);
   const { reservas, cargando, error, pulsos, parchar, recargar, refrescar } = useReservas(desde, n);
 
@@ -35,9 +40,13 @@ export function Reservas() {
     if (diasEntre(desde, dia) < 0 || diasEntre(desde, dia) >= n) setDia(desde);
   }, [desde, dia, n]);
 
-  const mover = (delta: number) => setDesde((d) => sumarDias(d, delta));
-  const rango = `${diaCorto(dias[0] ?? desde).num} ${diaCorto(dias[0] ?? desde).mes} – ${diaCorto(dias[n - 1] ?? desde).num} ${diaCorto(dias[n - 1] ?? desde).mes}`;
-  const enHoy = dias.includes(hoy);
+  const mover = (delta: number) => {
+    setDir(delta > 0 ? 1 : -1);
+    setDesde((d) => sumarDias(d, delta));
+  };
+  const a = diaCorto(dias[0] ?? desde);
+  const z = diaCorto(dias[n - 1] ?? desde);
+  const rango = a.mes === z.mes ? `${a.num} – ${z.num} ${z.mes}` : `${a.num} ${a.mes} – ${z.num} ${z.mes}`;
 
   const abrirNueva = (i: Inicio) => setNueva(i);
   const alCrearVacia = (cuartoId: string, d: string) => abrirNueva({ habitacionId: cuartoId, entrada: d });
@@ -86,19 +95,44 @@ export function Reservas() {
               <button type="button" className="rv-nav__btn" onClick={() => mover(7)} aria-label="Una semana después">
                 <Icon name="siguiente" />
               </button>
-              <Boton variante="quiet" disabled={enHoy && desde === hoy} onClick={() => { setDesde(hoy); setDia(hoy); }}>
+              <Boton
+                variante="quiet"
+                disabled={desde === hoy}
+                onClick={() => {
+                  setDir(desde > hoy ? -1 : 1);
+                  setDesde(hoy);
+                  setDia(hoy);
+                }}
+              >
                 Hoy
               </Boton>
             </div>
             <p className="rv-rango" aria-live="polite">
               {rango}
             </p>
+            {opciones.length > 1 && (
+              <div className="rv-vista" role="group" aria-label="Cuántos días ver">
+                {opciones.map((o) => (
+                  <button key={o} type="button" className="rv-vista__op" aria-pressed={n === o} onClick={() => setVista(o)}>
+                    {o} días
+                  </button>
+                ))}
+              </div>
+            )}
             <ul className="rv-leyenda" aria-label="Qué significa cada color">
               {LEYENDA.map((e) => (
                 <li key={e}>
                   <ChipReserva estado={e} />
                 </li>
               ))}
+              <li className="rv-ley-fondo">
+                <i className="rv-muestra rv-muestra--finde" aria-hidden="true" /> Fin de semana
+              </li>
+              {alta.length > 0 && (
+                <li className="rv-ley-fondo">
+                  <i className="rv-muestra rv-muestra--alta" aria-hidden="true" /> Temporada alta
+                </li>
+              )}
             </ul>
           </div>
 
@@ -126,10 +160,11 @@ export function Reservas() {
                   onAbrir={(id) => setAbierta({ id })}
                 />
               ) : (
-                <Linea dias={dias} hoy={hoy} cuartos={cuartos} reservas={reservas} pulsos={pulsos} ahora={ahora} onVacia={alCrearVacia} onAbrir={(id) => setAbierta({ id })} />
+                <Linea dias={dias} hoy={hoy} cuartos={cuartos} reservas={reservas} pulsos={pulsos} ahora={ahora} alta={alta} dir={dir} onVacia={alCrearVacia} onAbrir={(id) => setAbierta({ id })} />
               )}
               <p className="rv-ayuda rv-pie">
-                {ESTADO_RESERVA.prereserva}: aparta el cuarto 2 horas. Cuando llega el anticipo pasa a {ESTADO_RESERVA.confirmada.toLowerCase()}.
+                Cada barra empieza a la tarde del día que entra el huésped y termina a la mañana del día que sale, así se ve cuándo un cuarto queda libre para otro.{' '}
+                {ESTADO_RESERVA.prereserva}: aparta el cuarto 2 horas; cuando llega el anticipo pasa a {ESTADO_RESERVA.confirmada.toLowerCase()}.
               </p>
             </>
           )}

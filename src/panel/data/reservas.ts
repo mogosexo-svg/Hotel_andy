@@ -4,6 +4,8 @@ import type { Enums } from '../../lib/database.types';
 import { usePerfil } from './sesion';
 import { mensajeError } from '../lib/errores';
 import { canalDe, sumarDias, type EstadoReserva, type Fuente } from '../screens/reservas/logica';
+import type { Rango } from '../screens/config/logica';
+import { cargarTemporadas } from './config';
 
 export interface ReservaVista {
   id: string;
@@ -79,6 +81,22 @@ async function nombresDe(filas: FilaReserva[]): Promise<Map<string, string>> {
   return m;
 }
 
+/** Rangos de temporada alta (solo para pintar el fondo del calendario; si falla, no se pinta). */
+export function useTemporadaAlta(): Rango[] {
+  const { hotelId } = usePerfil();
+  const [rangos, setRangos] = useState<Rango[]>([]);
+  useEffect(() => {
+    let vivo = true;
+    cargarTemporadas(hotelId)
+      .then((t) => vivo && setRangos(t.filter((x) => !x.esBase).flatMap((x) => x.rangos)))
+      .catch(() => undefined);
+    return () => {
+      vivo = false;
+    };
+  }, [hotelId]);
+  return rangos;
+}
+
 /** Reservas que tocan la ventana [desde, desde + dias). Se actualiza solo (Realtime). */
 export function useReservas(desde: string, dias: number) {
   const { hotelId } = usePerfil();
@@ -98,7 +116,7 @@ export function useReservas(desde: string, dias: number) {
       .eq('hotel_id', hotelId)
       .neq('estado', 'cancelada')
       .lt('entrada', sumarDias(d, n))
-      .gt('salida', d)
+      .gte('salida', d) // la que sale la mañana del primer día también se ve (media barra)
       .order('entrada');
     if (err) throw err;
     const filas = (data ?? []) as FilaReserva[];

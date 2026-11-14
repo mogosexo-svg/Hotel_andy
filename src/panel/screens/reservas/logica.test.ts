@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { anticipoSugerido, barra, canalDe, cuentaAtras, diasEntre, diaCorto, montoACentavos, rangoDias, sumarDias, validarReserva } from './logica';
+import { anticipoSugerido, barra, canalDe, cuentaAtras, diasEntre, diaCorto, enRangos, esFinde, libresPorNoche, montoACentavos, movimientos, rangoDias, sumarDias, tramo, validarReserva } from './logica';
 
 describe('fechas', () => {
   it('suma y resta días cruzando mes y año', () => {
@@ -32,6 +32,57 @@ describe('barras', () => {
   it('fuera de la ventana no se dibuja', () => {
     expect(barra('2026-11-01', '2026-11-10', d, 14)).toBeNull();
     expect(barra('2026-11-24', '2026-11-26', d, 14)).toBeNull();
+  });
+});
+
+describe('tramo (medio día a cada lado)', () => {
+  const d = '2026-11-10';
+  it('entra a la tarde y sale a la mañana', () => {
+    expect(tramo('2026-11-12', '2026-11-15', d, 14)).toEqual({ inicio: 6, fin: 12, recortaIzq: false, recortaDer: false });
+  });
+  it('salida y entrada el mismo día en el mismo cuarto: se tocan sin pisarse', () => {
+    const a = tramo('2026-11-10', '2026-11-12', d, 14)!;
+    const b = tramo('2026-11-12', '2026-11-14', d, 14)!;
+    expect(a.fin).toBe(b.inicio);
+  });
+  it('empieza antes del rango', () => {
+    expect(tramo('2026-11-05', '2026-11-12', d, 14)).toEqual({ inicio: 1, fin: 6, recortaIzq: true, recortaDer: false });
+  });
+  it('termina después del rango', () => {
+    expect(tramo('2026-11-22', '2026-11-30', d, 14)).toEqual({ inicio: 26, fin: 29, recortaIzq: false, recortaDer: true });
+  });
+  it('sale la mañana del primer día: media columna', () => {
+    expect(tramo('2026-11-08', '2026-11-10', d, 14)).toEqual({ inicio: 1, fin: 2, recortaIzq: true, recortaDer: false });
+  });
+  it('fuera del rango no se dibuja', () => {
+    expect(tramo('2026-11-01', '2026-11-09', d, 14)).toBeNull();
+    expect(tramo('2026-11-24', '2026-11-26', d, 14)).toBeNull();
+  });
+  it('una cancelada no ocupa', () => {
+    expect(tramo('2026-11-12', '2026-11-15', d, 14, 'cancelada')).toBeNull();
+  });
+});
+
+describe('libres por noche y movimientos', () => {
+  const rs = [
+    { habitacionId: 'a', entrada: '2026-11-10', salida: '2026-11-12', estado: 'en_curso' as const },
+    { habitacionId: 'a', entrada: '2026-11-12', salida: '2026-11-13', estado: 'confirmada' as const },
+    { habitacionId: 'b', entrada: '2026-11-10', salida: '2026-11-13', estado: 'cancelada' as const },
+  ];
+  it('el día de salida el cuarto queda libre hasta la tarde, y la cancelada no cuenta', () => {
+    expect(libresPorNoche(rs, 2, ['2026-11-10', '2026-11-11', '2026-11-12', '2026-11-13'])).toEqual([1, 1, 1, 2]);
+  });
+  it('llegadas y salidas del día', () => {
+    expect(movimientos(rs, '2026-11-12')).toEqual({ llegan: 1, salen: 1 });
+  });
+});
+
+describe('calendario', () => {
+  it('fin de semana y temporada', () => {
+    expect(esFinde('2026-11-14')).toBe(true);
+    expect(esFinde('2026-11-13')).toBe(false);
+    expect(enRangos('2026-11-14', [{ desde: '2026-11-14', hasta: '2026-11-16' }])).toBe(true);
+    expect(enRangos('2026-11-17', [{ desde: '2026-11-14', hasta: '2026-11-16' }])).toBe(false);
   });
 });
 
