@@ -1,0 +1,85 @@
+---
+import { getImage } from 'astro:assets';
+import Web from '../layouts/Web.astro';
+import Nav from '../components/web/Nav.astro';
+import Hero from '../components/web/Hero.astro';
+import Reserva from '../components/web/Reserva.astro';
+import Habitaciones from '../components/web/Habitaciones.astro';
+import Intro from '../components/web/Intro.astro';
+import Galeria from '../components/web/Galeria.astro';
+import Resenas from '../components/web/Resenas.astro';
+import Ola from '../components/web/Ola.astro';
+import Piscina from '../components/web/Piscina.astro';
+import Practico from '../components/web/Practico.astro';
+import Donde from '../components/web/Donde.astro';
+import Faq from '../components/web/Faq.astro';
+import Pie from '../components/web/Pie.astro';
+import { cargarCatalogo, desdeMinimo, dinero, hora } from '../components/web/catalogo';
+import { foto } from '../components/web/fotos';
+import { preguntas } from '../components/web/faq';
+import { cargarGoogle } from '../components/web/resenas';
+
+const c = await cargarCatalogo();
+const g = await cargarGoogle();
+const h = c.hotel;
+const og = await getImage({ src: foto('terraza-1').img, width: 1200, height: 630, fit: 'cover', format: 'jpg' });
+const ogUrl = new URL(og.src, Astro.site).href;
+const desde = desdeMinimo(c);
+const descripcion = `Hotel de playa en ${h.ciudad}, ${h.provincia}: terraza con vista al mar, piscina techada${desde != null ? ` y cuartos desde ${dinero(desde)} la noche` : ''}. Reserva directo.`;
+const r = h.reglas;
+const hotelLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Hotel',
+  '@id': `${Astro.site}#hotel`,
+  name: h.nombre,
+  url: `${Astro.site}`,
+  telephone: h.telefono,
+  image: ogUrl,
+  starRating: { '@type': 'Rating', ratingValue: 3 },
+  checkinTime: hora(h.check_in),
+  checkoutTime: hora(h.check_out),
+  address: { '@type': 'PostalAddress', addressLocality: h.ciudad, addressRegion: h.provincia, addressCountry: 'EC' },
+  petsAllowed: !!r.mascotas?.aceptadas,
+  amenityFeature: [
+    ...(r.piscina ? [{ '@type': 'LocationFeatureSpecification', name: 'Piscina techada', value: true }] : []),
+    ...(r.wifi ? [{ '@type': 'LocationFeatureSpecification', name: 'Wifi', value: true }] : []),
+    ...(r.aire_acondicionado ? [{ '@type': 'LocationFeatureSpecification', name: 'Aire acondicionado', value: true }] : []),
+    ...(r.agua_caliente ? [{ '@type': 'LocationFeatureSpecification', name: 'Agua caliente', value: true }] : []),
+    ...(r.parqueadero ? [{ '@type': 'LocationFeatureSpecification', name: 'Parqueadero', value: true }] : []),
+  ],
+  aggregateRating: { '@type': 'AggregateRating', ratingValue: h.booking.calificacion, bestRating: 10, reviewCount: h.booking.resenas },
+  makesOffer: c.tipos.map((t) => ({ '@type': 'Offer', itemOffered: { '@id': `${Astro.site}#${t.clave}` } })),
+  containsPlace: c.tipos.map((t) => ({
+    '@type': 'HotelRoom',
+    '@id': `${Astro.site}#${t.clave}`,
+    name: t.nombre,
+    occupancy: { '@type': 'QuantitativeValue', maxValue: t.max_personas },
+    ...(t.desde_centavos != null && {
+      offers: { '@type': 'Offer', priceCurrency: 'USD', price: (t.desde_centavos / 100).toFixed(2), url: `${Astro.site}#reservar` },
+    }),
+  })),
+};
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: preguntas(c).map((x) => ({ '@type': 'Question', name: x.q, acceptedAnswer: { '@type': 'Answer', text: x.a } })),
+};
+---
+<Web title={`${h.nombre}, hotel de playa en ${h.ciudad}`} description={descripcion} og={ogUrl} jsonld={[hotelLd, faqLd]}>
+  <Nav nombre={h.nombre} />
+  <main id="contenido">
+    <Hero c={c} />
+    <Intro c={c} />
+    <Donde c={c} />
+    <Habitaciones c={c} />
+    <Galeria />
+    <Reserva c={c} />
+    <Ola relleno class="ola-noche" />
+    <Piscina c={c} />
+    <Resenas c={c} g={g} />
+    <Ola class="ola-sep" />
+    <Practico c={c} />
+    <Faq c={c} />
+  </main>
+  <Pie c={c} />
+</Web>

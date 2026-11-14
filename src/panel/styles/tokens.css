@@ -1,0 +1,117 @@
+/* Sistema de diseño del panel · Hotel Andy
+   Blanco puro, tinta azul marino y una gama de azules claros (cielo, celeste) como único acento. El color de estado vive solo en los estados. */
+@import '@fontsource-variable/manrope';
+@import '@fontsource/instrument-serif';
+
+:root {
+  color-scheme: light;
+
+  /* Superficies: todo blanco; la separación son líneas frías y sombras suaves */
+  --bg: #f4f9fd; /* celeste muy claro: las tarjetas blancas flotan sobre él */
+  --surface: #ffffff;
+  --surface-2: #f3f6f9; /* solo hover, pistas de barras y skeleton */
+  --line: #e4eaf0;
+  --line-strong: #c3ced8;
+  --line-input: #8998a6; /* borde de campos: ≥ 3:1 sobre blanco */
+
+  /* Tinta azul marino (contraste sobre blanco: 17.5 / 9.3 / 5.6) */
+  --ink: #0a1b2e;
+  --ink-2: #33475b;
+  --ink-3: #566a7e;
+
+  /* Marca: azules claros (cielo y celeste). El marino es solo tinta de texto */
+  --brand: #1a6fb0;
+  --brand-hover: #145a93;
+  --brand-soft: #eaf4fd; /* celeste muy claro: selección, hover, velos */
+  --agua: #5db8ee; /* cielo: realces, barras, indicadores */
+  --agua-suave: #cde7fa;
+  --on-brand: #ffffff;
+
+  /* Estados: fuerte (ícono, punto, borde), tinte (chip), tinta (texto) */
+  --libre: #1a8a5a;
+  --libre-tinte: #e7f6ee;
+  --libre-tinta: #0f5a3b;
+  --ocupado: #d03a35;
+  --ocupado-tinte: #fdebea;
+  --ocupado-tinta: #8f211d;
+  --por-limpiar: #ec7a10;
+  --por-limpiar-tinte: #fff0e0;
+  --por-limpiar-tinta: #8a4506;
+  --limpiando: #d9a400;
+  --limpiando-tinte: #fff7d6;
+  --limpiando-tinta: #675000;
+  --mantenimiento: #46525f;
+  --mantenimiento-tinte: #eceff2;
+  --mantenimiento-tinta: #2b343d;
+
+  /* Datos: paleta fría (series de gráficos) */
+  --serie-1: #2a87cf;
+  --serie-2: #7dbbea;
+  --serie-3: #b8dbf4;
+  --grid: #e9eff5;
+
+  /* Vidrio: blanco translúcido con borde de 1 px. Nunca bajo textos largos. */
+  --glass: rgb(255 255 255 / 0.86);
+  --glass-fuerte: rgb(255 255 255 / 0.93);
+  --glass-linea: rgb(10 27 46 / 0.09);
+  --glass-blur: blur(18px) saturate(1.5);
+
+  /* Tipografía: serif display para titulares y cifras; sans legible para todo lo demás */
+  --font: 'Manrope Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --t-base: 1.125rem; /* 18 px: mínimo del cuerpo */
+  --t-sm: 1rem; /* 16 px: solo etiquetas secundarias y datos densos */
+  --t-lg: 1.375rem;
+  --t-xl: 1.75rem;
+  --t-2xl: 2.25rem;
+  --t-num: 2.5rem; /* cifras: sans, tabulares, sobrias */
+  --t-label: 0.875rem; /* etiquetas en mayúsculas espaciadas (decorativas; el dato va a 16+) */
+
+  /* Espacio (escala de 4) */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --gutter: 1rem;
+
+  /* Forma y profundidad */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 22px;
+  --r-hoja: 26px;
+  --touch: 3rem; /* 48 px */
+  --shadow-1: 0 1px 2px rgb(10 27 46 / 0.04), 0 4px 14px rgb(26 111 176 / 0.06);
+  --shadow-2: 0 1px 3px rgb(10 27 46 / 0.06), 0 12px 32px rgb(26 111 176 / 0.14);
+  --shadow-card: 0 1px 2px rgb(10 27 46 / 0.04), 0 10px 30px rgb(26 111 176 / 0.09);
+  --shadow-sheet: 0 -10px 50px rgb(10 27 46 / 0.16);
+
+  /* Movimiento */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --resorte: cubic-bezier(0.34, 1.32, 0.5, 1);
+  --d-1: 150ms;
+  --d-2: 250ms;
+  --d-3: 400ms;
+
+  --nav-h: 4.5rem;
+  --side-w: 6.5rem;
+}
+
+/* Si la persona pide menos transparencia, el vidrio pasa a blanco opaco (contraste primero) */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass: #ffffff;
+    --glass-fuerte: #ffffff;
+    --glass-blur: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 2.5rem;
+    --t-num: 2.75rem;
+    --t-2xl: 2.75rem;
+  }
+}

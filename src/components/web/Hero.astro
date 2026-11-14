@@ -1,0 +1,32 @@
+---
+import { Picture } from 'astro:assets';
+import Icono from './Icono.astro';
+import { foto } from './fotos';
+import { titulo } from './serif';
+import { desdeMinimo, dinero, waUrl, type Catalogo } from './catalogo';
+interface Props { c: Catalogo }
+const { c } = Astro.props;
+const desde = desdeMinimo(c);
+const b = c.hotel.booking;
+const { img, alt } = foto('terraza-1');
+const p = c.hotel.reglas.piscina;
+---
+<section class="hero" data-hero>
+  <Picture src={img} alt={alt} formats={['avif', 'webp']} widths={[480, 800, 980]} sizes="max(100vw, 117svh)"
+    class="hero-img" loading="eager" fetchpriority="high" decoding="sync" />
+  <canvas class="hero-gl" data-agua="hero" aria-hidden="true"></canvas>
+  <div class="hero-velo" aria-hidden="true"></div>
+  <div class="hero-cuerpo">
+    <a class="etiqueta chip vidrio" href="#donde"><Icono n="pin" tam={16} /><span>{c.hotel.ciudad}, {c.hotel.provincia}</span><span class="chip-ver">Ver mapa</span></a>
+    <h1 class="gigante" set:html={titulo(`a pasos de la *playa*`)} />
+    <p class="hero-lead">Terraza con vista al mar{p ? `, piscina abierta hasta la ${p.cierra.slice(0, 5)}` : ''} y un cuarto para cada plan.</p>
+    <div class="acciones">
+      <a class="btn" href="#reservar"><span>Reservar</span><Icono n="flecha" tam={18} /></a>
+      <a class="btn btn-vidrio vidrio" href={waUrl(c, `Hola, quiero información para reservar en ${c.hotel.nombre}.`)} target="_blank" rel="noopener"><Icono n="chat" tam={18} /><span>Escribir por WhatsApp</span></a>
+    </div>
+  </div>
+  <aside class="hero-tarjeta vidrio" aria-label="Resumen del hotel">
+    {desde != null && <p><span class="etiqueta">Desde</span><strong class="num"><span class="serif">{dinero(desde)}</span> <small>la noche</small></strong></p>}
+    <p><span class="etiqueta">En Booking</span><strong class="num"><span class="serif">{String(b.calificacion).replace('.', ',')}</span> <small>{b.resenas} reseñas</small></strong></p>
+  </aside>
+</section>

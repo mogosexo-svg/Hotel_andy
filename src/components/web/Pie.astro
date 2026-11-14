@@ -1,0 +1,27 @@
+---
+import Ola from './Ola.astro';
+import Icono from './Icono.astro';
+import { titulo } from './serif';
+import { waUrl, type Catalogo } from './catalogo';
+interface Props { c: Catalogo; cierre?: boolean }
+const { c, cierre = true } = Astro.props;
+const tel = c.hotel.telefono;
+---
+<footer class="pie">
+  <Ola />
+  {cierre && (
+    <div class="pie-cierre">
+      <h2 class="gigante rv" set:html={titulo('Reserva directo con el *hotel*')} />
+      <div class="acciones">
+        <a class="btn" href="#reservar"><span>Reservar</span><Icono n="flecha" tam={18} /></a>
+        <a class="btn btn-claro" href={waUrl(c, `Hola, quiero información para reservar en ${c.hotel.nombre}.`)} target="_blank" rel="noopener"><Icono n="chat" tam={18} /><span>Escribir por WhatsApp</span></a>
+      </div>
+    </div>
+  )}
+  <div class="pie-base">
+    <p><strong class="serif">{c.hotel.nombre}</strong><br />{c.hotel.ciudad}, {c.hotel.provincia}, Ecuador</p>
+    <p><a href={`tel:${tel.replace(/[^\d+]/g, '')}`} class="num">{tel}</a></p>
+    <p><a href="/privacidad">Aviso de privacidad</a></p>
+    <p class="nota">© 2026 {c.hotel.nombre}. Web de Mogolicous.</p>
+  </div>
+</footer>

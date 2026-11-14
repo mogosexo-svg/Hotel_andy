@@ -285,9 +285,11 @@
     },
     "mascotas": {
       "aceptadas": true,
-      "cargo_adicional": null,
-      "_verificar": "Monto del cargo por mascota."
+      "cargo_adicional": 0
     },
+    "wifi": true,
+    "aire_acondicionado": true,
+    "agua_caliente": true,
     "desayuno": false,
     "parqueadero": true,
     "ascensor": false,
@@ -362,32 +364,32 @@
     {
       "id": "bano",
       "nombre": "Baño y amenidades",
-      "icono": "🧻"
+      "icono": "bano"
     },
     {
       "id": "lenceria",
       "nombre": "Lencería",
-      "icono": "🛏️"
+      "icono": "lenceria"
     },
     {
       "id": "limpieza",
       "nombre": "Limpieza",
-      "icono": "🧽"
+      "icono": "limpieza"
     },
     {
       "id": "piscina",
       "nombre": "Piscina",
-      "icono": "🏊"
+      "icono": "piscina"
     },
     {
       "id": "bebidas",
       "nombre": "Bebidas",
-      "icono": "🥤"
+      "icono": "bebidas"
     },
     {
       "id": "snacks",
       "nombre": "Snacks",
-      "icono": "🍫"
+      "icono": "snacks"
     }
   ],
   "_categorias_nota": "Iniciales sugeridas. El hotel las crea, edita y borra desde el panel (CRUD)."

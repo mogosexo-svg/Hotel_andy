@@ -1,0 +1,22 @@
+---
+import { preguntas } from './faq';
+import { titulo } from './serif';
+import type { Catalogo } from './catalogo';
+interface Props { c: Catalogo }
+const { c } = Astro.props;
+const items = preguntas(c);
+---
+<section id="preguntas" class="faq-sec">
+  <div class="faq-cab">
+    <p class="etiqueta rv">Preguntas frecuentes</p>
+    <h2 class="gigante gigante-m rv" set:html={titulo('Lo que *nos preguntan*')} />
+  </div>
+  <div class="faq rv">
+    {items.map((x) => (
+      <details>
+        <summary>{x.q}</summary>
+        <p>{x.a}</p>
+      </details>
+    ))}
+  </div>
+</section>
