@@ -1,0 +1,112 @@
+{
+ "name": "MCP hotel-andy",
+ "nodes": [
+  {
+   "parameters": {
+    "path": "hotel-andy"
+   },
+   "name": "MCP hotel-andy",
+   "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+   "typeVersion": 2,
+   "position": [
+    0,
+    0
+   ]
+  },
+  {
+   "parameters": {
+    "toolDescription": "Datos del Hotel Andy: tipos de habitación con capacidad y precio desde (canal directo), horarios de entrada y salida, reglas (mascotas, piscina, anticipo, parqueadero, wifi, aire, agua caliente), teléfono y nota de Booking. Úsala antes de responder cualquier dato del hotel.",
+    "method": "POST",
+    "url": "https://dwlbbceappfstzrbumuq.supabase.co/rest/v1/rpc/catalogo_publico",
+    "authentication": "genericCredentialType",
+    "genericAuthType": "httpHeaderAuth",
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={}",
+    "options": {}
+   },
+   "name": "catalogo_hotel",
+   "type": "n8n-nodes-base.httpRequestTool",
+   "typeVersion": 4.2,
+   "position": [
+    -300,
+    260
+   ]
+  },
+  {
+   "parameters": {
+    "toolDescription": "Tipos de habitación libres para unas fechas y número de personas, con el total en centavos de dólar para toda la estancia. La salida es el día que se van (no se cobra esa noche).",
+    "method": "POST",
+    "url": "https://dwlbbceappfstzrbumuq.supabase.co/rest/v1/rpc/consultar_disponibilidad",
+    "authentication": "genericCredentialType",
+    "genericAuthType": "httpHeaderAuth",
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify({ p_entrada: $fromAI('entrada', 'Fecha de entrada AAAA-MM-DD', 'string'), p_salida: $fromAI('salida', 'Fecha de salida AAAA-MM-DD', 'string'), p_personas: $fromAI('personas', 'Número de personas, 1 a 20', 'number') }) }}",
+    "options": {}
+   },
+   "name": "disponibilidad",
+   "type": "n8n-nodes-base.httpRequestTool",
+   "typeVersion": 4.2,
+   "position": [
+    0,
+    260
+   ]
+  },
+  {
+   "parameters": {
+    "toolDescription": "Cuartos libres y precio desde (centavos) por noche entre dos fechas, máximo 92 días. Opcional: tipo de habitación (clave del catálogo, p. ej. triple) para ver solo ese tipo. Úsala para preguntas como qué días hay disponibles en diciembre.",
+    "method": "POST",
+    "url": "https://dwlbbceappfstzrbumuq.supabase.co/rest/v1/rpc/calendario_publico",
+    "authentication": "genericCredentialType",
+    "genericAuthType": "httpHeaderAuth",
+    "sendBody": true,
+    "specifyBody": "json",
+    "jsonBody": "={{ JSON.stringify({ p_desde: $fromAI('desde', 'Primer día AAAA-MM-DD', 'string'), p_hasta: $fromAI('hasta', 'Día siguiente al último AAAA-MM-DD', 'string'), p_personas: $fromAI('personas', 'Número de personas, 1 a 20', 'number'), p_tipo: $fromAI('tipo', 'Clave del tipo de habitación o vacío para todo el hotel', 'string') || null }) }}",
+    "options": {}
+   },
+   "name": "calendario",
+   "type": "n8n-nodes-base.httpRequestTool",
+   "typeVersion": 4.2,
+   "position": [
+    300,
+    260
+   ]
+  }
+ ],
+ "connections": {
+  "catalogo_hotel": {
+   "ai_tool": [
+    [
+     {
+      "node": "MCP hotel-andy",
+      "type": "ai_tool",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "disponibilidad": {
+   "ai_tool": [
+    [
+     {
+      "node": "MCP hotel-andy",
+      "type": "ai_tool",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "calendario": {
+   "ai_tool": [
+    [
+     {
+      "node": "MCP hotel-andy",
+      "type": "ai_tool",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ }
+}
