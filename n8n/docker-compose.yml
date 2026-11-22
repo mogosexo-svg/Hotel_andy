@@ -33,6 +33,9 @@ services:
       N8N_HOST: ${N8N_HOST:-localhost}
       N8N_PROTOCOL: ${N8N_PROTOCOL:-http}
       WEBHOOK_URL: ${WEBHOOK_URL:-http://localhost:5678/}
+      N8N_EDITOR_BASE_URL: ${WEBHOOK_URL:-http://localhost:5678/}
+      # 1 detrás de un túnel o proxy (Cloudflare, Caddy); 0 en local.
+      N8N_PROXY_HOPS: ${N8N_PROXY_HOPS:-0}
       GENERIC_TIMEZONE: America/Guayaquil
       TZ: America/Guayaquil
       N8N_SECURE_COOKIE: ${N8N_SECURE_COOKIE:-false}
