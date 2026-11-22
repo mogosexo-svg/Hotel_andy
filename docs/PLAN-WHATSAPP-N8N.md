@@ -108,3 +108,10 @@ Herramientas, cada una un sub-flujo con HTTP Request a Supabase:
 | 2 y 3 | sonnet (flujos n8n) + opus revisa el prompt del bot | worktree D |
 | 4 | sonnet | worktree D |
 | 5 | opus `security-reviewer` | — |
+
+## 7. Zernio como canal de WhatsApp (22 nov 2026)
+Zernio (https://zernio.com/llms.txt) da la WhatsApp Cloud API oficial de Meta detrás de una sola API con bandeja de entrada, plantillas y webhooks (`message.received`), sin recargo sobre el precio de Meta. Reemplaza la parte más lenta de la Fase 0 (app de Meta, token de System User, webhook propio): la conexión se hace con el Embedded Signup de Meta desde un enlace.
+- `pnpm zernio:setup` crea (o reutiliza) el perfil del hotel con `externalId` = `hoteles.id` y genera el enlace para conectar el número. `ZERNIO_ONBOARDING=api` conecta sin coexistencia con la app de WhatsApp Business (más rápido, con llamadas y grupos).
+- La verificación del negocio en Meta y la aprobación de plantillas siguen siendo necesarias.
+- Costo: 2 cuentas conectadas gratis; para conectar WhatsApp Zernio puede pedir un método de pago en el equipo (HTTP 402).
+- n8n sigue orquestando: recibe el webhook de Zernio en lugar del de Meta y responde con `POST /v1/inbox/...`.
