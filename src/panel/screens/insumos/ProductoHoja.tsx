@@ -19,6 +19,7 @@ const TIPO_PALABRA: Record<Movimiento['tipo'], string> = {
   conteo: 'Conteo',
   anulacion: 'Factura anulada',
   consumo_diario: 'Consumo del día',
+  uso: 'Usado en el turno',
 };
 
 interface Props {

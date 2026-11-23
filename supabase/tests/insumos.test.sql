@@ -1,4 +1,5 @@
--- RF-27, RF-29, RF-29a, RF-30, RF-31: limpieza descuenta el kit, stock solo por movimientos, alertas y facturas.
+-- RF-27, RF-29, RF-29a, RF-30, RF-31: Listo ya no descuenta (inventario a mano desde 23 nov 2026), stock solo por
+-- movimientos, alertas y facturas.
 begin;
 select plan(24);
 
@@ -24,7 +25,7 @@ select is((select stock from productos where id = :'sabanas'), null, 'sábanas s
 prepare tocar_stock as update productos set stock = 999 where id = :'papel';
 select throws_ok('tocar_stock', 'P0001', null, 'el stock no se edita a mano');
 
--- Limpieza con sábanas y toallas sin contar: no falla ni las descuenta
+-- Limpieza con sábanas y toallas sin contar: no falla
 insert into reservas (hotel_id, habitacion_id, entrada, salida, personas, estado, fuente)
   values (:'h', :'r106', privado.hoy() - 1, privado.hoy(), 2, 'confirmada', 'telefono') returning id as res1 \gset
 select check_in(:'res1');
@@ -34,17 +35,18 @@ select empezar_limpieza(:'r106');
 prepare listo106 as select marcar_listo(:'r106');
 select lives_ok('listo106', 'Listo con insumos sin contar no falla');
 select tests.salir();
-select is((select stock from productos where id = :'sabanas'), null, 'producto con stock NULL no se descuenta');
+select is((select stock from productos where id = :'sabanas'), null, 'producto con stock NULL sigue sin contar');
 select is((select estado::text from habitaciones where id = :'r106'), 'libre', 'Listo deja el cuarto libre');
-select is((select stock from productos where id = :'papel'), 348::numeric, 'Listo descuenta 2 de papel');
+select is((select stock from productos where id = :'papel'), 350::numeric, 'Listo ya no descuenta papel');
 select is((select count(*)::int from alertas where resuelta_en is null and tipo = 'por_limpiar' and habitacion_id = :'r106'), 0,
   'Listo cierra el aviso de por limpiar');
 
--- Kit exacto con 3 huéspedes
+-- Con 3 huéspedes y todo contado: Listo no toca el stock
 select tests.como('recepcion@test');
 select ajustar_stock(:'sabanas', 'conteo', 50, 'conteo inicial');
 select ajustar_stock(:'toallas', 'conteo', 40, 'conteo inicial');
 select tests.salir();
+select stock as jabon0 from productos where id = :'jabon' \gset
 insert into reservas (hotel_id, habitacion_id, entrada, salida, personas, estado, fuente)
   values (:'h', :'r105', privado.hoy() - 1, privado.hoy(), 3, 'confirmada', 'telefono') returning id as res2 \gset
 select check_in(:'res2');
@@ -55,18 +57,18 @@ select marcar_listo(:'r105');
 select tests.salir();
 select results_eq(
   format('select stock from productos where id in (%L, %L, %L, %L) order by clave', :'jabon', :'papel', :'sabanas', :'toallas'),
-  $$values (116::numeric), (346::numeric), (49::numeric), (37::numeric)$$,
-  'Listo descuenta exactamente el kit: jabón 2, papel 2, sábanas 1, toallas × 3 huéspedes');
-select is((select count(*)::int from movimientos_insumo where habitacion_id = :'r105' and tipo = 'limpieza'), 4,
-  'un movimiento por insumo del kit, con su cuarto');
+  format('values (%s::numeric), (350::numeric), (50::numeric), (40::numeric)', :'jabon0'),
+  'Listo no descuenta el kit: jabón, papel, sábanas y toallas quedan igual');
+select is((select count(*)::int from movimientos_insumo where tipo = 'limpieza'), 0,
+  'Listo no crea movimientos de limpieza');
 
 -- RF-31: una sola alerta al cruzar el mínimo (papel: mínimo 12)
 select ajustar_stock(:'papel', 'conteo', 15);
-insert into movimientos_insumo (hotel_id, producto_id, tipo, cantidad) values (:'h', :'papel', 'limpieza', -2);
+insert into movimientos_insumo (hotel_id, producto_id, tipo, cantidad) values (:'h', :'papel', 'uso', -2);
 select is((select count(*)::int from alertas where producto_id = :'papel'), 0, 'por encima del mínimo no hay alerta');
-insert into movimientos_insumo (hotel_id, producto_id, tipo, cantidad) values (:'h', :'papel', 'limpieza', -2);
-insert into movimientos_insumo (hotel_id, producto_id, tipo, cantidad) values (:'h', :'papel', 'limpieza', -2);
-select is((select count(*)::int from alertas where producto_id = :'papel'), 1, 'una sola alerta al cruzar el mínimo, no una por limpieza');
+insert into movimientos_insumo (hotel_id, producto_id, tipo, cantidad) values (:'h', :'papel', 'uso', -2);
+insert into movimientos_insumo (hotel_id, producto_id, tipo, cantidad) values (:'h', :'papel', 'uso', -2);
+select is((select count(*)::int from alertas where producto_id = :'papel'), 1, 'una sola alerta al cruzar el mínimo, no una por salida');
 select ok((select mensaje like '%quedan 9 rollo%' from alertas where producto_id = :'papel'), 'la alerta dice cuánto queda');
 
 -- RF-29a: factura
@@ -89,12 +91,11 @@ select tests.salir();
 select is((select stock from productos where id = :'papel'), 9::numeric, 'anular revierte el stock');
 select is((select count(*)::int from alertas where producto_id = :'papel' and resuelta_en is null), 1, 'al volver a bajar, una alerta nueva');
 
--- RF-30: consumo diario del cloro (empieza en el mínimo: ya hay aviso)
+-- RF-30: sin consumo diario automático; el cloro se anota a mano (empieza en el mínimo: ya hay aviso)
 select is((select count(*)::int from alertas where producto_id = :'cloro' and resuelta_en is null), 1, 'el cloro en el mínimo ya avisa');
-select privado.descontar_consumo_diario();
-select privado.descontar_consumo_diario();
-select is((select stock from productos where id = :'cloro'), 3.5, 'el cloro baja 0,5 kg una sola vez por día');
-select is((select count(*)::int from alertas where producto_id = :'cloro'), 1, 'y no repite la alerta');
+select hasnt_function('privado', 'descontar_consumo_diario', 'ya no existe el descuento diario automático');
+insert into movimientos_insumo (hotel_id, producto_id, tipo, cantidad) values (:'h', :'cloro', 'uso', -0.5);
+select is((select count(*)::int from alertas where producto_id = :'cloro'), 1, 'anotar el uso no repite la alerta');
 
 select * from finish();
 rollback;

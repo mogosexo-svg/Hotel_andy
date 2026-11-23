@@ -1625,6 +1625,10 @@ export type Database = {
         };
         Returns: string;
       };
+      registrar_salidas_turno: {
+        Args: { p_hotel: string; p_items: Json };
+        Returns: Json;
+      };
       reportar_dano: {
         Args: { p_foto_path?: string; p_habitacion: string; p_nota: string };
         Returns: string;
@@ -1658,7 +1662,8 @@ export type Database = {
         | "merma"
         | "conteo"
         | "anulacion"
-        | "consumo_diario";
+        | "consumo_diario"
+        | "uso";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -1829,6 +1834,7 @@ export const Constants = {
         "conteo",
         "anulacion",
         "consumo_diario",
+        "uso",
       ],
     },
   },
