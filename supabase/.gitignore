@@ -1,0 +1,11 @@
+# Supabase
+.branches
+.temp
+
+# dotenvx
+.env.keys
+.env.local
+.env.*.local
+
+# Cuenta bancaria de la dueña (generado por scripts/seed.mjs desde data/hotel.private.json)
+seed.private.sql

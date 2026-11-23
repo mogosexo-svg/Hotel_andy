@@ -1,0 +1,12 @@
+---
+import { Picture } from 'astro:assets';
+import { foto } from './fotos';
+interface Props { nombre: string; sizes: string; widths?: number[]; eager?: boolean; class?: string; vel?: boolean; par?: boolean }
+const { nombre, sizes, widths = [400, 640, 960], eager = false, class: clase = '', vel = true, par = false } = Astro.props;
+const { img, alt } = foto(nombre);
+---
+<div class:list={['foto', par && 'par', clase]}>
+  <Picture src={img} alt={alt} formats={['avif', 'webp']} widths={widths} sizes={sizes}
+    loading={eager ? 'eager' : 'lazy'} fetchpriority={eager ? 'high' : 'auto'} decoding={eager ? 'sync' : 'async'} />
+  {vel && <i class="f-vel" aria-hidden="true"></i>}
+</div>

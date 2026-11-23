@@ -1,0 +1,23 @@
+---
+import Icono from './Icono.astro';
+import { titulo } from './serif';
+import { puntos } from './practico';
+import type { Catalogo } from './catalogo';
+interface Props { c: Catalogo }
+const { c } = Astro.props;
+const filas = puntos(c);
+---
+<section id="practico" class="practico">
+  <div class="prac-cab">
+    <p class="etiqueta rv">Antes de reservar</p>
+    <h2 class="gigante gigante-m rv" set:html={titulo('Lo *práctico*')} />
+  </div>
+  <div class="marq" data-marq aria-hidden="true">
+    <div class="marq-pista">
+      {[0, 1].map(() => filas.map(([ic, k, v]) => <span class="marq-chip"><Icono n={ic} tam={20} /><b>{k}</b> {v}</span>))}
+    </div>
+  </div>
+  <dl class="reglas">
+    {filas.map(([ic, k, v]) => <div class="rv"><dt><Icono n={ic} tam={20} />{k}</dt><dd>{v}</dd></div>)}
+  </dl>
+</section>

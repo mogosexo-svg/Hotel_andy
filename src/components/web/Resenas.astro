@@ -1,0 +1,50 @@
+---
+import Icono from './Icono.astro';
+import Foto from './Foto.astro';
+import { titulo } from './serif';
+import type { Catalogo } from './catalogo';
+import type { Google } from './resenas';
+interface Props { c: Catalogo; g: Google | null }
+const { c, g } = Astro.props;
+const b = c.hotel.booking;
+const coma = (n: number) => String(n).replace('.', ',');
+const busca = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${c.hotel.nombre} ${c.hotel.ciudad}`)}`;
+const lista = g?.resenas ?? [];
+const inicial = (s: string) => s.trim().charAt(0).toUpperCase();
+---
+<section id="resenas" class="resenas">
+  <div class="res-cab">
+    <div class="res-texto-cab">
+      <p class="etiqueta rv">Lo que dicen los huéspedes</p>
+      <h2 class="gigante gigante-m rv" set:html={titulo('Reseñas *reales*')} />
+      <p class="lead rv">La nota viene de Booking, de huéspedes que se alojaron en el hotel.</p>
+    </div>
+    <div class="res-foto">
+      <Foto nombre="terraza-3" widths={[480, 800, 1100]} sizes="(min-width: 900px) 56vw, 92vw" />
+      <a class="btn btn-vidrio vidrio res-google" href={g?.mapas ?? busca} target="_blank" rel="noopener"><span>{g ? 'Reseñas de Google' : 'Ver reseñas en Google'}</span><Icono n="flecha" tam={16} /></a>
+      <div class="res-tarjeta vidrio rv">
+        <div class="res-notas">
+          <p><strong class="serif num" data-n={b.calificacion} data-dec="1">{coma(b.calificacion)}</strong><span>Booking, {b.resenas} reseñas</span></p>
+          {g && <p><strong class="serif num">{coma(g.nota)}</strong><span>Google, {g.total} reseñas</span></p>}
+        </div>
+        <div class="res-medidor" role="img" aria-label={`${coma(b.calificacion)} de 10 en Booking`}><i style={`--v:${b.calificacion / 10}`}></i></div>
+      </div>
+    </div>
+  </div>
+  {lista.length > 0 && (
+    <div class="res-marq" data-marq>
+      <ul class="res-pista">
+        {[0, 1].map((copia) => lista.map((r) => (
+          <li class="res-card" aria-hidden={copia ? 'true' : undefined}>
+            <p class="res-estrellas" role="img" aria-label={`${r.estrellas} de 5 estrellas`}>{Array.from({ length: 5 }, (_, i) => <span class:list={[i < r.estrellas && 'on']}><Icono n="estrella" tam={16} /></span>)}</p>
+            <p class="res-texto">{r.texto}</p>
+            <p class="res-autor"><span class="res-ini" aria-hidden="true">{inicial(r.autor)}</span>
+              {r.uri ? <a href={r.uri} target="_blank" rel="noopener" tabindex={copia ? -1 : undefined}>{r.autor}</a> : <span>{r.autor}</span>}
+              {r.cuando && <small>{r.cuando}</small>}</p>
+          </li>
+        )))}
+      </ul>
+    </div>
+  )}
+  {g && <p class="nota res-atrib">Reseñas de Google. <a href={g.mapas} target="_blank" rel="noopener">Ver todas en Google Maps</a></p>}
+</section>

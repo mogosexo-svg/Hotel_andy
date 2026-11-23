@@ -1,0 +1,15 @@
+---
+// Línea de ola que se dibuja al entrar y ondula despacio. `relleno` pinta la ola como transición hacia la sección siguiente.
+interface Props { relleno?: boolean; class?: string }
+const { relleno = false, class: clase = '' } = Astro.props;
+const seg = Array.from({ length: 16 }, (_, i) => (i === 0 ? 'q90,-26 180,0' : 't180,0')).join(' ');
+const d = `M0,34 ${seg}`;
+---
+<div class:list={['ola', relleno && 'ola-llena', clase]} aria-hidden="true">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none">
+    <g class="ola-mov">
+      {relleno && <path class="ola-rell" d={`${d} L2880,60 L0,60Z`} />}
+      <path class="ola-trazo" d={d} pathLength="1" />
+    </g>
+  </svg>
+</div>

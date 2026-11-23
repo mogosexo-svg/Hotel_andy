@@ -1,0 +1,25 @@
+---
+import Foto from './Foto.astro';
+import Icono from './Icono.astro';
+import { titulo } from './serif';
+const fotos = ['terraza-3', 'piscina-noche-2', 'comedor-terraza-1', 'hab-matrimonial-3', 'terraza-2', 'hab-dos-camas-sofa-1'];
+---
+<section class="galeria" data-galeria aria-roledescription="carrusel" aria-label="Galería del hotel">
+  <div class="g-cab">
+    <h2 class="gigante gigante-m rv" set:html={titulo('Un hotel para quedarse a *mirar*')} />
+    <div class="g-flechas">
+      <button type="button" class="g-flecha" data-g-prev aria-label="Foto anterior"><Icono n="izq" tam={22} /></button>
+      <button type="button" class="g-flecha" data-g-next aria-label="Foto siguiente"><Icono n="der" tam={22} /></button>
+    </div>
+  </div>
+  <ul class="g-pista" data-pista tabindex="0" aria-label="Fotos del hotel, usa las flechas del teclado">
+    {fotos.map((n, k) => (
+      <li class="g-item" aria-roledescription="foto" aria-label={`${k + 1} de ${fotos.length}`}>
+        <Foto nombre={n} class="g-foto" vel={false} eager={k < 2} widths={[480, 800, 1100]} sizes="(min-width: 900px) 52vw, 82vw" />
+      </li>
+    ))}
+  </ul>
+  <ol class="g-puntos" data-g-puntos aria-hidden="true">
+    {fotos.map(() => <li><i></i></li>)}
+  </ol>
+</section>
