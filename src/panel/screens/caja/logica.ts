@@ -65,3 +65,11 @@ export function armarSalidas(cantidades: Record<string, number>, prods: ProdSali
 /** Total en vivo de lo vendido, en centavos. */
 export const totalVentas = (cantidades: Record<string, number>, prods: ProdSalida[]): number =>
   prods.reduce((s, p) => s + (esVenta(p) ? Math.round((cantidades[p.id] ?? 0) * (p.venta ?? 0)) : 0), 0);
+
+/** Inventario: solo lo que se contó y cambió respecto a lo que había. */
+export function armarConteo<P extends { id: string; nombre: string; stock: number | null }>(contado: Record<string, number>, prods: P[]) {
+  return prods.flatMap((p) => {
+    const n = contado[p.id];
+    return n == null || n < 0 || n === p.stock ? [] : [{ id: p.id, nombre: p.nombre, cantidad: n }];
+  });
+}

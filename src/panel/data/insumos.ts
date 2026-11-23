@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import type { Database } from '../../lib/database.types';
 import { usePerfil } from './sesion';
@@ -168,6 +168,8 @@ export async function lineasDeFactura(compraId: string): Promise<LineaFactura[] 
 /** Datos y acciones de Insumos. Una sola carga, Realtime y cambios optimistas con Deshacer donde la base lo permite. */
 export function useInsumos() {
   const { hotelId } = usePerfil();
+  // Un canal por instancia: Insumos y la hoja de inventario pueden estar abiertos a la vez.
+  const instancia = useId();
   const toast = useToast();
   const [cats, setCats] = useState<Cat[]>([]);
   const [prods, setProds] = useState<Prod[] | null>(null);
@@ -197,7 +199,7 @@ export function useInsumos() {
     vivo.current = true;
     void cargar().catch(() => setError(true));
     const canal = supabase
-      .channel(`insumos-${hotelId}`)
+      .channel(`insumos-${hotelId}-${instancia}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'productos' }, () => void cargar())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'alertas' }, () => void cargar())
       .subscribe();
@@ -205,7 +207,7 @@ export function useInsumos() {
       vivo.current = false;
       void supabase.removeChannel(canal);
     };
-  }, [cargar, hotelId]);
+  }, [cargar, hotelId, instancia]);
 
   const api = useMemo(() => {
     const fallo = (e: { message: string; code?: string } | null) => toast.error(mensajeError(e));
@@ -453,6 +455,19 @@ export function useInsumos() {
       return { ok: true, ventas: (data as unknown as { ventas_centavos?: number } | null)?.ventas_centavos ?? 0 };
     }
 
+    /** Inventario: guarda lo contado de cada producto (conteo). Se detiene en el primer error y dice cuál falló. */
+    async function contar(conteos: { id: string; nombre: string; cantidad: number }[]): Promise<{ ok: true } | { ok: false; mensaje: string }> {
+      for (const c of conteos) {
+        const { error: e } = await supabase.rpc('ajustar_stock', { p_producto: c.id, p_tipo: 'conteo', p_cantidad: c.cantidad, p_nota: 'Inventario' });
+        if (e) {
+          void cargar();
+          return { ok: false, mensaje: `${c.nombre}: ${mensajeError(e)}` };
+        }
+      }
+      void cargar();
+      return { ok: true };
+    }
+
     async function cuadre(fecha: string): Promise<Cuadre | null> {
       const { data, error: e } = await supabase.rpc('cuadre_dia', { p_hotel: hotelId, p_fecha: fecha });
       return e ? (fallo(e), null) : (data as unknown as Cuadre);
@@ -474,6 +489,7 @@ export function useInsumos() {
       registrarConsumo,
       anularConsumo,
       registrarSalidas,
+      contar,
       cuadre,
     };
   }, [hotelId, toast, cargar]);

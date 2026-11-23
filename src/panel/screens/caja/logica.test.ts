@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { armarSalidas, desdeTexto, enlaceWhatsApp, estadoDiferencia, quienCerro, totalVentas, tituloTurno, trozosMensaje } from './logica';
+import { armarConteo, armarSalidas, desdeTexto, enlaceWhatsApp, estadoDiferencia, quienCerro, totalVentas, tituloTurno, trozosMensaje } from './logica';
 
 describe('estadoDiferencia', () => {
   it('cero cuadra', () => expect(estadoDiferencia(0)).toMatchObject({ estado: 'cuadra', texto: 'Cuadra' }));
@@ -48,4 +48,18 @@ describe('salidas del turno', () => {
     expect(totalVentas({ cerveza: 1.5 }, prods)).toBe(375);
     expect(totalVentas({}, prods)).toBe(0);
   });
+});
+
+describe('inventario', () => {
+  const prods = [
+    { id: 'jabon', nombre: 'Jabón', stock: 10 },
+    { id: 'cloro', nombre: 'Cloro', stock: null },
+    { id: 'papel', nombre: 'Papel', stock: 4 },
+  ];
+  it('guarda solo lo contado que cambió', () =>
+    expect(armarConteo({ jabon: 7, cloro: 3, papel: 4 }, prods)).toEqual([
+      { id: 'jabon', nombre: 'Jabón', cantidad: 7 },
+      { id: 'cloro', nombre: 'Cloro', cantidad: 3 },
+    ]));
+  it('contar cero vale; negativo no', () => expect(armarConteo({ jabon: 0, papel: -1 }, prods)).toEqual([{ id: 'jabon', nombre: 'Jabón', cantidad: 0 }]));
 });

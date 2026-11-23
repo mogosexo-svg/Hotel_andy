@@ -929,10 +929,8 @@ p.ins-alerta .ico {
   display: grid;
   gap: var(--s-3);
 }
-@media (min-width: 700px) {
-  .ins-grandes:has(> :nth-child(2):not(.btn--ghost)) {
-    grid-template-columns: 1fr 1fr;
-  }
+.ins-grandes:has(> :nth-child(2):not(.btn--ghost)) {
+  grid-template-columns: 1fr 1fr;
 }
 .ins-enlaces {
   display: flex;
@@ -973,9 +971,9 @@ p.ins-alerta .ico {
 /* ---------- Cantidad con − y + ---------- */
 .stepper {
   display: grid;
-  grid-template-columns: var(--touch) minmax(3.5rem, 1fr) var(--touch);
+  grid-template-columns: var(--h-btn) minmax(3rem, 1fr) var(--h-btn);
   gap: var(--s-2);
-  min-width: 11rem;
+  min-width: 9rem;
 }
 .stepper .stepper__n {
   min-width: 0;
@@ -991,7 +989,7 @@ p.ins-alerta .ico {
   border-radius: var(--r-btn);
   background: var(--surface);
   color: var(--ink);
-  font-size: 1.75rem;
+  font-size: 1.375rem;
   font-weight: 600;
   line-height: 1;
   transition: background-color var(--d-1) var(--ease), transform var(--d-1) var(--ease);
@@ -1012,7 +1010,7 @@ p.ins-alerta .ico {
   min-height: var(--h-btn-grande);
 }
 .stepper--grande .stepper__n {
-  font-size: var(--t-2xl);
+  font-size: var(--t-xl);
 }
 
 /* ---------- Lo que salió en el turno (hoja de Caja) ---------- */

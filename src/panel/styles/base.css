@@ -198,8 +198,7 @@ body:has(.panel) {
 }
 .btn--huge {
   min-height: var(--h-btn-grande);
-  font-size: var(--t-lg);
-  border-radius: var(--r-lg);
+  font-size: var(--t-base);
 }
 .btn[aria-busy='true'] {
   pointer-events: none;

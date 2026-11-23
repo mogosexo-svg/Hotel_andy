@@ -12,6 +12,7 @@ import { ChipStock, Quedan } from './insumos/piezas';
 import { ProductoForm } from './insumos/ProductoForm';
 import { ProductoHoja } from './insumos/ProductoHoja';
 import { Venta } from './insumos/Venta';
+import { Salidas } from './caja/Salidas';
 
 type Filtro = 'todo' | 'bajos' | 'inactivos' | string;
 type Pestana = 'insumos' | 'compras';
@@ -28,6 +29,7 @@ export function Inventario() {
   const [form, setForm] = useState<{ producto?: Prod } | null>(null);
   const [verCats, setVerCats] = useState(false);
   const [venta, setVenta] = useState<{ inicial: string | null } | null>(null);
+  const [inventario, setInventario] = useState(false);
 
   // Atajos desde Ctrl+K: "Registrar una venta" abre esta pantalla y la hoja correspondiente.
   useEffect(() => {
@@ -100,7 +102,10 @@ export function Inventario() {
       </header>
 
       <div className="ins-acciones-cab">
-        <Boton icono="mas" onClick={() => setForm({})}>
+        <Boton icono="inventario" onClick={() => setInventario(true)}>
+          Hacer inventario
+        </Boton>
+        <Boton variante="quiet" icono="mas" onClick={() => setForm({})}>
           Nuevo producto
         </Boton>
         <Boton variante="quiet" icono="dinero" onClick={() => setVenta({ inicial: null })}>
@@ -229,6 +234,7 @@ export function Inventario() {
       )}
       {verCats && <Categorias api={api} onCerrar={() => setVerCats(false)} />}
       {venta && <Venta api={api} inicial={venta.inicial} onCerrar={() => setVenta(null)} />}
+      {inventario && <Salidas modo="inventario" onCerrar={() => setInventario(false)} onGuardado={() => void api.recargar()} />}
     </section>
   );
 }

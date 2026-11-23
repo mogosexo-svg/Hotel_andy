@@ -241,9 +241,9 @@ function Contar({ resumen, hotelId, onCerrado, onSalidas }: { resumen: ResumenCa
 
       <article className="card caja-salidas">
         <h2 className="caja-salidas__titulo">Lo que salió en este turno</h2>
-        <p className="caja-salidas__txt">{nSalidas === 0 ? 'Antes de cerrar, anota lo que se vendió y lo que se usó.' : `Anotaste ${nSalidas} ${nSalidas === 1 ? 'salida' : 'salidas'}.`}</p>
+        <p className="caja-salidas__txt">{nSalidas === 0 ? 'Antes de cerrar, anota lo que se vendió y cuenta el inventario.' : `Anotaste ${nSalidas} ${nSalidas === 1 ? 'salida' : 'salidas'}.`}</p>
         <Boton variante={nSalidas === 0 ? 'primary' : 'quiet'} block icono={nSalidas === 0 ? 'inventario' : 'mas'} onClick={() => setSalidas(true)}>
-          {nSalidas === 0 ? 'Anotar salidas' : 'Anotar más'}
+          {nSalidas === 0 ? 'Ventas e inventario' : 'Anotar más'}
         </Boton>
       </article>
       {salidas && <Salidas onCerrar={() => setSalidas(false)} onGuardado={onSalidas} />}

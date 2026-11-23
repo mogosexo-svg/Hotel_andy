@@ -83,8 +83,8 @@
   --r-lg: 22px;
   --r-hoja: 26px;
   --touch: 3rem; /* 48 px */
-  --h-btn: 3.25rem; /* alto del botón estándar */
-  --h-btn-grande: 4.5rem;
+  --h-btn: 2.75rem; /* 44 px: alto del botón estándar (mínimo táctil) */
+  --h-btn-grande: 3.25rem; /* 52 px: acción principal de una hoja */
   --r-btn: var(--r-md);
   --press: 0.97; /* escala al presionar cualquier control */
   --sombra-btn: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 1px 2px rgb(10 27 46 / 0.12);
