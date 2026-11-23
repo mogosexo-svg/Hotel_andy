@@ -90,7 +90,7 @@ export function DiaLista({ dias, hoy, dia, onDia, cuartos, reservas, pulsos, aho
       <div className="rv-dia-res" key={dia}>
         <h2 className="rv-dia-res__titulo">{titulo}</h2>
         <p className="rv-dia-res__sub">
-          <b>{g.libres.length}</b> {g.libres.length === 1 ? 'cuarto libre' : 'cuartos libres'} esta noche
+          <b>{g.libres.length}</b> {g.libres.length === 1 ? 'habitación libre' : 'habitaciones libres'} esta noche
         </p>
         <div className="rv-medidor" role="img" aria-label={`Ocupación del ${ocupacion} por ciento`}>
           <i style={{ ['--ocu' as string]: `${ocupacion}%` }} />
@@ -110,14 +110,14 @@ export function DiaLista({ dias, hoy, dia, onDia, cuartos, reservas, pulsos, aho
             Libres esta noche <span className="filtro__n">{g.libres.length}</span>
           </h3>
           {g.libres.length === 0 ? (
-            <p className="rv-vacio">No queda ningún cuarto libre. Está lleno.</p>
+            <p className="rv-vacio">No queda ninguna habitación libre. Está lleno.</p>
           ) : (
             <>
-              <p className="rv-ayuda">Toca un cuarto para reservarlo desde este día.</p>
+              <p className="rv-ayuda">Toca una habitación para reservarla desde este día.</p>
               <ul className="rv-libres">
                 {g.libres.map((c) => (
                   <li key={c.id}>
-                    <button type="button" className="rv-libre" disabled={dia < hoy} onClick={() => onVacia(c.id, dia)} aria-label={`Reservar el cuarto ${c.numero}, ${c.tipo}`}>
+                    <button type="button" className="rv-libre" disabled={dia < hoy} onClick={() => onVacia(c.id, dia)} aria-label={`Reservar la habitación ${c.numero}, ${c.tipo}`}>
                       <b>{c.numero}</b>
                       <small>{c.tipo}</small>
                     </button>
@@ -175,7 +175,7 @@ function Grupo({
                     <strong>{r.huesped ?? 'Sin nombre'}</strong>
                     <small>
                       {c?.tipo ? `${c.tipo} · ` : ''}
-                      {r.personas} {r.personas === 1 ? 'persona' : 'personas'}
+                      {r.personas} {r.personas === 1 ? 'huésped' : 'huéspedes'}
                     </small>
                     <small className="rv-item__canal">
                       <MarcaCanal fuente={r.fuente} /> {fuenteTexto(r.fuente)}
