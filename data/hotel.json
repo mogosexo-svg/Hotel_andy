@@ -278,7 +278,7 @@
     "cierres_caja": {
       "tarde": "15:00",
       "noche": "22:00",
-      "_verificar": "Horas de los 2 cierres de caja (America/Guayaquil) puestas por defecto: confirmar con la dueña a qué hora cierran la tarde y la noche."
+      "_nota": "Confirmado por el cliente el 23 nov 2026 (America/Guayaquil). Cambiable desde reglas."
     },
     "cancelacion": {
       "politica": "flexible_caso_a_caso",
