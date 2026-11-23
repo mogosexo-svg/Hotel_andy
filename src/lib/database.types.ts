@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       alertas: {
         Row: {
+          comprobante_id: string | null;
           creada_en: string;
           habitacion_id: string | null;
           hotel_id: string;
@@ -24,6 +25,7 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          comprobante_id?: string | null;
           creada_en?: string;
           habitacion_id?: string | null;
           hotel_id: string;
@@ -36,6 +38,7 @@ export type Database = {
           tipo: Database["public"]["Enums"]["tipo_alerta"];
         };
         Update: {
+          comprobante_id?: string | null;
           creada_en?: string;
           habitacion_id?: string | null;
           hotel_id?: string;
@@ -48,6 +51,13 @@ export type Database = {
           tipo?: Database["public"]["Enums"]["tipo_alerta"];
         };
         Relationships: [
+          {
+            foreignKeyName: "alertas_hotel_id_comprobante_id_fkey";
+            columns: ["hotel_id", "comprobante_id"];
+            isOneToOne: false;
+            referencedRelation: "comprobantes";
+            referencedColumns: ["hotel_id", "id"];
+          },
           {
             foreignKeyName: "alertas_hotel_id_fkey";
             columns: ["hotel_id"];
@@ -311,6 +321,83 @@ export type Database = {
             columns: ["hotel_id", "producto_id"];
             isOneToOne: false;
             referencedRelation: "productos";
+            referencedColumns: ["hotel_id", "id"];
+          },
+        ];
+      };
+      comprobantes: {
+        Row: {
+          creado_en: string;
+          estado: string;
+          foto_path: string;
+          hotel_id: string;
+          id: string;
+          monto_declarado_centavos: number | null;
+          motivo_rechazo: string | null;
+          origen: string;
+          pago_id: string | null;
+          reserva_id: string | null;
+          revisado_en: string | null;
+          revisado_por: string | null;
+          telefono: string;
+          vence_antes: string | null;
+          wa_message_id: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          creado_en?: string;
+          estado?: string;
+          foto_path: string;
+          hotel_id: string;
+          id?: string;
+          monto_declarado_centavos?: number | null;
+          motivo_rechazo?: string | null;
+          origen?: string;
+          pago_id?: string | null;
+          reserva_id?: string | null;
+          revisado_en?: string | null;
+          revisado_por?: string | null;
+          telefono: string;
+          vence_antes?: string | null;
+          wa_message_id?: string | null;
+        };
+        Update: {
+          creado_en?: string;
+          estado?: string;
+          foto_path?: string;
+          hotel_id?: string;
+          id?: string;
+          monto_declarado_centavos?: number | null;
+          motivo_rechazo?: string | null;
+          origen?: string;
+          pago_id?: string | null;
+          reserva_id?: string | null;
+          revisado_en?: string | null;
+          revisado_por?: string | null;
+          telefono?: string;
+          vence_antes?: string | null;
+          wa_message_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "comprobantes_hotel_id_fkey";
+            columns: ["hotel_id"];
+            isOneToOne: false;
+            referencedRelation: "hoteles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "comprobantes_hotel_id_pago_id_fkey";
+            columns: ["hotel_id", "pago_id"];
+            isOneToOne: false;
+            referencedRelation: "pagos";
+            referencedColumns: ["hotel_id", "id"];
+          },
+          {
+            foreignKeyName: "comprobantes_hotel_id_reserva_id_fkey";
+            columns: ["hotel_id", "reserva_id"];
+            isOneToOne: false;
+            referencedRelation: "reservas";
             referencedColumns: ["hotel_id", "id"];
           },
         ];
@@ -1275,6 +1362,10 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      aceptar_comprobante: {
+        Args: { p_comprobante: string; p_monto_centavos: number };
+        Returns: string;
+      };
       ajustar_stock: {
         Args: {
           p_cantidad: number;
@@ -1290,6 +1381,10 @@ export type Database = {
       };
       anular_factura: {
         Args: { p_compra: string; p_motivo?: string };
+        Returns: undefined;
+      };
+      asociar_comprobante: {
+        Args: { p_comprobante: string; p_reserva: string };
         Returns: undefined;
       };
       calendario_publico: {
@@ -1330,6 +1425,29 @@ export type Database = {
           p_reserva: string;
         };
         Returns: Json;
+      };
+      comprobantes_pendientes: {
+        Args: { p_hotel: string };
+        Returns: {
+          anticipo_centavos: number;
+          codigo: string;
+          comprobante_id: string;
+          creado_en: string;
+          entrada: string;
+          foto_path: string;
+          habitacion: string;
+          huesped: string;
+          monto_declarado_centavos: number;
+          origen: string;
+          pagado_centavos: number;
+          reserva_estado: Database["public"]["Enums"]["estado_reserva"];
+          reserva_id: string;
+          salida: string;
+          telefono: string;
+          tipo: string;
+          total_centavos: number;
+          vence_en: string;
+        }[];
       };
       consultar_disponibilidad: {
         Args: {
@@ -1396,6 +1514,21 @@ export type Database = {
           ingresos_centavos: number;
         }[];
       };
+      rechazar_comprobante: {
+        Args: { p_comprobante: string; p_motivo: string };
+        Returns: undefined;
+      };
+      recibir_comprobante: {
+        Args: {
+          p_codigo?: string;
+          p_foto_path: string;
+          p_hotel: string;
+          p_monto_centavos?: number;
+          p_telefono: string;
+          p_wa_message_id?: string;
+        };
+        Returns: Json;
+      };
       registrar_consumo: {
         Args: {
           p_cantidad: number;
@@ -1436,7 +1569,8 @@ export type Database = {
         | "por_limpiar"
         | "mantenimiento"
         | "cuarto_no_listo"
-        | "conflicto_ical";
+        | "conflicto_ical"
+        | "comprobante";
       tipo_movimiento:
         | "compra"
         | "limpieza"
@@ -1604,6 +1738,7 @@ export const Constants = {
         "mantenimiento",
         "cuarto_no_listo",
         "conflicto_ical",
+        "comprobante",
       ],
       tipo_movimiento: [
         "compra",

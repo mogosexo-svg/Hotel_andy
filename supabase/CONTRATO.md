@@ -51,6 +51,7 @@ El resto de tablas (pagos, compras, consumos, movimientos, mensajes, toques NFC)
 | `huespedes` | `nombre`, `documento`, `telefono` (normalizado `+593…`), `procedencia`, `consentimiento_en`, `acepta_campanas`. | Borrar un huésped deja sus reservas con `huesped_id` null (LOPDP). |
 | `reservas` | `codigo`, `habitacion_id`, `huesped_id`, `entrada`, `salida` (`[)`), `personas`, `mascota`, `estado`, `fuente`, `canal`, `total_centavos`, `vence_en`, check-in/out (`_en`, `_por`), `ical_uid`. | **Realtime.** EXCLUDE `sin_cruces`. Canal y total se congelan al crear. |
 | `pagos` | `reserva_id`, `monto_centavos`, `medio` (`efectivo`/`transferencia`), `comprobante_path`. | |
+| `comprobantes` | Foto del anticipo que manda el huésped: `reserva_id` (null = sin asociar), `telefono` (E.164), `foto_path` (`<hotel_id>/comprobantes/...`, CHECK), `monto_declarado_centavos`, `origen` (`whatsapp`/`recepcion`/`web`), `estado` (`pendiente`/`aceptado`/`rechazado`), `motivo_rechazo`, `pago_id`, `revisado_por`, `revisado_en`, `vence_antes` (interno), `wa_message_id` (único). | **Realtime.** Leen dueña y recepción; se escribe solo por RPC. CHECK: aceptado ⇒ pago + reserva + `revisado_en`; rechazado ⇒ motivo + `revisado_en`. **n8n avisa al huésped** escuchando `estado = 'rechazado'` (con `motivo_rechazo` y `telefono`) por Realtime (service_role) o un webhook de BD sobre `UPDATE`. |
 | `categorias` | `nombre`, `icono`, `orden`. `icono` es una clave, no un emoji: `bano`, `lenceria`, `limpieza`, `piscina`, `bebidas`, `snacks` (las categorías nuevas pueden usar otra clave). | No se borra con productos (FK → `23503`). |
 | `productos` | Insumos y venta: `unidad`, `stock` (null = sin contar), `minimo`, `se_vende`, `precio_compra_centavos`, `precio_venta_centavos`, `consumo_diario`, `activo`. | **Realtime.** `stock` no se edita: trigger lo rechaza. Borrar = `activo = false`. |
 | `kit_por_tipo` | `tipo_id` × `producto_id` → `cantidad`, `por` (`limpieza`/`persona`). | |
@@ -58,13 +59,13 @@ El resto de tablas (pagos, compras, consumos, movimientos, mensajes, toques NFC)
 | `compras` / `compras_lineas` | Facturas: proveedor, número, fecha, foto, total; líneas con cantidad y costo. `anulada_en`. | No se repite proveedor + número activo. |
 | `consumos` | Ventas: `cantidad`, precio y costo congelados, `total_centavos` (generado), `reserva_id` (al cuarto) o `medio` + `pagado_en`. | Pendiente = `reserva_id` y `medio` null. Anulada = `anulado_en` no null (filtrar siempre `anulado_en is null`). |
 | `reportes_mantenimiento` | Daños: nota, foto, quién; `resuelto_en`. | |
-| `alertas` | `tipo` (stock_bajo, por_limpiar, mantenimiento, cuarto_no_listo, conflicto_ical), `mensaje` listo para mostrar/enviar, `resuelta_en`, `notificada_en`. | **Realtime.** Una sola `stock_bajo` abierta por producto. |
+| `alertas` | `tipo` (stock_bajo, por_limpiar, mantenimiento, cuarto_no_listo, conflicto_ical, comprobante), `comprobante_id`, `mensaje` listo para mostrar/enviar, `resuelta_en`, `notificada_en`. | **Realtime.** Una sola `stock_bajo` abierta por producto. |
 | `mensajes_whatsapp` | Entrantes/salientes. `wa_message_id` único (webhook idempotente). | Escribe service_role. |
 | `nfc_destinos` / `nfc_toques` | `/r/<lugar>` → `url` (https). Un toque por fila. | Escribe el toque service_role. |
 | `calendarios_ical` | Por cuarto y canal: `url_importar`, `token_exportar`, última sincronización. | |
 | `auditoria` | Quién (`usuario_id`) cambió qué (`antes`/`despues`) en reservas, estados de cuarto, pagos y compras. | Solo inserción por triggers. |
 
-Storage: bucket privado `hotel`, ruta `<hotel_id>/<comprobantes|danos|facturas|productos>/<archivo>`. Sube cualquier rol del hotel; leen dueña y recepción.
+Storage: bucket privado `hotel`, ruta `<hotel_id>/<comprobantes|danos|facturas|productos>/<archivo>`. Sube cualquier rol del hotel; leen dueña y recepción. Los comprobantes que llegan por WhatsApp los sube n8n (service_role) a `<hotel_id>/comprobantes/`.
 
 ## RPC públicas (`anon` y `authenticated`)
 
@@ -84,6 +85,10 @@ Storage: bucket privado `hotel`, ruta `<hotel_id>/<comprobantes|danos|facturas|p
 | `cuenta_reserva(p_reserva uuid)` | duena, recepcion | `{total_centavos, pagado_centavos, consumos_pendientes:[{id, producto, cantidad, total_centavos, creado_en}], consumos_pendientes_centavos, saldo_centavos}` |
 | `registrar_pago(p_reserva uuid, p_monto_centavos int, p_medio medio_pago, p_comprobante_path text = null)` | duena, recepcion | Inserta el pago; una prereserva pasa a `confirmada`. Devuelve `uuid` del pago. |
 | `cancelar_reserva(p_reserva uuid, p_motivo text = null)` | duena, recepcion | prereserva/confirmada → `cancelada`. |
+| `comprobantes_pendientes(p_hotel uuid)` | duena, recepcion | Filas `{comprobante_id, creado_en, origen, telefono, foto_path, monto_declarado_centavos, huesped, reserva_id, codigo, reserva_estado, habitacion, tipo, entrada, salida, total_centavos, anticipo_centavos, pagado_centavos, vence_en}`, más viejos primero. Campos de reserva null si no está asociado. `anticipo` = `reglas.anticipo.porcentaje` (50 %) del total. |
+| `aceptar_comprobante(p_comprobante uuid, p_monto_centavos int)` | duena, recepcion | Solo pendiente y con reserva. Registra el pago (misma regla que `registrar_pago`, medio `transferencia`, `comprobante_path` = la foto), pre-reserva → `confirmada`, comprobante → aceptado, resuelve la alerta. Devuelve `uuid` del pago. Falla: "Este comprobante ya fue revisado", "Asocia el comprobante a una reserva antes de aceptarlo", "La reserva X está cancelada…" / "La pre-reserva X venció y el cuarto se liberó…". |
+| `rechazar_comprobante(p_comprobante uuid, p_motivo text)` | duena, recepcion | Motivo obligatorio. Devuelve la pre-reserva a su vencimiento normal (ahora + `prereserva_horas`, sin pasar del que tenía si aún no llegó; no lo toca si hay otro comprobante pendiente). Resuelve la alerta. |
+| `asociar_comprobante(p_comprobante uuid, p_reserva uuid)` | duena, recepcion | Asigna (o corrige) la reserva de un comprobante pendiente; retiene la pre-reserva nueva y suelta la anterior. |
 | `empezar_limpieza(p_habitacion uuid)` | todos | Por limpiar → Limpiando. |
 | `deshacer_limpieza(p_habitacion uuid)` | todos | Limpiando → Por limpiar (deshace "Empezar"; desde otro estado falla: "Ese cuarto no se está limpiando"). No toca stock. |
 | `marcar_listo(p_habitacion uuid)` | todos | Limpiando → Libre y descuenta el kit del tipo (toallas × personas de la última estadía) en la misma transacción. Cierra la alerta `por_limpiar`. |
@@ -101,10 +106,17 @@ Storage: bucket privado `hotel`, ruta `<hotel_id>/<comprobantes|danos|facturas|p
 
 CRUD directo con supabase-js (RLS): `reservas` (crear/mover/editar desde el calendario; el total se calcula solo si no se manda), `huespedes`, `categorias`, `productos` (sin `stock`), `alertas` (marcar `resuelta_en`), y la configuración de la dueña (`tarifas`, `temporadas.fechas`, `kit_por_tipo`, `hoteles`, `config`, `usuarios_hotel`, `nfc_destinos`, `calendarios_ical`).
 
+## RPC del backend (solo `service_role`: n8n / Edge Functions)
+
+| Firma | Hace / devuelve |
+|---|---|
+| `recibir_comprobante(p_hotel uuid, p_telefono text, p_foto_path text, p_wa_message_id text = null, p_codigo text = null, p_monto_centavos int = null)` | `jsonb {comprobante_id, reserva_id, codigo, asociado}`. Idempotente por `wa_message_id` (repetir devuelve el mismo, sin efectos). Asocia por `p_codigo` (cualquier estado) o, sin código, la pre-reserva más reciente del huésped con ese teléfono (normalizado como el resto). La foto debe estar en `<p_hotel>/comprobantes/`. Retiene la pre-reserva: `vence_en` = máx(actual, ahora + 24 h). Abre alerta `comprobante` ("Comprobante de <nombre> para la reserva <código>" o "Comprobante sin reserva asociada (<teléfono>)"). anon y authenticated no pueden llamarla. |
+
 ## Reglas que viven en la base
 - **Estados** (`habitaciones.estado`): libre → ocupado → por_limpiar → limpiando → libre; limpiando → por_limpiar (deshacer); cualquiera → mantenimiento; mantenimiento → libre/por_limpiar solo la dueña.
 - **Reservas**: sin cruces (prereserva, confirmada y en curso bloquean; salida y entrada el mismo día no chocan). Personas ≤ capacidad. Canal sale de la fuente (booking/airbnb → su canal; resto → directo). Total = tarifa de cada noche según su temporada; sin tarifa directa la reserva falla; Booking/Airbnb sin tarifa quedan con total null hasta cargarlo.
 - **Stock**: solo por `movimientos_insumo`. Null = sin contar: las salidas no lo tocan; una compra o un conteo lo empiezan. Puede quedar negativo, pero siempre con alerta.
+- **Comprobantes**: recibir uno retiene la pre-reserva hasta 24 h (el cron no la libera mientras); aceptarlo la confirma; rechazarlo devuelve el vencimiento normal.
 - **Alerta de stock**: al quedar en o bajo el mínimo (o negativo) se abre una sola; el mensaje escribe decimales con coma ("1,5 kg"); se actualiza mientras siga baja y se cierra al reponer.
 
 ## Tareas programadas (`pg_cron`, migración `…600_cron.sql`)
