@@ -1,0 +1,214 @@
+/* Comprobantes por revisar: foto a la izquierda, datos y decisión a la derecha. Solo transform/opacity en el movimiento. */
+.comp-lista {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.comp-lista > li {
+  min-width: 0;
+  animation: item-in var(--d-3) var(--ease) backwards;
+}
+.comp-lista > li:nth-child(2) {
+  animation-delay: 45ms;
+}
+.comp-lista > li:nth-child(n + 3) {
+  animation-delay: 90ms;
+}
+.comp {
+  display: grid;
+  gap: var(--s-4);
+  padding: var(--s-4);
+}
+.comp__foto {
+  position: relative;
+  display: block;
+  height: 13rem;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--brand-soft);
+  cursor: zoom-in;
+}
+.comp__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--d-3) var(--ease);
+}
+.comp__foto:hover .comp__img {
+  transform: scale(1.03);
+}
+.comp__img--grande {
+  height: auto;
+  max-height: 70dvh;
+  border-radius: var(--r-md);
+  object-fit: contain;
+}
+.comp__ampliar {
+  position: absolute;
+  right: var(--s-2);
+  bottom: var(--s-2);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: var(--s-1) var(--s-3);
+  border-radius: 99px;
+  background: var(--glass-fuerte);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: 0 0 0 1px var(--glass-linea);
+  color: var(--ink);
+  font-size: var(--t-sm);
+  font-weight: 700;
+}
+.comp__sinfoto {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--s-2);
+  height: 100%;
+  min-height: 8rem;
+  padding: var(--s-4);
+  color: var(--ink-2);
+  text-align: center;
+}
+.comp__cuerpo {
+  display: grid;
+  gap: var(--s-3);
+  align-content: start;
+  min-width: 0;
+}
+.comp__cab {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+.comp__cab h2 {
+  font-size: var(--t-lg);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+.comp__tel {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  margin-top: 2px;
+  color: var(--ink-2);
+}
+.comp__hace {
+  flex: none;
+  color: var(--ink-3);
+  font-size: var(--t-sm);
+  font-weight: 650;
+}
+.comp__reserva {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+.comp__datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-3) var(--s-4);
+  margin: 0;
+}
+.comp__datos dt {
+  color: var(--ink-3);
+  font-size: var(--t-sm);
+  font-weight: 650;
+}
+.comp__datos dd {
+  margin: 0;
+  font-weight: 700;
+}
+.comp__ancho {
+  grid-column: 1 / -1;
+}
+.comp__sin {
+  display: flex;
+  gap: var(--s-2);
+  align-items: flex-start;
+  padding: var(--s-3);
+  border-radius: var(--r-md);
+  background: var(--por-limpiar-tinte);
+  color: var(--por-limpiar-tinta);
+  font-weight: 650;
+}
+.comp__sin .ico {
+  flex: none;
+  margin-top: 2px;
+}
+.comp__decl,
+.comp__ayuda {
+  color: var(--ink-2);
+  font-size: var(--t-sm);
+}
+.comp__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.comp__acciones .btn {
+  flex: 1 1 8rem;
+}
+.comp__candidatas {
+  max-height: 18rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.comp__cand {
+  padding-block: var(--s-2);
+}
+.comp__cand small {
+  display: block;
+  color: var(--ink-2);
+  font-size: var(--t-sm);
+}
+
+@media (min-width: 700px) {
+  .comp {
+    grid-template-columns: 14rem minmax(0, 1fr);
+    align-items: start;
+  }
+  .comp__foto {
+    height: 100%;
+    min-height: 14rem;
+  }
+}
+@media (min-width: 1280px) {
+  .comp-lista {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+/* Aviso en Inicio */
+.b-comp {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+  border: 0;
+  background: linear-gradient(90deg, var(--brand-soft), #fff);
+  box-shadow: 0 0 0 1px var(--agua), var(--shadow-card);
+  color: var(--ink);
+  text-align: left;
+}
+.b-comp__txt {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.b-comp__txt small {
+  color: var(--ink-2);
+  font-size: var(--t-sm);
+}

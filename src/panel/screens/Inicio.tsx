@@ -42,7 +42,7 @@ export interface Resumen {
 }
 export type FilaIngreso = Database['public']['Functions']['ocupacion_ingresos']['Returns'][number];
 
-export function Inicio({ ir }: { ir: (p: Pagina) => void }) {
+export function Inicio({ ir, porRevisar }: { ir: (p: Pagina) => void; porRevisar: number }) {
   const { hotelId, nombre } = usePerfil();
   const { tick } = useCuartos();
   const [resumen, setResumen] = useState<Resumen | null>(null);
@@ -95,13 +95,13 @@ export function Inicio({ ir }: { ir: (p: Pagina) => void }) {
       ) : !resumen || !serie ? (
         <InicioSkeleton />
       ) : (
-        <InicioDatos r={resumen} serie={serie} ir={ir} hoy={hoy} temporada={temporada} />
+        <InicioDatos r={resumen} serie={serie} ir={ir} hoy={hoy} temporada={temporada} porRevisar={porRevisar} />
       )}
     </section>
   );
 }
 
-function InicioDatos({ r, serie, ir, hoy, temporada }: { r: Resumen; serie: FilaIngreso[]; ir: (p: Pagina) => void; hoy: string; temporada: string | null }) {
+function InicioDatos({ r, serie, ir, hoy, temporada, porRevisar }: { r: Resumen; serie: FilaIngreso[]; ir: (p: Pagina) => void; hoy: string; temporada: string | null; porRevisar: number }) {
   const { cuartos, cuartoAbierto, abrirCuarto } = useCuartos();
   const libres = Math.max(0, r.cuartos - r.ocupados - r.por_limpiar - r.limpiando - r.en_arreglo);
   const hayDatos = useMemo(() => serie.some((f) => f.cuartos_ocupados > 0 || f.ingresos_centavos > 0), [serie]);
@@ -121,6 +121,18 @@ function InicioDatos({ r, serie, ir, hoy, temporada }: { r: Resumen; serie: Fila
   return (
     <>
     <div className="inicio bento">
+      {porRevisar > 0 && (
+        <button type="button" className="card b-card b-comp" onClick={() => ir('comprobantes')}>
+          <span className="b-burbuja">
+            <Icon name="factura" />
+          </span>
+          <span className="b-comp__txt">
+            <b>{porRevisar === 1 ? '1 comprobante por revisar' : `${porRevisar} comprobantes por revisar`}</b>
+            <small>Fotos de anticipos que mandaron por WhatsApp</small>
+          </span>
+          <Icon name="siguiente" size="sm" />
+        </button>
+      )}
       <TarjetaHoy hoy={hoy} llegadas={r.llegadas_hoy.length} salidas={r.salidas_hoy.length} temporada={temporada} ir={ir} />
       <TarjetaPisos cuartos={cuartos} abrirCuarto={abrirCuarto} ir={ir} />
       <MedidorOcupacion pct={r.ocupacion_pct} ocupados={r.ocupados} total={r.cuartos} libres={libres} ir={ir} />

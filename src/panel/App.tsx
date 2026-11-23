@@ -19,6 +19,8 @@ import { Reservas } from './screens/reservas/Reservas';
 import { Limpieza } from './screens/Limpieza';
 import { Inventario } from './screens/Inventario';
 import { Config } from './screens/config/Config';
+import { Comprobantes } from './screens/comprobantes/Comprobantes';
+import { useComprobantes } from './data/comprobantes';
 import { paginaDeHash, paginasDe, type Pagina } from './nav';
 import { ROL_PALABRA } from './lib/estados';
 
@@ -143,10 +145,15 @@ function Shell() {
   const gestiona = perfil.rol !== 'limpieza';
   const porLimpiar = cuartos.filter((c) => c.estado === 'por_limpiar').length;
   const stockBajo = useStockBajo(perfil.hotelId, tick, gestiona);
+  const comprobantes = useComprobantes(gestiona);
+  const porRevisar = comprobantes.lista.length;
   const avisos: AvisoItem[] = [
     { id: 'limpiar', n: porLimpiar, texto: porLimpiar === 1 ? 'cuarto por limpiar' : 'cuartos por limpiar', icono: 'por_limpiar', ir: () => ir('limpieza') },
     ...(gestiona
-      ? [{ id: 'stock', n: stockBajo, texto: stockBajo === 1 ? 'insumo se está acabando' : 'insumos se están acabando', icono: 'inventario' as const, ir: () => ir('inventario') }]
+      ? [
+          { id: 'comprobantes', n: porRevisar, texto: porRevisar === 1 ? 'comprobante por revisar' : 'comprobantes por revisar', icono: 'factura' as const, ir: () => ir('comprobantes') },
+          { id: 'stock', n: stockBajo, texto: stockBajo === 1 ? 'insumo se está acabando' : 'insumos se están acabando', icono: 'inventario' as const, ir: () => ir('inventario') },
+        ]
       : []),
   ];
   const solo = paginas.length === 1;
@@ -203,6 +210,11 @@ function Shell() {
                     {p.id === 'limpieza' && porLimpiar > 0 && (
                       <span className="riel__punto" aria-label={`${porLimpiar} por limpiar`}>
                         {porLimpiar}
+                      </span>
+                    )}
+                    {p.id === 'comprobantes' && porRevisar > 0 && (
+                      <span className="riel__punto" aria-label={`${porRevisar} por revisar`}>
+                        {porRevisar}
                       </span>
                     )}
                   </span>
@@ -267,9 +279,10 @@ function Shell() {
         </header>
 
       <main className="contenido" id="contenido" style={{ ['--dx' as string]: `${dx}px` }}>
-        {pagina === 'inicio' && <Inicio ir={ir} />}
+        {pagina === 'inicio' && <Inicio ir={ir} porRevisar={porRevisar} />}
         {pagina === 'cuartos' && <Mapa />}
         {pagina === 'reservas' && <Reservas />}
+        {pagina === 'comprobantes' && <Comprobantes datos={comprobantes} />}
         {pagina === 'limpieza' && <Limpieza />}
         {pagina === 'inventario' && <Inventario />}
         {pagina === 'config' && <Config />}
