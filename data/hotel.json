@@ -275,6 +275,11 @@
       "medio": "transferencia"
     },
     "prereserva_horas": 2,
+    "cierres_caja": {
+      "tarde": "15:00",
+      "noche": "22:00",
+      "_verificar": "Horas de los 2 cierres de caja (America/Guayaquil) puestas por defecto: confirmar con la dueña a qué hora cierran la tarde y la noche."
+    },
     "cancelacion": {
       "politica": "flexible_caso_a_caso",
       "bot": "No promete reembolso ni plazos: pasa el caso a la dueña."

@@ -35,6 +35,7 @@ insert into nfc_destinos (hotel_id, lugar, url) values (:'hb', 'piscina', 'https
 insert into nfc_toques (hotel_id, destino_id) values (:'hb', :'nb');
 insert into calendarios_ical (hotel_id, habitacion_id, canal) values (:'hb', :'rb', 'booking');
 select recibir_comprobante(:'hb', '0990000000', :'hb' || '/comprobantes/b.jpg');
+select cerrar_caja(:'hb', 'tarde', 500, null);
 
 -- Estructura: todas las tablas con hotel_id y RLS
 select is(array(select c.relname::text from pg_class c join pg_namespace n on n.oid = c.relnamespace

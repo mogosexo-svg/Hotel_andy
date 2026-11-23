@@ -11,6 +11,8 @@ export type Database = {
     Tables: {
       alertas: {
         Row: {
+          caja_fecha: string | null;
+          caja_turno: string | null;
           comprobante_id: string | null;
           creada_en: string;
           habitacion_id: string | null;
@@ -25,6 +27,8 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          caja_fecha?: string | null;
+          caja_turno?: string | null;
           comprobante_id?: string | null;
           creada_en?: string;
           habitacion_id?: string | null;
@@ -38,6 +42,8 @@ export type Database = {
           tipo: Database["public"]["Enums"]["tipo_alerta"];
         };
         Update: {
+          caja_fecha?: string | null;
+          caja_turno?: string | null;
           comprobante_id?: string | null;
           creada_en?: string;
           habitacion_id?: string | null;
@@ -214,6 +220,69 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "categorias_hotel_id_fkey";
+            columns: ["hotel_id"];
+            isOneToOne: false;
+            referencedRelation: "hoteles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      cierres_caja: {
+        Row: {
+          cerrado_en: string;
+          cerrado_por: string | null;
+          desde: string;
+          diferencia_centavos: number | null;
+          efectivo_contado_centavos: number;
+          efectivo_esperado_centavos: number;
+          fecha: string;
+          hasta: string;
+          hotel_id: string;
+          id: string;
+          mensaje: string;
+          nota: string | null;
+          total_centavos: number | null;
+          transferencia_centavos: number;
+          turno: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          cerrado_en?: string;
+          cerrado_por?: string | null;
+          desde: string;
+          diferencia_centavos?: never;
+          efectivo_contado_centavos: number;
+          efectivo_esperado_centavos: number;
+          fecha: string;
+          hasta: string;
+          hotel_id: string;
+          id?: string;
+          mensaje: string;
+          nota?: string | null;
+          total_centavos?: never;
+          transferencia_centavos: number;
+          turno: string;
+        };
+        Update: {
+          cerrado_en?: string;
+          cerrado_por?: string | null;
+          desde?: string;
+          diferencia_centavos?: never;
+          efectivo_contado_centavos?: number;
+          efectivo_esperado_centavos?: number;
+          fecha?: string;
+          hasta?: string;
+          hotel_id?: string;
+          id?: string;
+          mensaje?: string;
+          nota?: string | null;
+          total_centavos?: never;
+          transferencia_centavos?: number;
+          turno?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "cierres_caja_hotel_id_fkey";
             columns: ["hotel_id"];
             isOneToOne: false;
             referencedRelation: "hoteles";
@@ -1418,6 +1487,15 @@ export type Database = {
         Returns: string;
       };
       catalogo_publico: { Args: { p_hotel?: string }; Returns: Json };
+      cerrar_caja: {
+        Args: {
+          p_efectivo_contado_centavos: number;
+          p_hotel: string;
+          p_nota?: string;
+          p_turno: string;
+        };
+        Returns: Json;
+      };
       check_in: { Args: { p_reserva: string }; Returns: undefined };
       check_out: {
         Args: {
@@ -1551,6 +1629,7 @@ export type Database = {
         Args: { p_foto_path?: string; p_habitacion: string; p_nota: string };
         Returns: string;
       };
+      resumen_caja: { Args: { p_hotel: string }; Returns: Json };
       resumen_inicio: { Args: { p_hotel: string }; Returns: Json };
     };
     Enums: {
@@ -1570,7 +1649,8 @@ export type Database = {
         | "mantenimiento"
         | "cuarto_no_listo"
         | "conflicto_ical"
-        | "comprobante";
+        | "comprobante"
+        | "cierre_caja";
       tipo_movimiento:
         | "compra"
         | "limpieza"
@@ -1739,6 +1819,7 @@ export const Constants = {
         "cuarto_no_listo",
         "conflicto_ical",
         "comprobante",
+        "cierre_caja",
       ],
       tipo_movimiento: [
         "compra",
