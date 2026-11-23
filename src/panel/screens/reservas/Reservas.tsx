@@ -10,10 +10,12 @@ import { HojaNueva, type Inicio } from './HojaNueva';
 import { HojaReserva } from './HojaReserva';
 import { Huespedes } from './Huespedes';
 import { Linea } from './Linea';
-import { diaCorto, diasEntre, ESTADO_RESERVA, rangoDias, sumarDias, type EstadoReserva } from './logica';
+import { diaCorto, diasEntre, rangoDias, sumarDias, type EstadoReserva } from './logica';
 import { ChipReserva, useAhora, useAncho } from './piezas';
 
 type Pestana = 'calendario' | 'huespedes';
+type Modo = 'cuadricula' | 'dia';
+const CLAVE_MODO = 'rv-modo';
 const LEYENDA: EstadoReserva[] = ['prereserva', 'confirmada', 'en_curso', 'finalizada'];
 const OPCIONES = { movil: [14], media: [7], ancha: [7, 14], amplia: [7, 14, 30] } as const;
 
@@ -28,7 +30,23 @@ export function Reservas() {
   const [abierta, setAbierta] = useState<{ id: string; pagar?: boolean } | null>(null);
   const ahora = useAhora();
 
-  const [vista, setVista] = useState(14);
+  const [vista, setVista] = useState(7);
+  const [modo, setModo] = useState<Modo>(() => {
+    try {
+      return localStorage.getItem(CLAVE_MODO) === 'dia' ? 'dia' : 'cuadricula';
+    } catch {
+      return 'cuadricula';
+    }
+  });
+  const elegirModo = (m: Modo) => {
+    setModo(m);
+    try {
+      localStorage.setItem(CLAVE_MODO, m);
+    } catch {
+      /* sin almacenamiento: se queda la elección de esta sesión */
+    }
+  };
+  const lista = ancho === 'movil' || modo === 'dia';
   const [dir, setDir] = useState<1 | -1>(1);
   const opciones: readonly number[] = OPCIONES[ancho];
   const n = opciones.includes(vista) ? vista : opciones[opciones.length - 1];
@@ -58,7 +76,7 @@ export function Reservas() {
           <h1>Reservas</h1>
           <p className="pantalla__sub">{fechaCorta(hoy)} · se actualiza solo</p>
         </div>
-        <Boton icono="mas" onClick={() => abrirNueva({ entrada: pestana === 'calendario' && ancho === 'movil' ? dia : undefined })}>
+        <Boton icono="mas" onClick={() => abrirNueva({ entrada: pestana === 'calendario' && lista ? dia : undefined })}>
           Nueva reserva
         </Boton>
       </header>
@@ -110,6 +128,16 @@ export function Reservas() {
             <p className="rv-rango" aria-live="polite">
               {rango}
             </p>
+            {ancho !== 'movil' && (
+              <div className="rv-vista rv-modo" role="group" aria-label="Cómo ver las reservas">
+                <button type="button" className="rv-vista__op" aria-pressed={modo === 'cuadricula'} onClick={() => elegirModo('cuadricula')}>
+                  Cuadrícula
+                </button>
+                <button type="button" className="rv-vista__op" aria-pressed={modo === 'dia'} onClick={() => elegirModo('dia')}>
+                  Por día
+                </button>
+              </div>
+            )}
             {opciones.length > 1 && (
               <div className="rv-vista" role="group" aria-label="Cuántos días ver">
                 {opciones.map((o) => (
@@ -125,14 +153,6 @@ export function Reservas() {
                   <ChipReserva estado={e} />
                 </li>
               ))}
-              <li className="rv-ley-fondo">
-                <i className="rv-muestra rv-muestra--finde" aria-hidden="true" /> Fin de semana
-              </li>
-              {alta.length > 0 && (
-                <li className="rv-ley-fondo">
-                  <i className="rv-muestra rv-muestra--alta" aria-hidden="true" /> Temporada alta
-                </li>
-              )}
             </ul>
           </div>
 
@@ -143,10 +163,10 @@ export function Reservas() {
               {reservas.length === 0 && (
                 <div className="rv-vacio-cal">
                   <Icon name="calendario" />
-                  <p>No hay reservas del {rango}. {ancho === 'movil' ? 'Toca un cuarto libre para crear una.' : 'Toca un día libre de un cuarto para crear una.'}</p>
+                  <p>No hay reservas del {rango}. {lista ? 'Toca una habitación libre para crear una.' : 'Toca un día libre de una habitación para crear una.'}</p>
                 </div>
               )}
-              {ancho === 'movil' ? (
+              {lista ? (
                 <DiaLista
                   dias={dias}
                   hoy={hoy}
@@ -162,10 +182,9 @@ export function Reservas() {
               ) : (
                 <Linea dias={dias} hoy={hoy} cuartos={cuartos} reservas={reservas} pulsos={pulsos} ahora={ahora} alta={alta} dir={dir} onVacia={alCrearVacia} onAbrir={(id) => setAbierta({ id })} />
               )}
-              <p className="rv-ayuda rv-pie">
-                Cada barra empieza a la tarde del día que entra el huésped y termina a la mañana del día que sale, así se ve cuándo un cuarto queda libre para otro.{' '}
-                {ESTADO_RESERVA.prereserva}: aparta el cuarto 2 horas; cuando llega el anticipo pasa a {ESTADO_RESERVA.confirmada.toLowerCase()}.
-              </p>
+              {!(modo === 'dia' && ancho !== 'movil') && (
+                <p className="rv-ayuda rv-pie">Cada barra empieza a la tarde de la entrada y termina a la mañana de la salida.</p>
+              )}
             </>
           )}
         </>
