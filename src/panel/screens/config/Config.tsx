@@ -5,7 +5,6 @@ import { Aviso } from '../../ui/kit';
 import { Precios } from './Precios';
 import { Temporadas } from './Temporadas';
 import { Reglas } from './Reglas';
-import { Kit } from './Kit';
 import { Usuarios } from './Usuarios';
 import { PlanCuenta } from './PlanCuenta';
 import { Nfc } from './Nfc';
@@ -14,7 +13,6 @@ const SECCIONES = [
   { id: 'precios', texto: 'Precios' },
   { id: 'temporada', texto: 'Temporada alta' },
   { id: 'reglas', texto: 'Reglas del hotel' },
-  { id: 'kit', texto: 'Kit de limpieza' },
   { id: 'usuarios', texto: 'Usuarios' },
   { id: 'plan', texto: 'Plan y cuenta' },
   { id: 'nfc', texto: 'Placas NFC' },
@@ -55,7 +53,6 @@ export function Config() {
           {sec === 'precios' && <Precios irA={setSec} />}
           {sec === 'temporada' && <Temporadas />}
           {sec === 'reglas' && <Reglas />}
-          {sec === 'kit' && <Kit />}
           {sec === 'usuarios' && <Usuarios />}
           {sec === 'plan' && <PlanCuenta />}
           {sec === 'nfc' && <Nfc />}

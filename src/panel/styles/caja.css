@@ -129,6 +129,20 @@
   font-size: var(--t-sm);
 }
 
+/* Lo que salió en el turno */
+.caja-salidas {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-5) var(--s-4);
+}
+.caja-salidas__titulo {
+  font-size: var(--t-lg);
+  font-weight: 700;
+}
+.caja-salidas__txt {
+  color: var(--ink-2);
+}
+
 /* Contar */
 .caja-contar {
   display: grid;

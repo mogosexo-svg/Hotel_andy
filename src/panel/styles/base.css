@@ -152,7 +152,7 @@ body:has(.panel) {
   transition: opacity 0s, transform var(--d-3) var(--ease);
 }
 /* Presión: todos los controles tocables responden igual (transform, 150 ms) */
-:where(.btn, .icono-btn, .btn-cerrar, .filtro, .pestana, .vidrio-btn, .rv-pasos__btn, .ins-cantidad__btn, .b-link):active:not(:disabled) {
+:where(.btn, .icono-btn, .btn-cerrar, .filtro, .pestana, .vidrio-btn, .rv-pasos__btn, .ins-cantidad__btn, .stepper__btn, .b-link):active:not(:disabled) {
   transform: scale(var(--press));
 }
 .btn:disabled {
@@ -833,7 +833,7 @@ input[type='date'].input::-webkit-date-and-time-value {
     display: none;
   }
   /* Sin movimiento de presión: el fondo y el foco siguen avisando */
-  .panel :is(.btn, .icono-btn, .btn-cerrar, .filtro, .pestana, .vidrio-btn, .rv-pasos__btn, .ins-cantidad__btn, .b-link, .buscador, .campana, .rv-nav__btn):active:not(:disabled) {
+  .panel :is(.btn, .icono-btn, .btn-cerrar, .filtro, .pestana, .vidrio-btn, .rv-pasos__btn, .ins-cantidad__btn, .stepper__btn, .b-link, .buscador, .campana, .rv-nav__btn):active:not(:disabled) {
     transform: none;
   }
   .hoja--sale .hoja {

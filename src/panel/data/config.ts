@@ -5,7 +5,6 @@ import { leerMultirango, type Hotel, type Rango } from '../screens/config/logica
 
 type Canal = Database['public']['Enums']['canal_venta'];
 type Rol = Database['public']['Enums']['rol_usuario'];
-type KitPor = Database['public']['Enums']['kit_por'];
 
 /** Las llamadas de Configuración lanzan el error de la base tal cual; la pantalla lo traduce. */
 function ver<T>(r: { data: T; error: { message: string; code?: string } | null }): NonNullable<T> {
@@ -162,66 +161,6 @@ export async function guardarHotel(hotelId: string, cambio: CambioHotel, previo:
   const aBase = (c: CambioHotel) => c as Database['public']['Tables']['hoteles']['Update'];
   sinError(await supabase.from('hoteles').update(aBase(cambio)).eq('id', hotelId));
   return async () => sinError(await supabase.from('hoteles').update(aBase(previo)).eq('id', hotelId));
-}
-
-/* ───────────── Kit de limpieza ───────────── */
-export interface Insumo {
-  id: string;
-  nombre: string;
-  unidad: string;
-}
-export interface LineaKit {
-  tipoId: string;
-  productoId: string;
-  cantidad: number;
-  por: KitPor;
-}
-
-export async function cargarKit(hotelId: string) {
-  const [tipos, prods, kit] = await Promise.all([
-    cargarTipos(hotelId),
-    supabase
-      .from('productos')
-      .select('id, nombre, unidad')
-      .eq('hotel_id', hotelId)
-      .eq('activo', true)
-      .eq('se_vende', false)
-      .order('nombre'),
-    supabase.from('kit_por_tipo').select('tipo_id, producto_id, cantidad, por').eq('hotel_id', hotelId),
-  ]);
-  return {
-    tipos,
-    insumos: ver(prods) as Insumo[],
-    kit: ver(kit).map<LineaKit>((k) => ({
-      tipoId: k.tipo_id,
-      productoId: k.producto_id,
-      cantidad: Number(k.cantidad),
-      por: k.por,
-    })),
-  };
-}
-
-export async function guardarKit(hotelId: string, linea: LineaKit, previa: LineaKit | undefined): Promise<() => Promise<void>> {
-  sinError(
-    await supabase.from('kit_por_tipo').upsert(
-      {
-        hotel_id: hotelId,
-        tipo_id: linea.tipoId,
-        producto_id: linea.productoId,
-        cantidad: linea.cantidad,
-        por: linea.por,
-      },
-      { onConflict: 'tipo_id,producto_id' },
-    ),
-  );
-  return async () => {
-    if (previa) await guardarKit(hotelId, previa, undefined);
-    else await quitarKit(linea);
-  };
-}
-
-export async function quitarKit(l: Pick<LineaKit, 'tipoId' | 'productoId'>) {
-  sinError(await supabase.from('kit_por_tipo').delete().eq('tipo_id', l.tipoId).eq('producto_id', l.productoId));
 }
 
 /* ───────────── Usuarios ───────────── */

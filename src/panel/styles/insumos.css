@@ -22,9 +22,6 @@
   font-size: var(--t-sm);
   white-space: nowrap;
 }
-.ins-acciones-cab > :first-child {
-  grid-column: 1 / -1;
-}
 .filtro--accion {
   border-style: dashed;
   color: var(--brand);
@@ -32,7 +29,7 @@
 .ins-tabs {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0;
   padding: var(--s-1);
   border: 1px solid var(--line);
@@ -41,14 +38,14 @@
   overflow-x: auto;
   scrollbar-width: none;
 }
-/* Indicador que se desliza de pestaña en pestaña (3 pestañas iguales) */
+/* Indicador que se desliza de pestaña en pestaña (2 pestañas iguales) */
 .ins-tabs::before {
   content: '';
   position: absolute;
   top: var(--s-1);
   bottom: var(--s-1);
   left: var(--s-1);
-  width: calc((100% - 2 * var(--s-1)) / 3);
+  width: calc((100% - 2 * var(--s-1)) / 2);
   border-radius: var(--r-sm);
   background: var(--surface);
   box-shadow: var(--shadow-1), 0 0 0 1px var(--line);
@@ -56,9 +53,6 @@
 }
 .ins-tabs:has(.ins-tab:nth-child(2)[aria-selected='true'])::before {
   transform: translateX(100%);
-}
-.ins-tabs:has(.ins-tab:nth-child(3)[aria-selected='true'])::before {
-  transform: translateX(200%);
 }
 .ins-tab {
   position: relative;
@@ -87,7 +81,7 @@
     padding: 0 var(--s-5);
   }
   .ins-tabs {
-    max-width: 30rem;
+    max-width: 24rem;
   }
 }
 
@@ -114,19 +108,49 @@
 }
 .insumo__abrir {
   display: grid;
-  gap: var(--s-2);
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: 'nombre quedan' 'chip chip';
+  align-items: center;
+  gap: var(--s-2) var(--s-4);
   width: 100%;
+  min-height: 4.5rem;
   padding: 0;
   border: 0;
   background: none;
   text-align: left;
   color: inherit;
 }
-.insumo__abrir .insumo__cab {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--s-1) var(--s-3);
-  flex-wrap: wrap;
+.insumo__abrir .insumo__nombre {
+  grid-area: nombre;
+  font-size: var(--t-lg);
+  font-weight: 700;
+  line-height: 1.2;
+}
+.insumo__abrir .quedan {
+  grid-area: quedan;
+  justify-self: end;
+}
+.insumo__abrir .chip {
+  grid-area: chip;
+  justify-self: start;
+}
+/* "Quedan 12 rollos": el número manda */
+.quedan {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  color: var(--ink-2);
+  font-weight: 650;
+  white-space: nowrap;
+}
+.quedan__n {
+  color: var(--ink);
+  font-size: var(--t-2xl);
+  font-weight: 800;
+  line-height: 1;
+}
+.quedan--nada {
+  color: var(--ink-3);
 }
 .insumo--apagado {
   opacity: 0.72;
@@ -897,4 +921,152 @@ p.ins-alerta .ico {
   .ins-tabla .ins-ayuda {
     display: inline;
   }
+}
+
+/* ---------- Hoja de producto: dos botones enormes ---------- */
+.ins-grandes {
+  display: grid;
+  gap: var(--s-3);
+}
+@media (min-width: 700px) {
+  .ins-grandes:has(> :nth-child(2):not(.btn--ghost)) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.ins-enlaces {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s-2) var(--s-4);
+}
+.ins-paso {
+  animation: aparece var(--d-2) var(--ease);
+}
+.ins-movs summary,
+.ins-mas summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--touch);
+  color: var(--brand);
+  font-weight: 650;
+  cursor: pointer;
+  list-style: none;
+}
+.ins-movs summary::-webkit-details-marker,
+.ins-mas summary::-webkit-details-marker {
+  display: none;
+}
+.ins-movs summary .ico,
+.ins-mas summary .ico {
+  transition: transform var(--d-2) var(--ease);
+}
+.ins-movs[open] summary .ico,
+.ins-mas[open] summary .ico {
+  transform: rotate(90deg);
+}
+.ins-mas[open] > .ins-form {
+  padding-top: var(--s-2);
+}
+
+/* ---------- Cantidad con − y + ---------- */
+.stepper {
+  display: grid;
+  grid-template-columns: var(--touch) minmax(3.5rem, 1fr) var(--touch);
+  gap: var(--s-2);
+  min-width: 11rem;
+}
+.stepper .stepper__n {
+  min-width: 0;
+  padding: 0 var(--s-1);
+  text-align: center;
+  font-size: var(--t-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.stepper__btn {
+  min-height: var(--h-btn);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-btn);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1;
+  transition: background-color var(--d-1) var(--ease), transform var(--d-1) var(--ease);
+}
+.stepper__btn:hover:not(:disabled) {
+  background: var(--brand-soft);
+  border-color: var(--brand);
+}
+.stepper__btn:disabled {
+  opacity: 0.45;
+}
+.stepper--grande {
+  grid-template-columns: var(--h-btn-grande) 1fr var(--h-btn-grande);
+  min-width: 0;
+}
+.stepper--grande .stepper__btn,
+.stepper--grande .stepper__n {
+  min-height: var(--h-btn-grande);
+}
+.stepper--grande .stepper__n {
+  font-size: var(--t-2xl);
+}
+
+/* ---------- Lo que salió en el turno (hoja de Caja) ---------- */
+.ins-opciones--2 {
+  grid-template-columns: 1fr 1fr;
+}
+.sal-sec {
+  display: grid;
+  gap: var(--s-3);
+}
+.sal-lista {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sal-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+.sal-fila__txt {
+  display: grid;
+  min-width: 0;
+}
+.sal-fila .stepper {
+  flex: none;
+  min-width: 0;
+  grid-template-columns: var(--touch) 3.25rem var(--touch);
+}
+.sal-pie {
+  position: sticky;
+  bottom: calc(-1 * var(--s-5));
+  display: grid;
+  gap: var(--s-3);
+  margin: 0 calc(-1 * var(--s-2));
+  padding: var(--s-3) var(--s-2) var(--s-2);
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+}
+.sal-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 650;
+  color: var(--ink-2);
+}
+.sal-total strong {
+  color: var(--ink);
+  font-size: var(--t-xl);
+  font-variant-numeric: tabular-nums;
 }

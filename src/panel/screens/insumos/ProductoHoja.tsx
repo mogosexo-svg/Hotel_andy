@@ -1,147 +1,161 @@
 import { useEffect, useState } from 'react';
-import { Boton, BarraStock, Skeleton } from '../../ui/kit';
+import { Boton, Skeleton } from '../../ui/kit';
 import { Icon } from '../../ui/Icon';
-import { listarMovimientos, urlFirmada, type InsumosApi, type Movimiento, type Prod, type TipoAjuste } from '../../data/insumos';
-import { HojaEstable, Campo, Opciones } from './piezas';
-import { parseCantidad } from './logica';
+import { listarMovimientos, urlFirmada, type InsumosApi, type Movimiento, type Prod } from '../../data/insumos';
+import { ChipStock, HojaEstable, Quedan, Stepper } from './piezas';
 import { dinero, hace, numero, unidadPlural } from '../../lib/format';
 
-const AJUSTES: { id: TipoAjuste; texto: string; etiqueta: string; ayuda: string }[] = [
-  { id: 'conteo', texto: 'Conté', etiqueta: 'Cuánto hay ahora', ayuda: 'Lo que contaste con tus manos. Reemplaza lo que decía el sistema.' },
-  { id: 'merma', texto: 'Se perdió', etiqueta: 'Cuánto se perdió', ayuda: 'Roto, vencido o dañado. Se resta del stock.' },
-  { id: 'compra', texto: 'Compré', etiqueta: 'Cuánto entró', ayuda: 'Compra suelta, sin factura. Se suma al stock.' },
-];
 const TIPO_PALABRA: Record<Movimiento['tipo'], string> = {
-  compra: 'Compra',
-  limpieza: 'Limpieza',
-  venta: 'Venta',
+  compra: 'Llegó',
+  limpieza: 'Limpieza (antes)',
+  venta: 'Se vendió',
   merma: 'Se perdió',
-  conteo: 'Conteo',
+  conteo: 'Corregido',
   anulacion: 'Factura anulada',
-  consumo_diario: 'Consumo del día',
-  uso: 'Usado en el turno',
+  consumo_diario: 'Consumo del día (antes)',
+  uso: 'Se usó',
+};
+
+type Modo = 'llego' | 'uso' | 'contar';
+const MODOS: Record<Modo, { titulo: string; pregunta: string; boton: string }> = {
+  llego: { titulo: 'Llegó', pregunta: '¿Cuántos llegaron?', boton: 'Guardar lo que llegó' },
+  uso: { titulo: 'Se usó', pregunta: '¿Cuántos se usaron?', boton: 'Guardar lo que se usó' },
+  contar: { titulo: 'Corregir cantidad', pregunta: '¿Cuántos hay ahora, contados?', boton: 'Guardar la cantidad' },
 };
 
 interface Props {
   api: InsumosApi;
   producto: Prod;
-  /** Abre la hoja con el modo "Contar" ya elegido. */
-  contar?: boolean;
-  puedeAjustar: boolean;
   onEditar: () => void;
-  onVender: () => void;
   onCerrar: () => void;
 }
 
-/** Un producto: cuánto hay, ajuste de stock (RF-29) e historial de movimientos. */
-export function ProductoHoja({ api, producto: p, contar, puedeAjustar, onEditar, onVender, onCerrar }: Props) {
-  const [tipo, setTipo] = useState<TipoAjuste>('conteo');
-  const [cantidad, setCantidad] = useState('');
-  const [nota, setNota] = useState('');
+/** Un producto: cuánto queda y dos botones grandes, "Llegó" y "Se usó". Lo demás va abajo, más chico. */
+export function ProductoHoja({ api, producto: p, onEditar, onCerrar }: Props) {
+  const [modo, setModo] = useState<Modo | null>(null);
+  const [cantidad, setCantidad] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [mov, setMov] = useState<Movimiento[] | null | 'error'>(null);
+  const [verMov, setVerMov] = useState(false);
   const [foto, setFoto] = useState<string | null>(null);
-  const [verAjuste, setVerAjuste] = useState(!!contar);
-  const { nivel, pct, frase } = p.nivel;
-  const alerta = api.alertas.find((a) => a.productoId === p.id);
-  const ajuste = AJUSTES.find((a) => a.id === tipo) ?? AJUSTES[0];
 
   useEffect(() => {
+    if (!verMov) return;
     let vivo = true;
     void listarMovimientos(p.id).then((m) => vivo && setMov(m ?? 'error'));
     return () => {
       vivo = false;
     };
-  }, [p.id, p.stock]);
+  }, [p.id, p.stock, verMov]);
   useEffect(() => {
     if (p.foto) void urlFirmada(p.foto).then(setFoto);
   }, [p.foto]);
 
+  function elegir(m: Modo) {
+    setModo(m);
+    setCantidad(m === 'contar' ? (p.stock ?? 0) : 1);
+    setError(null);
+  }
+
   async function guardar() {
-    const n = parseCantidad(cantidad);
-    if (n == null) return setError('Escribe un número. Ejemplo: 12 o 0,5');
-    if (tipo !== 'conteo' && n <= 0) return setError('La cantidad tiene que ser mayor que cero.');
+    if (!modo) return;
+    if (modo !== 'contar' && cantidad <= 0) return setError('Pon cuántos son: uno o más.');
     setError(null);
     setGuardando(true);
-    const nuevo = await api.ajustar(p, tipo, n, nota.trim() || null);
-    setGuardando(false);
-    if (nuevo != null) {
-      setCantidad('');
-      setNota('');
-      setVerAjuste(false);
+    let ok: boolean;
+    if (modo === 'uso') {
+      const r = await api.registrarSalidas([{ producto_id: p.id, cantidad }]);
+      ok = r.ok;
+      if (!r.ok) setError(r.mensaje);
+    } else {
+      ok = (await api.ajustar(p, modo === 'llego' ? 'compra' : 'conteo', cantidad, null)) != null;
     }
+    setGuardando(false);
+    if (ok) setModo(null);
   }
+
+  const unidad = (n: number) => unidadPlural(p.unidad, n);
 
   return (
     <HojaEstable titulo={p.nombre} onCerrar={onCerrar}>
       <div className="ins-detalle">
         {foto && <img className="ins-detalle__foto" src={foto} alt={`Foto de ${p.nombre}`} />}
         <div className="ins-stock">
-          <p className="ins-stock__cifra">
-            {p.stock == null ? <span className="ins-stock__nada">Sin contar</span> : <><span className="num">{numero(p.stock)}</span> <span className="ins-stock__u">{unidadPlural(p.unidad, p.stock)}</span></>}
-          </p>
-          <BarraStock nivel={nivel} pct={pct} />
-          <p className={`insumo__frase n-${nivel}`}>{alerta && nivel !== 'sin_contar' ? alerta.mensaje : frase}</p>
+          <Quedan stock={p.stock} unidad={p.unidad} />
+          <div>
+            <ChipStock nivel={p.nivel.nivel} />
+          </div>
           <p className="ins-ayuda">
             {p.minimo != null ? `Avisamos cuando queden ${numero(p.minimo)} o menos.` : 'Sin mínimo: no avisamos.'}
             {p.seVende && p.venta != null && ` Se vende a ${dinero(p.venta)}.`}
           </p>
         </div>
 
-        {puedeAjustar && !verAjuste && (
-          <div className="ins-acciones">
-            <Boton block onClick={() => setVerAjuste(true)} icono="editar">
-              {p.stock == null ? 'Contar ahora' : 'Contar o ajustar'}
-            </Boton>
-            {p.seVende && (
-              <Boton variante="quiet" block onClick={onVender} icono="dinero">
-                Vender
+        {!modo ? (
+          <>
+            <div className="ins-grandes">
+              <Boton huge block icono="llega" onClick={() => elegir('llego')}>
+                Llegó
               </Boton>
-            )}
-            <Boton variante="quiet" block onClick={onEditar}>
-              Editar producto
-            </Boton>
-          </div>
-        )}
-
-        {puedeAjustar && verAjuste && (
+              <Boton huge block variante="quiet" icono="sale" onClick={() => elegir('uso')}>
+                Se usó
+              </Boton>
+            </div>
+            <div className="ins-enlaces">
+              <Boton variante="ghost" onClick={() => elegir('contar')}>
+                Corregir cantidad
+              </Boton>
+              <Boton variante="ghost" onClick={onEditar}>
+                Editar producto
+              </Boton>
+            </div>
+          </>
+        ) : (
           <form
-            className="ins-form ins-ajuste"
+            className="ins-form ins-paso"
             onSubmit={(e) => {
               e.preventDefault();
               void guardar();
             }}
           >
-            <Opciones nombre="Qué pasó" valor={tipo} opciones={AJUSTES} onChange={setTipo} />
-            <Campo etiqueta={ajuste.etiqueta} ayuda={ajuste.ayuda} error={error}>
-              {(id) => <input id={id} className="input" inputMode="decimal" autoFocus autoComplete="off" value={cantidad} onChange={(e) => setCantidad(e.target.value)} placeholder={`En ${p.unidad}. Ej.: 12 o 0,5`} />}
-            </Campo>
-            <Campo etiqueta="Nota (opcional)">{(id) => <input id={id} className="input" value={nota} onChange={(e) => setNota(e.target.value)} placeholder="Ej.: Conteo del domingo" />}</Campo>
-            <div className="ins-acciones ins-acciones--fila">
-              <Boton variante="quiet" onClick={() => setVerAjuste(false)}>
-                Cancelar
+            <h3 className="ins-sub">{MODOS[modo].titulo}</h3>
+            <div className="campo">
+              <span className="campo__etiqueta">
+                {MODOS[modo].pregunta} <span className="ins-ayuda">({unidad(2)})</span>
+              </span>
+              <Stepper grande valor={cantidad} onChange={setCantidad} etiqueta={p.nombre} />
+            </div>
+            {error && (
+              <p className="campo__error" role="alert">
+                {error}
+              </p>
+            )}
+            <div className="ins-grandes">
+              <Boton type="submit" huge block cargando={guardando}>
+                {MODOS[modo].boton}
               </Boton>
-              <Boton type="submit" cargando={guardando}>
-                Guardar
+              <Boton variante="ghost" block onClick={() => setModo(null)}>
+                Atrás
               </Boton>
             </div>
           </form>
         )}
 
-        <section aria-labelledby="ins-hist">
-          <h3 id="ins-hist" className="ins-sub">
-            Qué ha pasado con este producto
-          </h3>
+        <details className="ins-movs" onToggle={(e) => setVerMov(e.currentTarget.open)}>
+          <summary>
+            Ver movimientos
+            <Icon name="siguiente" size="sm" />
+          </summary>
           {mov === null ? (
             <div className="pila" aria-busy="true">
               <Skeleton h="3rem" />
               <Skeleton h="3rem" />
             </div>
           ) : mov === 'error' ? (
-            <p className="ins-ayuda">No pudimos traer el historial. Cierra y vuelve a abrir.</p>
+            <p className="ins-ayuda">No pudimos traer los movimientos. Cierra y vuelve a abrir.</p>
           ) : mov.length === 0 ? (
-            <p className="ins-ayuda">Todavía no hay movimientos. Cuenta el producto para empezar.</p>
+            <p className="ins-ayuda">Todavía no hay movimientos.</p>
           ) : (
             <ul className="ins-hist">
               {mov.map((m) => (
@@ -159,7 +173,7 @@ export function ProductoHoja({ api, producto: p, contar, puedeAjustar, onEditar,
               ))}
             </ul>
           )}
-        </section>
+        </details>
       </div>
     </HojaEstable>
   );

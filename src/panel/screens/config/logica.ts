@@ -319,19 +319,6 @@ export function mostrarCampo(c: CampoRegla, v: Valor): string {
   }
 }
 
-/* ───────────── Kit de limpieza ───────────── */
-
-export const POR_PALABRA = {
-  limpieza: 'por cada limpieza',
-  persona: 'por cada persona',
-} as const;
-
-export function parsearCantidad(texto: string): Resultado<number> {
-  const m = /^(\d{1,3})(?:[.,](\d{1,2}))?$/.exec(texto.trim());
-  const n = m ? Number(`${m[1]}.${m[2] ?? '0'}`) : NaN;
-  return n > 0 && n <= 999 ? ok(n) : mal('Escribe una cantidad mayor que cero, por ejemplo 2 o 0,5.');
-}
-
 /* ───────────── Plan y cuenta ───────────── */
 
 export const PLANES = {

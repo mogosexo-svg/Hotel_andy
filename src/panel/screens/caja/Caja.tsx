@@ -6,6 +6,7 @@ import { dinero, fechaCorta, hoyEC } from '../../lib/format';
 import { Aviso, Boton, ErrorCarga, Hoja, Skeleton } from '../../ui/kit';
 import { Icon } from '../../ui/Icon';
 import { useToast } from '../../ui/Toast';
+import { Salidas } from './Salidas';
 import { montoEditable } from '../comprobantes/logica';
 import { desdeTexto, enlaceWhatsApp, estadoDiferencia, nombreTurno, quienCerro, tituloTurno, trozosMensaje, type EstadoCaja } from './logica';
 
@@ -93,6 +94,7 @@ export function Caja() {
         key={`${resumen.fecha}-${resumen.turno}`}
         resumen={resumen}
         hotelId={hotelId}
+        onSalidas={refrescar}
         onCerrado={(c) => {
           setHecho(c);
           refrescar();
@@ -161,11 +163,13 @@ export function Caja() {
   );
 }
 
-function Contar({ resumen, hotelId, onCerrado }: { resumen: ResumenCaja; hotelId: string; onCerrado: (c: Cierre) => void }) {
+function Contar({ resumen, hotelId, onCerrado, onSalidas }: { resumen: ResumenCaja; hotelId: string; onCerrado: (c: Cierre) => void; onSalidas: () => void }) {
   const [texto, setTexto] = useState('');
   const [nota, setNota] = useState('');
   const [error, setError] = useState('');
   const [enviando, setEnviando] = useState(false);
+  const [salidas, setSalidas] = useState(false);
+  const nSalidas = resumen.salidas_registradas ?? 0;
   const contado = montoEditable(texto);
   const raro = texto.trim() !== '' && contado === null;
 
@@ -221,6 +225,15 @@ function Contar({ resumen, hotelId, onCerrado }: { resumen: ResumenCaja; hotelId
           )}
         </details>
       </article>
+
+      <article className="card caja-salidas">
+        <h2 className="caja-salidas__titulo">Lo que salió en este turno</h2>
+        <p className="caja-salidas__txt">{nSalidas === 0 ? 'Antes de cerrar, anota lo que se vendió y lo que se usó.' : `Anotaste ${nSalidas} ${nSalidas === 1 ? 'salida' : 'salidas'}.`}</p>
+        <Boton variante={nSalidas === 0 ? 'primary' : 'quiet'} block icono={nSalidas === 0 ? 'inventario' : 'mas'} onClick={() => setSalidas(true)}>
+          {nSalidas === 0 ? 'Anotar salidas' : 'Anotar más'}
+        </Boton>
+      </article>
+      {salidas && <Salidas onCerrar={() => setSalidas(false)} onGuardado={onSalidas} />}
 
       <form
         className="card caja-contar"

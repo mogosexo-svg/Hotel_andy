@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { desdeTexto, enlaceWhatsApp, estadoDiferencia, quienCerro, tituloTurno, trozosMensaje } from './logica';
+import { armarSalidas, desdeTexto, enlaceWhatsApp, estadoDiferencia, quienCerro, totalVentas, tituloTurno, trozosMensaje } from './logica';
 
 describe('estadoDiferencia', () => {
   it('cero cuadra', () => expect(estadoDiferencia(0)).toMatchObject({ estado: 'cuadra', texto: 'Cuadra' }));
@@ -24,5 +24,28 @@ describe('textos', () => {
   it('quién cerró', () => {
     expect(quienCerro('Caja: ok\nCerró: Ana Mero\nNota: x')).toBe('Ana Mero');
     expect(quienCerro('sin dato')).toBeNull();
+  });
+});
+
+describe('salidas del turno', () => {
+  const prods = [
+    { id: 'agua', seVende: true, venta: 100 },
+    { id: 'cerveza', seVende: true, venta: 250 },
+    { id: 'jabon', seVende: false, venta: null },
+    { id: 'sinprecio', seVende: true, venta: null },
+  ];
+  const cant = { agua: 3, cerveza: 0, jabon: 2, sinprecio: 1, fantasma: 5 };
+  it('arma solo cantidad > 0; ventas con medio, usos sin medio', () => {
+    expect(armarSalidas(cant, prods, 'transferencia')).toEqual([
+      { producto_id: 'agua', cantidad: 3, medio: 'transferencia' },
+      { producto_id: 'jabon', cantidad: 2 },
+      { producto_id: 'sinprecio', cantidad: 1 },
+    ]);
+  });
+  it('sin cantidades no arma nada', () => expect(armarSalidas({}, prods, 'efectivo')).toEqual([]));
+  it('total en vivo solo cuenta lo que se vende', () => {
+    expect(totalVentas(cant, prods)).toBe(300);
+    expect(totalVentas({ cerveza: 1.5 }, prods)).toBe(375);
+    expect(totalVentas({}, prods)).toBe(0);
   });
 });

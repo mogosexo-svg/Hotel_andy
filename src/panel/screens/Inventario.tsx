@@ -1,38 +1,30 @@
 import { useEffect, useMemo, useState } from 'react';
 import '../styles/insumos.css';
-import { tomarAccionInsumos, useInsumos, type AlertaStock, type Prod } from '../data/insumos';
-import { numero, sinEmoji } from '../lib/format';
+import { tomarAccionInsumos, useInsumos, type Prod } from '../data/insumos';
 import { esBajo } from '../lib/stock';
-import { Aviso, BarraStock, Boton, ErrorCarga, Skeleton } from '../ui/kit';
+import { Aviso, Boton, ErrorCarga, Skeleton } from '../ui/kit';
 import { Icon, IconoCat } from '../ui/Icon';
 import { coincide } from './insumos/logica';
 import { Categorias } from './insumos/Categorias';
 import { CargarFactura } from './insumos/CargarFactura';
-import { CuadreDia } from './insumos/Cuadre';
 import { Facturas } from './insumos/Facturas';
+import { ChipStock, Quedan } from './insumos/piezas';
 import { ProductoForm } from './insumos/ProductoForm';
 import { ProductoHoja } from './insumos/ProductoHoja';
 import { Venta } from './insumos/Venta';
 
 type Filtro = 'todo' | 'bajos' | 'inactivos' | string;
-type Pestana = 'insumos' | 'facturas' | 'cuadre';
-
-/** Alerta de la base "Se está acabando Cloro: quedan 4 kg (…)" → "Quedan 4 kg (…)": el grupo ya dice que se está acabando; también se quita cualquier emoji. */
-function textoAlerta(a: AlertaStock): string {
-  const t = sinEmoji(a.mensaje).replace(/^[^\p{L}\p{N}]+/u, '');
-  const resto = t.includes(': ') ? t.slice(t.indexOf(': ') + 2) : t;
-  return resto.charAt(0).toUpperCase() + resto.slice(1);
-}
+type Pestana = 'insumos' | 'compras';
 
 export function Inventario() {
   const api = useInsumos();
-  const { prods, cats, alertas } = api;
+  const { prods, cats } = api;
   const [pestana, setPestana] = useState<Pestana>('insumos');
   const [filtro, setFiltro] = useState<Filtro>('todo');
   const [q, setQ] = useState('');
   const [factura, setFactura] = useState<{ inicial: string | null } | null>(null);
   const [proveedores, setProveedores] = useState<string[]>([]);
-  const [abierto, setAbierto] = useState<{ id: string; contar: boolean } | null>(null);
+  const [abierto, setAbierto] = useState<string | null>(null);
   const [form, setForm] = useState<{ producto?: Prod } | null>(null);
   const [verCats, setVerCats] = useState(false);
   const [venta, setVenta] = useState<{ inicial: string | null } | null>(null);
@@ -52,7 +44,6 @@ export function Inventario() {
 
   const activos = useMemo(() => (prods ?? []).filter((p) => p.activo), [prods]);
   const inactivos = useMemo(() => (prods ?? []).filter((p) => !p.activo), [prods]);
-  const alertaDe = useMemo(() => new Map<string, AlertaStock>(alertas.map((a) => [a.productoId, a])), [alertas]);
   const bajos = useMemo(() => activos.filter((p) => esBajo(p.nivel.nivel)), [activos]);
   const bajosPorCat = useMemo(() => {
     const m = new Map<string, number>();
@@ -72,7 +63,7 @@ export function Inventario() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activos, inactivos, cats, filtro, q]);
 
-  const abrirProd = prods?.find((p) => p.id === abierto?.id);
+  const abrirProd = prods?.find((p) => p.id === abierto);
   const sinContar = activos.filter((p) => p.nivel.nivel === 'sin_contar').length;
 
   if (factura)
@@ -84,21 +75,12 @@ export function Inventario() {
         onCancelar={() => setFactura(null)}
         onListo={() => {
           setFactura(null);
-          setPestana('facturas');
+          setPestana('compras');
         }}
       />
     );
 
-  const fila = (p: Prod, enAlerta = false) => (
-    <Fila
-      key={p.id}
-      p={p}
-      aviso={enAlerta ? alertaDe.get(p.id) : undefined}
-      onAbrir={(contar) => setAbierto({ id: p.id, contar })}
-      onComprar={() => setFactura({ inicial: p.id })}
-      onReactivar={() => void api.activar(p, true)}
-    />
-  );
+  const fila = (p: Prod) => <Fila key={p.id} p={p} onAbrir={() => setAbierto(p.id)} onReactivar={() => void api.activar(p, true)} />;
 
   return (
     <section className="pantalla">
@@ -118,23 +100,19 @@ export function Inventario() {
       </header>
 
       <div className="ins-acciones-cab">
-        <Boton icono="factura" onClick={() => setFactura({ inicial: null })}>
-          Cargar compra
+        <Boton icono="mas" onClick={() => setForm({})}>
+          Nuevo producto
         </Boton>
         <Boton variante="quiet" icono="dinero" onClick={() => setVenta({ inicial: null })}>
           Vender
-        </Boton>
-        <Boton variante="quiet" icono="mas" onClick={() => setForm({})}>
-          Nuevo producto
         </Boton>
       </div>
 
       <div className="ins-tabs" role="tablist" aria-label="Qué quieres ver">
         {(
           [
-            ['insumos', 'Insumos'],
-            ['facturas', 'Facturas'],
-            ['cuadre', 'Cuadre del día'],
+            ['insumos', 'Inventario'],
+            ['compras', 'Compras'],
           ] as [Pestana, string][]
         ).map(([id, texto]) => (
           <button key={id} type="button" role="tab" aria-selected={pestana === id} className="ins-tab" onClick={() => setPestana(id)}>
@@ -143,8 +121,14 @@ export function Inventario() {
         ))}
       </div>
 
-      {pestana === 'facturas' && <Facturas api={api} onNueva={() => setFactura({ inicial: null })} onProveedores={setProveedores} />}
-      {pestana === 'cuadre' && <CuadreDia api={api} onVender={() => setVenta({ inicial: null })} />}
+      {pestana === 'compras' && (
+        <>
+          <Boton icono="factura" onClick={() => setFactura({ inicial: null })}>
+            Cargar compra
+          </Boton>
+          <Facturas api={api} onNueva={() => setFactura({ inicial: null })} onProveedores={setProveedores} />
+        </>
+      )}
 
       {pestana === 'insumos' &&
         (api.error ? (
@@ -191,15 +175,6 @@ export function Inventario() {
               )}
             </div>
 
-            {filtro === 'todo' && !buscando && bajos.length > 0 && (
-              <div className="grupo grupo--alerta">
-                <h2 className="grupo__titulo">
-                  <Icon name="alerta" /> Se está acabando
-                </h2>
-                <ul className="insumos">{bajos.map((p) => fila(p, true))}</ul>
-              </div>
-            )}
-
             {grupos.length === 0 ? (
               <Aviso
                 icono="buscar"
@@ -234,16 +209,10 @@ export function Inventario() {
         <ProductoHoja
           api={api}
           producto={abrirProd}
-          contar={abierto?.contar}
-          puedeAjustar
           onCerrar={() => setAbierto(null)}
           onEditar={() => {
             setAbierto(null);
             setForm({ producto: abrirProd });
-          }}
-          onVender={() => {
-            setAbierto(null);
-            setVenta({ inicial: abrirProd.id });
           }}
         />
       )}
@@ -264,35 +233,20 @@ export function Inventario() {
   );
 }
 
-function Fila({ p, aviso, onAbrir, onComprar, onReactivar }: { p: Prod; aviso?: AlertaStock; onAbrir: (contar: boolean) => void; onComprar: () => void; onReactivar: () => void }) {
-  const { nivel, pct, frase } = p.nivel;
-  const bajo = esBajo(nivel);
+function Fila({ p, onAbrir, onReactivar }: { p: Prod; onAbrir: () => void; onReactivar: () => void }) {
+  const { nivel } = p.nivel;
   return (
     <li className={`insumo ${!p.activo ? 'insumo--apagado' : ''}`}>
-      <button type="button" className="insumo__abrir" onClick={() => onAbrir(false)} aria-label={`${p.nombre}: ${frase}. Abrir`}>
-        <span className="insumo__cab">
-          <span className="insumo__nombre">{p.nombre}</span>
-          <span className={`insumo__frase n-${nivel}`}>{aviso ? textoAlerta(aviso) : frase}</span>
-        </span>
-        <BarraStock nivel={nivel} pct={pct} />
-        <span className="insumo__pie">
-          {nivel === 'sin_contar' ? 'Nadie ha contado este producto todavía' : p.minimo != null ? `Mínimo ${numero(p.minimo)}` : 'Sin mínimo'}
-          {p.seVende && ' · Se vende'}
-        </span>
+      <button type="button" className="insumo__abrir" onClick={onAbrir} aria-label={`${p.nombre}: ${p.nivel.frase}. Abrir`}>
+        <span className="insumo__nombre">{p.nombre}</span>
+        <Quedan stock={p.stock} unidad={p.unidad} />
+        <ChipStock nivel={nivel} />
       </button>
-      {!p.activo ? (
+      {!p.activo && (
         <Boton variante="quiet" onClick={onReactivar}>
           Volver a la lista
         </Boton>
-      ) : bajo ? (
-        <Boton variante="quiet" icono="factura" onClick={onComprar}>
-          Cargar compra
-        </Boton>
-      ) : nivel === 'sin_contar' ? (
-        <Boton variante="quiet" onClick={() => onAbrir(true)}>
-          Contar ahora
-        </Boton>
-      ) : null}
+      )}
     </li>
   );
 }

@@ -22,6 +22,8 @@ export interface ResumenCaja {
   transferencia_centavos: number;
   total_centavos: number;
   movimientos: Movimiento[];
+  /** Usos y ventas anotados desde el último cierre. */
+  salidas_registradas?: number;
 }
 export type AlertaCaja = { id: string; mensaje: string; caja_turno: string | null };
 

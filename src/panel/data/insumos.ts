@@ -10,6 +10,10 @@ import { numero, unidadPlural } from '../lib/format';
 export type TipoAjuste = Extract<Database['public']['Enums']['tipo_movimiento'], 'conteo' | 'merma' | 'compra'>;
 export type Medio = Database['public']['Enums']['medio_pago'];
 
+/** Un renglón de `registrar_salidas_turno`: con `medio` es venta pagada; sin él, uso. */
+export type ItemSalida = { producto_id: string; cantidad: number; medio?: Medio };
+export type ResultadoSalidas = { ok: true; ventas: number } | { ok: false; mensaje: string };
+
 export interface Cat {
   id: string;
   nombre: string;
@@ -441,6 +445,14 @@ export function useInsumos() {
       return true;
     }
 
+    /** Lo que se usó y se vendió en el turno. Todo o nada: si la base rechaza algo, no se guarda nada. */
+    async function registrarSalidas(items: ItemSalida[]): Promise<ResultadoSalidas> {
+      const { data, error: e } = await supabase.rpc('registrar_salidas_turno', { p_hotel: hotelId, p_items: items });
+      if (e) return { ok: false, mensaje: mensajeError(e) };
+      void cargar();
+      return { ok: true, ventas: (data as unknown as { ventas_centavos?: number } | null)?.ventas_centavos ?? 0 };
+    }
+
     async function cuadre(fecha: string): Promise<Cuadre | null> {
       const { data, error: e } = await supabase.rpc('cuadre_dia', { p_hotel: hotelId, p_fecha: fecha });
       return e ? (fallo(e), null) : (data as unknown as Cuadre);
@@ -461,6 +473,7 @@ export function useInsumos() {
       anularFactura,
       registrarConsumo,
       anularConsumo,
+      registrarSalidas,
       cuadre,
     };
   }, [hotelId, toast, cargar]);

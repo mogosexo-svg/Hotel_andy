@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { Hoja } from '../../ui/kit';
 import { Icon } from '../../ui/Icon';
+import type { NivelStock } from '../../lib/stock';
 import type { Prod } from '../../data/insumos';
-import { coincide } from './logica';
+import { cantidadATexto, coincide, parseCantidad } from './logica';
 import { numero, unidadPlural } from '../../lib/format';
 
 /** `Hoja` del kit vuelve a enfocar si cambia `onCerrar`: este envoltorio le da siempre la misma función. */
@@ -153,5 +154,68 @@ export function BuscadorProducto({ prods, valor, onElegir, onLimpiar, excluir, s
         </ul>
       )}
     </div>
+  );
+}
+
+/** Cantidad con − y +: uno a uno, o escribiendo (acepta 0,5). Nunca baja de cero. */
+export function Stepper({ valor, onChange, etiqueta, grande }: { valor: number; onChange: (n: number) => void; etiqueta: string; grande?: boolean }) {
+  const [txt, setTxt] = useState(valor ? cantidadATexto(valor) : '0');
+  // Si el valor cambia desde fuera (los botones), el texto lo sigue; mientras se teclea no se pisa.
+  useEffect(() => {
+    if ((parseCantidad(txt) ?? 0) !== valor) setTxt(cantidadATexto(valor) || '0');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [valor]);
+  const mover = (d: number) => onChange(Math.max(0, Math.round((d > 0 ? Math.floor(valor) + 1 : Math.ceil(valor) - 1) * 1000) / 1000));
+  return (
+    <div className={`stepper ${grande ? 'stepper--grande' : ''}`}>
+      <button type="button" className="stepper__btn" aria-label={`Uno menos de ${etiqueta}`} disabled={valor <= 0} onClick={() => mover(-1)}>
+        −
+      </button>
+      <input
+        className="input stepper__n"
+        inputMode="decimal"
+        autoComplete="off"
+        aria-label={`Cantidad de ${etiqueta}`}
+        value={txt}
+        onFocus={(e) => e.target.select()}
+        onChange={(e) => {
+          setTxt(e.target.value);
+          onChange(parseCantidad(e.target.value) ?? 0);
+        }}
+      />
+      <button type="button" className="stepper__btn" aria-label={`Uno más de ${etiqueta}`} onClick={() => mover(1)}>
+        +
+      </button>
+    </div>
+  );
+}
+
+/** Estado de un producto con las palabras de la dueña: color + ícono + palabra. */
+export function ChipStock({ nivel }: { nivel: NivelStock }) {
+  const [clase, icono, palabra] =
+    nivel === 'agotado'
+      ? (['e-ocupado', 'alerta', 'Se acabó'] as const)
+      : nivel === 'bajo'
+        ? (['e-por_limpiar', 'alerta', 'Se está acabando'] as const)
+        : nivel === 'sin_contar'
+          ? (['e-mantenimiento', 'inventario', 'Sin contar'] as const)
+          : (['e-libre', 'libre', 'Hay'] as const);
+  return (
+    <span className={`chip ${clase}`}>
+      <Icon name={icono} />
+      {palabra}
+    </span>
+  );
+}
+
+/** "Quedan 12 rollos" con el número grande. */
+export function Quedan({ stock, unidad }: { stock: number | null; unidad: string }) {
+  if (stock == null) return <span className="quedan quedan--nada">Sin contar</span>;
+  return (
+    <span className="quedan">
+      <span className="quedan__t">Quedan</span>
+      <span className="num quedan__n">{numero(stock)}</span>
+      <span className="quedan__t">{unidadPlural(unidad, stock)}</span>
+    </span>
   );
 }

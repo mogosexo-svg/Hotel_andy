@@ -98,7 +98,7 @@ export function ProductoForm({ api, producto, nombreInicial = '', categoriaInici
           )}
         </Campo>
         <div className="ins-par">
-          <Campo etiqueta="Se cuenta en">
+          <Campo etiqueta="Unidad">
             {(id) => (
               <>
                 <input id={id} className="input" list="ins-unidades" value={unidad} onChange={(e) => setUnidad(e.target.value)} autoComplete="off" />
@@ -110,35 +110,41 @@ export function ProductoForm({ api, producto, nombreInicial = '', categoriaInici
               </>
             )}
           </Campo>
-          <Campo etiqueta="Avisar si queda" ayuda="Opcional">
+          <Campo etiqueta="Mínimo" ayuda="Avisamos si queda esto o menos">
             {(id) => <input id={id} className="input" inputMode="decimal" value={minimo} onChange={(e) => setMinimo(e.target.value)} placeholder="10" />}
           </Campo>
         </div>
-        {!producto && (
-          <Campo etiqueta="¿Cuánto hay ahora?" ayuda="Opcional. Si lo dejas vacío quedará “Sin contar”.">
-            {(id) => <input id={id} className="input" inputMode="decimal" value={stock} onChange={(e) => setStock(e.target.value)} placeholder="Ej.: 12 o 0,5" />}
+        <Interruptor marcado={seVende} onChange={setSeVende} texto="¿Se vende?" />
+        {seVende && (
+          <Campo etiqueta="Precio de venta ($)">
+            {(id) => <input id={id} className="input" inputMode="decimal" value={venta} onChange={(e) => setVenta(e.target.value)} placeholder="2,50" />}
           </Campo>
         )}
-        <Interruptor marcado={seVende} onChange={setSeVende} texto="Se vende a los huéspedes" />
-        <div className="ins-par">
-          {seVende && (
-            <Campo etiqueta="Se vende a ($)">
-              {(id) => <input id={id} className="input" inputMode="decimal" value={venta} onChange={(e) => setVenta(e.target.value)} placeholder="2,50" />}
+        <details className="ins-mas">
+          <summary>
+            Más opciones
+            <Icon name="siguiente" size="sm" />
+          </summary>
+          <div className="ins-form">
+            {!producto && (
+              <Campo etiqueta="¿Cuánto hay ahora?" ayuda="Opcional. Si lo dejas vacío quedará “Sin contar”.">
+                {(id) => <input id={id} className="input" inputMode="decimal" value={stock} onChange={(e) => setStock(e.target.value)} placeholder="Ej.: 12 o 0,5" />}
+              </Campo>
+            )}
+            <Campo etiqueta="Precio de compra ($)" ayuda="Opcional">
+              {(id) => <input id={id} className="input" inputMode="decimal" value={compra} onChange={(e) => setCompra(e.target.value)} placeholder="1,20" />}
             </Campo>
-          )}
-          <Campo etiqueta="Se compra a ($)" ayuda="Opcional">
-            {(id) => <input id={id} className="input" inputMode="decimal" value={compra} onChange={(e) => setCompra(e.target.value)} placeholder="1,20" />}
-          </Campo>
-        </div>
-        <div className="campo">
-          <span className="campo__etiqueta">Foto (opcional)</span>
-          <label className="ins-foto">
-            {vista ? <img src={vista} alt="" /> : <Icon name="foto" />}
-            <span>{vista ? 'Cambiar la foto' : 'Tomar o elegir una foto'}</span>
-            <input type="file" accept="image/*" className="sr-only" onChange={(e) => setFoto(e.target.files?.[0] ?? null)} />
-          </label>
-        </div>
-        {producto && <Interruptor marcado={activo} onChange={setActivo} texto="Aparece en la lista (si lo apagas, se guarda el historial)" />}
+            <div className="campo">
+              <span className="campo__etiqueta">Foto (opcional)</span>
+              <label className="ins-foto">
+                {vista ? <img src={vista} alt="" /> : <Icon name="foto" />}
+                <span>{vista ? 'Cambiar la foto' : 'Tomar o elegir una foto'}</span>
+                <input type="file" accept="image/*" className="sr-only" onChange={(e) => setFoto(e.target.files?.[0] ?? null)} />
+              </label>
+            </div>
+            {producto && <Interruptor marcado={activo} onChange={setActivo} texto="Aparece en la lista (si lo apagas, se guarda el historial)" />}
+          </div>
+        </details>
         {error && (
           <p className="campo__error" role="alert">
             {error}

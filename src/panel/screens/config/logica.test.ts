@@ -14,7 +14,6 @@ import {
   nombreRango,
   nochesDe,
   parsearCampo,
-  parsearCantidad,
   unir,
   validarCuenta,
   validarLugar,
@@ -160,12 +159,7 @@ describe('reglas del hotel', () => {
   });
 });
 
-describe('kit, cuenta y NFC', () => {
-  it('cantidad del kit', () => {
-    expect(parsearCantidad('0,5')).toEqual({ ok: true, valor: 0.5 });
-    expect(parsearCantidad('2')).toEqual({ ok: true, valor: 2 });
-    for (const t of ['0', '', '-1', 'x', '1000']) expect(parsearCantidad(t).ok, t).toBe(false);
-  });
+describe('cuenta y NFC', () => {
   it('cuenta: valida, enmascara y no inventa', () => {
     expect(leerCuenta(null)).toBeNull();
     expect(leerCuenta({})).toBeNull();

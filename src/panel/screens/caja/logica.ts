@@ -1,4 +1,5 @@
 import { dinero, hoyEC } from '../../lib/format';
+import type { ItemSalida, Medio } from '../../data/insumos';
 
 export type EstadoCaja = 'cuadra' | 'faltan' | 'sobran';
 
@@ -39,3 +40,28 @@ export function trozosMensaje(mensaje: string): { t: string; b: boolean }[] {
 
 /** Quién cerró, leído del propio mensaje ("Cerró: Ana"); null si no aparece. */
 export const quienCerro = (mensaje: string): string | null => mensaje.match(/Cerr[óo]:?\*?\s*([^\n*·]+)/)?.[1].trim() || null;
+
+/* ───────────── Lo que salió en el turno ───────────── */
+
+export interface ProdSalida {
+  id: string;
+  seVende: boolean;
+  /** Precio de venta en centavos. */
+  venta: number | null;
+}
+
+/** Se anota como venta solo si se vende y tiene precio; lo demás es "se usó". */
+export const esVenta = (p: ProdSalida) => p.seVende && (p.venta ?? 0) > 0;
+
+/** Items para `registrar_salidas_turno`: solo cantidad > 0; las ventas llevan la forma de pago. */
+export function armarSalidas(cantidades: Record<string, number>, prods: ProdSalida[], medio: Medio): ItemSalida[] {
+  return prods.flatMap((p) => {
+    const cantidad = cantidades[p.id] ?? 0;
+    if (!(cantidad > 0)) return [];
+    return [esVenta(p) ? { producto_id: p.id, cantidad, medio } : { producto_id: p.id, cantidad }];
+  });
+}
+
+/** Total en vivo de lo vendido, en centavos. */
+export const totalVentas = (cantidades: Record<string, number>, prods: ProdSalida[]): number =>
+  prods.reduce((s, p) => s + (esVenta(p) ? Math.round((cantidades[p.id] ?? 0) * (p.venta ?? 0)) : 0), 0);
