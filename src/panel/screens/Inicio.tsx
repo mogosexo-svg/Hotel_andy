@@ -4,6 +4,7 @@ import type { Database } from '../../lib/database.types';
 import { usePerfil } from '../data/sesion';
 import { useCuartos } from '../data/cuartos';
 import { hoyEC, saludo } from '../lib/format';
+import { nombreTurno } from './caja/logica';
 import { nivelStock } from '../lib/stock';
 import type { Pagina } from '../nav';
 import { Aviso, BarraStock, ErrorCarga, Skeleton } from '../ui/kit';
@@ -42,7 +43,7 @@ export interface Resumen {
 }
 export type FilaIngreso = Database['public']['Functions']['ocupacion_ingresos']['Returns'][number];
 
-export function Inicio({ ir, porRevisar }: { ir: (p: Pagina) => void; porRevisar: number }) {
+export function Inicio({ ir, porRevisar, cierre }: { ir: (p: Pagina) => void; porRevisar: number; cierre: string | null }) {
   const { hotelId, nombre } = usePerfil();
   const { tick } = useCuartos();
   const [resumen, setResumen] = useState<Resumen | null>(null);
@@ -95,13 +96,13 @@ export function Inicio({ ir, porRevisar }: { ir: (p: Pagina) => void; porRevisar
       ) : !resumen || !serie ? (
         <InicioSkeleton />
       ) : (
-        <InicioDatos r={resumen} serie={serie} ir={ir} hoy={hoy} temporada={temporada} porRevisar={porRevisar} />
+        <InicioDatos r={resumen} serie={serie} ir={ir} hoy={hoy} temporada={temporada} porRevisar={porRevisar} cierre={cierre} />
       )}
     </section>
   );
 }
 
-function InicioDatos({ r, serie, ir, hoy, temporada, porRevisar }: { r: Resumen; serie: FilaIngreso[]; ir: (p: Pagina) => void; hoy: string; temporada: string | null; porRevisar: number }) {
+function InicioDatos({ r, serie, ir, hoy, temporada, porRevisar, cierre }: { r: Resumen; serie: FilaIngreso[]; ir: (p: Pagina) => void; hoy: string; temporada: string | null; porRevisar: number; cierre: string | null }) {
   const { cuartos, cuartoAbierto, abrirCuarto } = useCuartos();
   const libres = Math.max(0, r.cuartos - r.ocupados - r.por_limpiar - r.limpiando - r.en_arreglo);
   const hayDatos = useMemo(() => serie.some((f) => f.cuartos_ocupados > 0 || f.ingresos_centavos > 0), [serie]);
@@ -121,6 +122,18 @@ function InicioDatos({ r, serie, ir, hoy, temporada, porRevisar }: { r: Resumen;
   return (
     <>
     <div className="inicio bento">
+      {cierre && (
+        <button type="button" className="card b-card b-comp" onClick={() => ir('caja')}>
+          <span className="b-burbuja">
+            <Icon name="caja" />
+          </span>
+          <span className="b-comp__txt">
+            <b>Toca el cierre de {nombreTurno(cierre)}</b>
+            <small>Cuenta el efectivo y manda el resumen por WhatsApp</small>
+          </span>
+          <Icon name="siguiente" size="sm" />
+        </button>
+      )}
       {porRevisar > 0 && (
         <button type="button" className="card b-card b-comp" onClick={() => ir('comprobantes')}>
           <span className="b-burbuja">

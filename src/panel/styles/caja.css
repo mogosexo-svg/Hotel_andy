@@ -1,0 +1,315 @@
+/* Caja: resumen grande, conteo con diferencia en vivo e historial. Solo transform/opacity en el movimiento. */
+.caja {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-5);
+  align-items: start;
+}
+.caja-col {
+  display: grid;
+  gap: var(--s-4);
+  min-width: 0;
+  align-content: start;
+}
+.caja-col > * {
+  animation: item-in var(--d-3) var(--ease) backwards;
+}
+.caja-titulo {
+  font-size: var(--t-lg);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.caja-vacio,
+.caja-avisos-on {
+  color: var(--ink-2);
+  font-size: var(--t-sm);
+}
+.caja-avisos-on {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+.pantalla--caja .pantalla__cab {
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+
+/* Resumen */
+.caja-resumen {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-5) var(--s-4);
+  background: linear-gradient(160deg, var(--brand-soft), #fff 70%);
+}
+.caja-resumen__turno {
+  font-family: var(--font-display);
+  font-size: var(--t-2xl);
+  line-height: 1.1;
+}
+.caja-resumen__desde {
+  color: var(--ink-2);
+}
+.caja-cifras {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-3) var(--s-4);
+  margin: var(--s-2) 0 0;
+}
+.caja-cifras dt {
+  color: var(--ink-3);
+  font-size: var(--t-sm);
+  font-weight: 650;
+}
+.caja-cifras dd {
+  margin: 0;
+  font-size: var(--t-xl);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+.caja-cifras__total {
+  grid-column: 1 / -1;
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--line);
+}
+.caja-cifras__total dd {
+  color: var(--brand);
+  font-size: var(--t-num);
+}
+
+/* Movimientos plegables */
+.caja-movs summary {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: var(--touch);
+  color: var(--brand);
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+.caja-movs summary::-webkit-details-marker {
+  display: none;
+}
+.caja-movs summary .ico {
+  transition: transform var(--d-2) var(--ease);
+}
+.caja-movs[open] summary .ico {
+  transform: rotate(90deg);
+}
+.caja-movs ul {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.caja-movs li {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-2) 0;
+  border-top: 1px solid var(--line);
+}
+.caja-movs__hora {
+  color: var(--ink-3);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.caja-movs__txt {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.caja-movs__txt small {
+  display: block;
+  color: var(--ink-2);
+  font-size: var(--t-sm);
+}
+
+/* Contar */
+.caja-contar {
+  display: grid;
+  gap: var(--s-4);
+  padding: var(--s-5) var(--s-4);
+}
+.caja-contar label {
+  font-size: var(--t-lg);
+  font-weight: 700;
+}
+.caja-monto {
+  position: relative;
+}
+.caja-monto > span {
+  position: absolute;
+  left: var(--s-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-3);
+  font-size: var(--t-2xl);
+  font-weight: 700;
+  pointer-events: none;
+}
+.caja-monto .input {
+  min-height: 4.5rem;
+  padding-left: 2.75rem;
+  font-size: var(--t-2xl);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.caja-dif-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  min-height: 2.5rem;
+}
+.caja-dif-fila__sub {
+  color: var(--ink-2);
+  font-size: var(--t-sm);
+}
+.chip.caja-dif {
+  min-height: 2.5rem;
+  padding: 0 var(--s-3);
+  font-size: var(--t-lg);
+  animation: caja-pop var(--d-2) var(--ease);
+}
+@keyframes caja-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+/* Éxito y burbuja de WhatsApp */
+.caja-exito {
+  display: grid;
+  gap: var(--s-4);
+  padding: var(--s-5) var(--s-4);
+}
+.caja-exito h2 {
+  font-size: var(--t-xl);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.caja-exito__sub {
+  color: var(--ink-2);
+}
+.caja-exito__ico {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: var(--libre-tinte);
+  color: var(--libre);
+}
+.caja-chat {
+  padding: var(--s-4) var(--s-3);
+  border-radius: var(--r-md);
+  background: var(--brand-soft);
+  box-shadow: inset 0 0 0 1px var(--agua-suave);
+}
+.caja-burbuja {
+  position: relative;
+  max-width: 34rem;
+  margin: 0;
+  padding: var(--s-3) var(--s-4);
+  border-radius: 4px var(--r-md) var(--r-md) var(--r-md);
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(10 27 46 / 0.1);
+  font-size: var(--t-sm);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.caja-acciones {
+  display: grid;
+  gap: var(--s-2);
+}
+.caja-acciones .btn {
+  text-decoration: none;
+}
+.caja-hoja {
+  display: grid;
+  gap: var(--s-4);
+  padding-bottom: var(--s-3);
+}
+
+/* Historial */
+.caja-hist {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.caja-fila {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-areas: 'quien monto sig' 'chip chip sig';
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  width: 100%;
+  padding: var(--s-3) var(--s-4);
+  border: 0;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: transform var(--d-2) var(--ease);
+}
+.caja-fila:hover {
+  transform: translateY(-1px);
+}
+.caja-fila__quien {
+  grid-area: quien;
+  display: grid;
+  min-width: 0;
+}
+.caja-fila__quien small {
+  color: var(--ink-2);
+  font-size: var(--t-sm);
+}
+.caja-fila__monto {
+  grid-area: monto;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.caja-fila .chip {
+  grid-area: chip;
+  justify-self: start;
+}
+.caja-fila > .ico {
+  grid-area: sig;
+  color: var(--ink-3);
+}
+
+@media (min-width: 700px) {
+  .caja-cifras {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .caja-cifras__total {
+    grid-column: auto;
+    padding-top: 0;
+    border-top: 0;
+  }
+  .caja-cifras dd {
+    font-size: var(--t-num);
+  }
+}
+@media (min-width: 1180px) {
+  .caja {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .caja-col > *,
+  .chip.caja-dif {
+    animation: none;
+  }
+  .caja-fila:hover {
+    transform: none;
+  }
+}

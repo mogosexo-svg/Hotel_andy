@@ -20,7 +20,9 @@ import { Limpieza } from './screens/Limpieza';
 import { Inventario } from './screens/Inventario';
 import { Config } from './screens/config/Config';
 import { Comprobantes } from './screens/comprobantes/Comprobantes';
+import { Caja } from './screens/caja/Caja';
 import { useComprobantes } from './data/comprobantes';
+import { useAlertaCaja } from './data/caja';
 import { paginaDeHash, paginasDe, type Pagina } from './nav';
 import { ROL_PALABRA } from './lib/estados';
 
@@ -147,11 +149,14 @@ function Shell() {
   const stockBajo = useStockBajo(perfil.hotelId, tick, gestiona);
   const comprobantes = useComprobantes(gestiona);
   const porRevisar = comprobantes.lista.length;
+  const alertasCaja = useAlertaCaja(gestiona);
+  const turnoCaja = alertasCaja.some((a) => a.caja_turno === 'noche') ? 'noche' : alertasCaja.length ? 'tarde' : null;
   const avisos: AvisoItem[] = [
     { id: 'limpiar', n: porLimpiar, texto: porLimpiar === 1 ? 'cuarto por limpiar' : 'cuartos por limpiar', icono: 'por_limpiar', ir: () => ir('limpieza') },
     ...(gestiona
       ? [
           { id: 'comprobantes', n: porRevisar, texto: porRevisar === 1 ? 'comprobante por revisar' : 'comprobantes por revisar', icono: 'factura' as const, ir: () => ir('comprobantes') },
+          { id: 'caja', n: alertasCaja.length, texto: turnoCaja === 'noche' ? 'cierre de caja pendiente (la noche)' : 'cierre de caja pendiente', icono: 'caja' as const, ir: () => ir('caja') },
           { id: 'stock', n: stockBajo, texto: stockBajo === 1 ? 'insumo se está acabando' : 'insumos se están acabando', icono: 'inventario' as const, ir: () => ir('inventario') },
         ]
       : []),
@@ -210,6 +215,11 @@ function Shell() {
                     {p.id === 'limpieza' && porLimpiar > 0 && (
                       <span className="riel__punto" aria-label={`${porLimpiar} por limpiar`}>
                         {porLimpiar}
+                      </span>
+                    )}
+                    {p.id === 'caja' && alertasCaja.length > 0 && (
+                      <span className="riel__punto" aria-label="Toca cerrar la caja">
+                        {alertasCaja.length}
                       </span>
                     )}
                     {p.id === 'comprobantes' && porRevisar > 0 && (
@@ -279,10 +289,11 @@ function Shell() {
         </header>
 
       <main className="contenido" id="contenido" style={{ ['--dx' as string]: `${dx}px` }}>
-        {pagina === 'inicio' && <Inicio ir={ir} porRevisar={porRevisar} />}
+        {pagina === 'inicio' && <Inicio ir={ir} porRevisar={porRevisar} cierre={turnoCaja} />}
         {pagina === 'cuartos' && <Mapa />}
         {pagina === 'reservas' && <Reservas />}
         {pagina === 'comprobantes' && <Comprobantes datos={comprobantes} />}
+        {pagina === 'caja' && <Caja />}
         {pagina === 'limpieza' && <Limpieza />}
         {pagina === 'inventario' && <Inventario />}
         {pagina === 'config' && <Config />}

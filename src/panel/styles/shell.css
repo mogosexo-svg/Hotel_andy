@@ -423,7 +423,7 @@
     align-items: stretch;
     padding: var(--s-4) var(--s-2) var(--s-3);
     /* Alto de cada botón: se encoge en pantallas bajas para que "Salir" siempre quepa. */
-    --riel-h: clamp(3.5rem, calc((100dvh - 19rem) / 6), 5rem);
+    --riel-h: clamp(3.5rem, calc((100dvh - 19rem) / 8), 5rem);
     overflow-y: auto;
     scrollbar-width: none;
   }
