@@ -1,5 +1,5 @@
 // Fotos y qué cuarto muestra cada una. Qué cuarto es cada foto NO está confirmado (tipo_sugerido en fotos/fotos.json):
-// para corregirlo se cambia ese campo. Un tipo sin fotos (triple, triple deluxe) sale con un estado sin foto, nunca con una inventada.
+// para corregirlo se cambia ese campo. Un tipo sin fotos sale con un estado sin foto, nunca con una inventada.
 import type { ImageMetadata } from 'astro';
 import meta from '../../../fotos/fotos.json';
 
