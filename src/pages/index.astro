@@ -25,7 +25,7 @@ const h = c.hotel;
 const og = await getImage({ src: foto('terraza-1').img, width: 1200, height: 630, fit: 'cover', format: 'jpg' });
 const ogUrl = new URL(og.src, Astro.site).href;
 const desde = desdeMinimo(c);
-const descripcion = `Hotel de playa en ${h.ciudad}, ${h.provincia}: terraza con vista al mar, piscina techada${desde != null ? ` y cuartos desde ${dinero(desde)} la noche` : ''}. Reserva directo.`;
+const descripcion = `Hotel de playa en ${h.ciudad}, ${h.provincia}: terraza con vista al mar, piscina techada${desde != null ? ` y habitaciones desde ${dinero(desde)} la noche` : ''}. Reserva directo.`;
 const r = h.reglas;
 const hotelLd = {
   '@context': 'https://schema.org',

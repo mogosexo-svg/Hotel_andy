@@ -15,7 +15,7 @@ for (const t of c.tipos) {
   const f = fotosDeTipo(t.clave)[0];
   if (f) minis[t.id] = (await getImage({ src: foto(f).img, width: 520, format: 'webp' })).src;
 }
-const pasos = ['Fechas', 'Personas', 'Cuarto', 'Tus datos'];
+const pasos = ['Fechas', 'Personas', 'Habitación', 'Tus datos'];
 ---
 <section id="reservar" class="reserva" data-reserva
   data-url={import.meta.env.PUBLIC_SUPABASE_URL} data-key={import.meta.env.PUBLIC_SUPABASE_ANON_KEY}
@@ -49,9 +49,9 @@ const pasos = ['Fechas', 'Personas', 'Cuarto', 'Tus datos'];
           <output class="serif num" data-personas aria-live="polite">2</output>
           <button type="button" class="r-mas" data-mas aria-label="Una persona más"><Icono n="mas" /></button>
         </div>
-        <p class="nota">Cuenta a todos, también a los niños. Te mostramos los cuartos donde caben.</p>
+        <p class="nota">Cuenta a todos, también a los niños. Te mostramos las habitaciones donde caben.</p>
         <p class="error" data-error role="alert" hidden></p>
-        <div class="r-pie"><button type="button" class="btn btn-claro" data-volver="fechas">Volver</button><button type="button" class="btn" data-ver><span>Ver cuartos libres</span><Icono n="flecha" tam={18} /></button></div>
+        <div class="r-pie"><button type="button" class="btn btn-claro" data-volver="fechas">Volver</button><button type="button" class="btn" data-ver><span>Ver habitaciones libres</span><Icono n="flecha" tam={18} /></button></div>
       </section>
 
       <section data-paso="resultados" class="r-paso" hidden>
@@ -85,7 +85,7 @@ const pasos = ['Fechas', 'Personas', 'Cuarto', 'Tus datos'];
           </div>
           <div class="boleto-corte" aria-hidden="true"></div>
           <div class="boleto-inf">
-            <p class="etiqueta">Tu cuarto queda guardado</p>
+            <p class="etiqueta">Tu habitación queda guardada</p>
             <p class="boleto-reloj num" data-reloj role="timer" aria-live="off">--:--:--</p>
             <p class="nota" data-vence></p>
           </div>

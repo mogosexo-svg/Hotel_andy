@@ -140,7 +140,7 @@ export function crearCalendario(host: HTMLElement, o: Opciones) {
     leyenda.className = 'cal-leyenda';
     const hayAlta = [...datos.values()].some((x) => x.alta);
     const hayPrecio = [...datos.values()].some((x) => x.desde != null);
-    leyenda.innerHTML = `${hayPrecio ? '<span>El número pequeño es el precio desde, por noche</span>' : ''}${hayAlta ? '<span><i></i>Temporada alta</span>' : ''}${[...datos.values()].some((x) => x.libres === 0) ? `<span>${o.lleno?.() ?? 'Tachado: sin cuartos'}</span>` : ''}`;
+    leyenda.innerHTML = `${hayPrecio ? '<span>El número pequeño es el precio desde, por noche</span>' : ''}${hayAlta ? '<span><i></i>Temporada alta</span>' : ''}${[...datos.values()].some((x) => x.libres === 0) ? `<span>${o.lleno?.() ?? 'Tachado: sin habitaciones'}</span>` : ''}`;
     host.replaceChildren(frag, leyenda);
     clases();
   }

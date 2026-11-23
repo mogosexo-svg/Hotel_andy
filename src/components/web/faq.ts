@@ -11,13 +11,13 @@ export function preguntas(c: Catalogo): { q: string; a: string }[] {
       a: r.mascotas.cargo_adicional === 0 ? 'Sí, las mascotas son bienvenidas y no tienen cargo.' : 'Sí, se aceptan mascotas. Escríbenos por WhatsApp para saber el cargo.',
     },
     (r.wifi || r.aire_acondicionado || r.agua_caliente) && {
-      q: '¿Qué incluyen los cuartos?',
-      a: `${new Intl.ListFormat('es').format([r.wifi && 'wifi', r.aire_acondicionado && 'aire acondicionado', r.agua_caliente && 'agua caliente'].filter((x): x is string => !!x))} en todos los cuartos, sin costo extra. El precio es por habitación, no por persona.`.replace(/^./, (x) => x.toUpperCase()),
+      q: '¿Qué incluyen las habitaciones?',
+      a: `${new Intl.ListFormat('es').format([r.wifi && 'wifi', r.aire_acondicionado && 'aire acondicionado', r.agua_caliente && 'agua caliente'].filter((x): x is string => !!x))} en todas las habitaciones.`.replace(/^./, (x) => x.toUpperCase()),
     },
     r.desayuno === false && { q: '¿Incluye desayuno?', a: 'No, el desayuno no está incluido.' },
     r.anticipo && r.prereserva_horas ? {
       q: '¿Cómo se paga la reserva?',
-      a: `La pre-reserva guarda el cuarto ${r.prereserva_horas} horas. Se confirma con un anticipo del ${r.anticipo.porcentaje} % por ${r.anticipo.medio}.`,
+      a: `La pre-reserva guarda la habitación ${r.prereserva_horas} horas. Se confirma con un anticipo del ${r.anticipo.porcentaje} % por ${r.anticipo.medio}.`,
     } : false,
     { q: '¿Puedo cancelar o cambiar las fechas?', a: 'Se conversa caso a caso por WhatsApp.' },
     r.ascensor === false && {

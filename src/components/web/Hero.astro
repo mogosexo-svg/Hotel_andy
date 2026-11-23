@@ -19,7 +19,7 @@ const p = c.hotel.reglas.piscina;
   <div class="hero-cuerpo">
     <a class="etiqueta chip vidrio" href="#donde"><Icono n="pin" tam={16} /><span>{c.hotel.ciudad}, {c.hotel.provincia}</span><span class="chip-ver">Ver mapa</span></a>
     <h1 class="gigante" set:html={titulo(`a pasos de la *playa*`)} />
-    <p class="hero-lead">Terraza con vista al mar{p ? `, piscina abierta hasta la ${p.cierra.slice(0, 5)}` : ''} y un cuarto para cada plan.</p>
+    <p class="hero-lead">Terraza con vista al mar{p ? `, piscina abierta hasta la ${p.cierra.slice(0, 5)}` : ''} y una habitación para cada plan.</p>
     <div class="acciones">
       <a class="btn" href="#reservar"><span>Reservar</span><Icono n="flecha" tam={18} /></a>
       <a class="btn btn-vidrio vidrio" href={waUrl(c, `Hola, quiero información para reservar en ${c.hotel.nombre}.`)} target="_blank" rel="noopener"><Icono n="chat" tam={18} /><span>Escribir por WhatsApp</span></a>

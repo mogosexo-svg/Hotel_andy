@@ -15,7 +15,7 @@ const spans = ['s7', 's5', 's4', 's4', 's4', 's5', 's7'];
   <div class="cab">
     <p class="etiqueta rv">Habitaciones</p>
     <h2 class="gigante gigante-m rv" set:html={titulo('Elige la habitación de tu *preferencia*')} />
-    <p class="lead rv">{c.tipos.length} tipos, para dos personas o para toda la familia. El precio es por habitación, no por persona.</p>
+    <p class="lead rv">{c.tipos.length} tipos, para dos personas o para toda la familia. El precio es por habitación.</p>
   </div>
   <ul class="cuartos">
     {c.tipos.map((t, i) => {
@@ -45,17 +45,17 @@ const spans = ['s7', 's5', 's4', 's4', 's4', 's5', 's7'];
                   </figure>
                 );
               }) : (
-                <figure class="v-slide v-sin" data-activa=""><Icono n="ola" tam={56} /><p>Todavía no tenemos foto de este cuarto.</p></figure>
+                <figure class="v-slide v-sin" data-activa=""><Icono n="ola" tam={56} /><p>Todavía no tenemos foto de esta habitación.</p></figure>
               )}
             </div>
             <div class="v-info">
               <h3 class="serif">{t.nombre}</h3>
-              <p class="v-cap"><Icono n="usuario" tam={18} /> Hasta {t.max_personas} personas, {t.cuartos} {t.cuartos === 1 ? 'cuarto' : 'cuartos'} en el hotel</p>
+              <p class="v-cap"><Icono n="usuario" tam={18} /> Hasta {t.max_personas} personas, {t.cuartos} {t.cuartos === 1 ? 'habitación' : 'habitaciones'} en el hotel</p>
               {t.descripcion && <p class="v-desc">{t.descripcion}</p>}
               <ul class="v-inc">{incluye.map(([ic, tx]) => <li><Icono n={ic} tam={18} /><span>{tx}</span></li>)}</ul>
               <div class="v-pie">
                 {t.desde_centavos != null && <p class="v-precio">Desde <strong class="serif num">{dinero(t.desde_centavos)}</strong> la noche</p>}
-                <a class="btn" href="#reservar" data-reservar={t.id} data-nombre={t.nombre} data-max={t.max_personas}><span>Reservar este cuarto</span><Icono n="flecha" tam={18} /></a>
+                <a class="btn" href="#reservar" data-reservar={t.id} data-nombre={t.nombre} data-max={t.max_personas}><span>Reservar esta habitación</span><Icono n="flecha" tam={18} /></a>
               </div>
             </div>
           </template>
@@ -63,9 +63,9 @@ const spans = ['s7', 's5', 's4', 's4', 's4', 's5', 's7'];
       );
     })}
   </ul>
-  <p class="nota">Las fotos son de cuartos del hotel y pueden no ser exactamente el tipo que reservas.</p>
+  <p class="nota">Las fotos son de habitaciones del hotel y pueden no ser exactamente el tipo que reservas.</p>
 
-  <dialog class="visor" data-dlg aria-label="Fotos del cuarto" aria-modal="true">
+  <dialog class="visor" data-dlg aria-label="Fotos de la habitación" aria-modal="true">
     <div class="v-fondo-cap" aria-hidden="true"></div>
     <div class="v-escena" data-escena></div>
     <ol class="v-barras" data-barras aria-hidden="true"></ol>

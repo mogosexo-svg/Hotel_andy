@@ -90,7 +90,7 @@ if (root) {
           return null; // sin la RPC o con la red caída el calendario sigue sirviendo, solo sin precios
         }
       },
-      lleno: () => (pref ? `Tachado: sin ${pref.nombre}` : 'Tachado: sin cuartos'),
+      lleno: () => (pref ? `Tachado: sin ${pref.nombre}` : 'Tachado: sin habitaciones'),
       alCambiar: (ini, fin) => {
         error(fechas, '');
         sel.textContent = !ini ? 'Elige tu día de entrada.' : !fin ? `Entrada el ${dia(ini)}. Ahora elige tu día de salida.`
@@ -168,8 +168,8 @@ if (root) {
     const n = filas[0]?.noches ?? Math.round((Date.parse(consulta.salida) - Date.parse(consulta.entrada)) / 864e5);
     q('[data-resumen]').textContent = filas.length
       ? `Del ${dia(consulta.entrada)} al ${dia(consulta.salida)}, ${plural(n, 'noche', 'noches')}, ${plural(consulta.personas, 'persona', 'personas')}. Esto hay libre:`
-      : `Del ${dia(consulta.entrada)} al ${dia(consulta.salida)} no hay cuartos libres con esa capacidad. Prueba otras fechas o escríbenos por WhatsApp.`;
-    if (pref && filas.length && !filas.some((f) => f.tipo_id === pref!.id)) q('[data-resumen]').textContent += ` El cuarto ${pref.nombre} no está libre en esas fechas.`;
+      : `Del ${dia(consulta.entrada)} al ${dia(consulta.salida)} no hay habitaciones libres con esa capacidad. Prueba otras fechas o escríbenos por WhatsApp.`;
+    if (pref && filas.length && !filas.some((f) => f.tipo_id === pref!.id)) q('[data-resumen]').textContent += ` La habitación ${pref.nombre} no está libre en esas fechas.`;
     orden.forEach((f, k) => {
       const li = document.createElement('li');
       li.style.setProperty('--k', String(k));
@@ -233,7 +233,7 @@ if (root) {
     const rotulo = enviar.querySelector('span')!;
     const antes = rotulo.textContent;
     enviar.classList.add('cargando');
-    rotulo.textContent = 'Guardando tu cuarto…';
+    rotulo.textContent = 'Guardando tu habitación…';
     datos.setAttribute('aria-busy', 'true');
     try {
       const p = await rpc<Pre>('crear_prereserva', {
