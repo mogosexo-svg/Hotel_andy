@@ -30,7 +30,7 @@ const spans = ['s7', 's5', 's4', 's4', 's4', 's5', 's7'];
             )}
             <span class="cuarto-cap vidrio">
               <span class="cuarto-nombre">{t.nombre}</span>
-              <span class="cuarto-meta">Hasta {t.max_personas} personas{fs.length > 1 ? `, ${fs.length} fotos` : ''}</span>
+              <span class="cuarto-meta">Hasta {t.max_personas} huéspedes{fs.length > 1 ? `, ${fs.length} fotos` : ''}</span>
               {t.desde_centavos != null && <span class="cuarto-precio">Desde <strong class="num">{dinero(t.desde_centavos)}</strong></span>}
             </span>
           </button>
@@ -50,7 +50,7 @@ const spans = ['s7', 's5', 's4', 's4', 's4', 's5', 's7'];
             </div>
             <div class="v-info">
               <h3 class="serif">{t.nombre}</h3>
-              <p class="v-cap"><Icono n="usuario" tam={18} /> Hasta {t.max_personas} personas, {t.cuartos} {t.cuartos === 1 ? 'habitación' : 'habitaciones'} en el hotel</p>
+              <p class="v-cap"><Icono n="usuario" tam={18} /> Hasta {t.max_personas} huéspedes, {t.cuartos} {t.cuartos === 1 ? 'habitación' : 'habitaciones'} en el hotel</p>
               {t.descripcion && <p class="v-desc">{t.descripcion}</p>}
               <ul class="v-inc">{incluye.map(([ic, tx]) => <li><Icono n={ic} tam={18} /><span>{tx}</span></li>)}</ul>
               <div class="v-pie">

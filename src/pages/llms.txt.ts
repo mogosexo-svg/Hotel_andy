@@ -18,7 +18,7 @@ export const GET: APIRoute = async ({ site }) => {
     '',
     '## Habitaciones',
     ...c.tipos.map(
-      (t) => `- ${t.nombre}: hasta ${t.max_personas} personas${t.desde_centavos != null ? `, desde ${dinero(t.desde_centavos)} la noche` : ''}`,
+      (t) => `- ${t.nombre}: hasta ${t.max_personas} huéspedes${t.desde_centavos != null ? `, desde ${dinero(t.desde_centavos)} la noche` : ''}`,
     ),
     '',
     '## Preguntas frecuentes',

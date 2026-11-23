@@ -43,11 +43,11 @@ const pasos = ['Fechas', 'Personas', 'Habitación', 'Tus datos'];
       </section>
 
       <section data-paso="personas" class="r-paso" hidden>
-        <h3 class="serif">¿Cuántas personas son?</h3>
+        <h3 class="serif">¿Cuántos huéspedes son?</h3>
         <div class="stepper" role="group" aria-label="Personas">
-          <button type="button" class="r-mas" data-menos aria-label="Una persona menos"><Icono n="menos" /></button>
+          <button type="button" class="r-mas" data-menos aria-label="Un huésped menos"><Icono n="menos" /></button>
           <output class="serif num" data-personas aria-live="polite">2</output>
-          <button type="button" class="r-mas" data-mas aria-label="Una persona más"><Icono n="mas" /></button>
+          <button type="button" class="r-mas" data-mas aria-label="Un huésped más"><Icono n="mas" /></button>
         </div>
         <p class="nota">Cuenta a todos, también a los niños. Te mostramos las habitaciones donde caben.</p>
         <p class="error" data-error role="alert" hidden></p>
@@ -57,7 +57,7 @@ const pasos = ['Fechas', 'Personas', 'Habitación', 'Tus datos'];
       <section data-paso="resultados" class="r-paso" hidden>
         <p class="resumen" data-resumen></p>
         <ul class="tipos" data-lista></ul>
-        <div class="r-pie"><button type="button" class="btn btn-claro" data-volver="personas">Cambiar fechas o personas</button></div>
+        <div class="r-pie"><button type="button" class="btn btn-claro" data-volver="personas">Cambiar fechas o huéspedes</button></div>
       </section>
 
       <form data-paso="datos" class="r-paso form" hidden novalidate>

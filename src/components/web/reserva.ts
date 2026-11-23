@@ -167,7 +167,7 @@ if (root) {
     const orden = [...filas].sort((a, b) => Number(b.tipo_id === pref?.id) - Number(a.tipo_id === pref?.id));
     const n = filas[0]?.noches ?? Math.round((Date.parse(consulta.salida) - Date.parse(consulta.entrada)) / 864e5);
     q('[data-resumen]').textContent = filas.length
-      ? `Del ${dia(consulta.entrada)} al ${dia(consulta.salida)}, ${plural(n, 'noche', 'noches')}, ${plural(consulta.personas, 'persona', 'personas')}. Esto hay libre:`
+      ? `Del ${dia(consulta.entrada)} al ${dia(consulta.salida)}, ${plural(n, 'noche', 'noches')}, ${plural(consulta.personas, 'huésped', 'huéspedes')}. Esto hay libre:`
       : `Del ${dia(consulta.entrada)} al ${dia(consulta.salida)} no hay habitaciones libres con esa capacidad. Prueba otras fechas o escríbenos por WhatsApp.`;
     if (pref && filas.length && !filas.some((f) => f.tipo_id === pref!.id)) q('[data-resumen]').textContent += ` La habitación ${pref.nombre} no está libre en esas fechas.`;
     orden.forEach((f, k) => {
@@ -180,7 +180,7 @@ if (root) {
       const nombre = document.createElement('strong');
       nombre.textContent = f.nombre;
       const cap = document.createElement('span');
-      cap.textContent = `Hasta ${f.max_personas} personas${f.cuartos_libres <= 2 ? `, ${f.cuartos_libres === 1 ? 'queda 1' : `quedan ${f.cuartos_libres}`}` : ''}`;
+      cap.textContent = `Hasta ${f.max_personas} huéspedes${f.cuartos_libres <= 2 ? `, ${f.cuartos_libres === 1 ? 'queda 1' : `quedan ${f.cuartos_libres}`}` : ''}`;
       info.append(nombre, cap);
       if (f.tipo_id === pref?.id) { const tg = document.createElement('span'); tg.className = 'tag'; tg.textContent = 'Tu elección'; info.append(tg); }
       const pie = document.createElement('div');
@@ -242,7 +242,7 @@ if (root) {
       });
       q('[data-codigo]').textContent = p.codigo;
       q('[data-detalle]').textContent = `${elegido.nombre}, del ${dia(p.entrada)} al ${dia(p.salida)}. Total ${usd(p.total_centavos)}.`;
-      const msg = `Hola, soy ${nombre}. Hice la pre-reserva ${p.codigo} en ${hotel}: ${elegido.nombre}, del ${dia(p.entrada)} al ${dia(p.salida)}, ${plural(consulta.personas, 'persona', 'personas')}, total ${usd(p.total_centavos)}.`;
+      const msg = `Hola, soy ${nombre}. Hice la pre-reserva ${p.codigo} en ${hotel}: ${elegido.nombre}, del ${dia(p.entrada)} al ${dia(p.salida)}, ${plural(consulta.personas, 'huésped', 'huéspedes')}, total ${usd(p.total_centavos)}.`;
       q<HTMLAnchorElement>('[data-wa]').href = `https://wa.me/${tel}?text=${encodeURIComponent(msg)}`;
       ir('listo');
       cuentaAtras(p.vence_en);
