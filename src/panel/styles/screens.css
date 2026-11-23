@@ -269,7 +269,7 @@
   font: 700 13px var(--font);
 }
 .g-lienzo {
-  animation: dibuja 1000ms var(--ease) backwards;
+  animation: dibuja var(--d-3) var(--ease) backwards;
 }
 @keyframes dibuja {
   from {
@@ -345,7 +345,7 @@
   min-width: 2px;
   border-radius: inherit;
   transform-origin: left;
-  animation: crece 0.8s var(--ease);
+  animation: crece var(--d-3) var(--ease);
 }
 
 @media (min-width: 700px) {
@@ -523,7 +523,7 @@
   pointer-events: none;
 }
 .cuarto.is-pulso .cuarto__pulso {
-  animation: pulso 0.9s var(--ease);
+  animation: pulso var(--d-3) var(--ease);
 }
 @keyframes pulso {
   0% {

@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { Icon, type IconoNombre } from './Icon';
 import { ESTADOS, type Estado } from '../lib/estados';
 import { MARCA_MINIMO, type NivelStock } from '../lib/stock';
@@ -40,11 +40,23 @@ export function ChipEstado({ estado }: { estado: Estado }) {
 export function Hoja({ titulo, onCerrar, children }: { titulo: ReactNode; onCerrar: () => void; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const id = useId();
+  const [saliendo, setSaliendo] = useState(false);
+  const cerrarRef = useRef(onCerrar);
+  cerrarRef.current = onCerrar;
+  // Salida suave (transición, no animación: si el padre no desmonta, vuelve sola a su sitio)
+  const cerrar = useCallback(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return cerrarRef.current();
+    setSaliendo(true);
+    window.setTimeout(() => {
+      cerrarRef.current();
+      setSaliendo(false);
+    }, 200);
+  }, []);
   useEffect(() => {
     const previo = document.activeElement as HTMLElement | null;
     ref.current?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onCerrar();
+      if (e.key === 'Escape') cerrar();
     };
     document.addEventListener('keydown', onKey);
     const overflow = document.body.style.overflow;
@@ -54,16 +66,16 @@ export function Hoja({ titulo, onCerrar, children }: { titulo: ReactNode; onCerr
       document.body.style.overflow = overflow;
       previo?.focus?.();
     };
-  }, [onCerrar]);
+  }, [cerrar]);
   return (
-    <div className="hoja-fondo" onMouseDown={(e) => e.target === e.currentTarget && onCerrar()}>
+    <div className={`hoja-fondo ${saliendo ? 'hoja--sale' : ''}`} onMouseDown={(e) => e.target === e.currentTarget && cerrar()}>
       <div className="hoja" role="dialog" aria-modal="true" aria-labelledby={id} tabIndex={-1} ref={ref}>
         <div className="hoja__asa" />
         <div className="hoja__cabeza">
           <h2 className="hoja__titulo" id={id}>
             {titulo}
           </h2>
-          <button type="button" className="btn-cerrar" onClick={onCerrar} aria-label="Cerrar">
+          <button type="button" className="btn-cerrar" onClick={cerrar} aria-label="Cerrar">
             <Icon name="cerrar" />
           </button>
         </div>
@@ -135,7 +147,7 @@ export function Contador({ valor, formato }: { valor: number; formato?: (n: numb
     const t0 = performance.now();
     let raf = 0;
     const paso = (t: number) => {
-      const p = Math.min(1, (t - t0) / 700);
+      const p = Math.min(1, (t - t0) / 400); // = --d-3
       const e = 1 - Math.pow(1 - p, 4);
       setV(desde + (valor - desde) * e);
       if (p < 1) raf = requestAnimationFrame(paso);
@@ -146,7 +158,9 @@ export function Contador({ valor, formato }: { valor: number; formato?: (n: numb
   const f = formato ?? ((n: number) => String(Math.round(n)));
   return (
     <span className="num" aria-label={f(valor)}>
-      <span aria-hidden="true">{f(v)}</span>
+      <span className="num__v" key={valor} aria-hidden="true">
+        {f(v)}
+      </span>
     </span>
   );
 }

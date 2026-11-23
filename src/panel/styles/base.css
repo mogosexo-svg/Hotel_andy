@@ -45,7 +45,6 @@ body:has(.panel) {
 .panel :focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: 2px;
-  border-radius: var(--r-sm);
 }
 :where(.panel) :where(input, textarea, button, select) {
   font: inherit;
@@ -110,10 +109,10 @@ body:has(.panel) {
   align-items: center;
   justify-content: center;
   gap: var(--s-2);
-  min-height: 3.25rem;
+  min-height: var(--h-btn);
   padding: 0 var(--s-5);
   border: 1px solid transparent;
-  border-radius: var(--r-md);
+  border-radius: var(--r-btn);
   font-weight: 650;
   line-height: 1;
   text-decoration: none;
@@ -152,8 +151,9 @@ body:has(.panel) {
   transform: scale(1.8);
   transition: opacity 0s, transform var(--d-3) var(--ease);
 }
-.btn:active:not(:disabled) {
-  transform: scale(0.98);
+/* Presión: todos los controles tocables responden igual (transform, 150 ms) */
+:where(.btn, .icono-btn, .btn-cerrar, .filtro, .pestana, .vidrio-btn, .rv-pasos__btn, .ins-cantidad__btn, .b-link):active:not(:disabled) {
+  transform: scale(var(--press));
 }
 .btn:disabled {
   opacity: 0.5;
@@ -162,7 +162,7 @@ body:has(.panel) {
 .btn--primary {
   background: var(--brand);
   color: var(--on-brand);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 1px 2px rgb(10 27 46 / 0.12);
+  box-shadow: var(--sombra-btn);
 }
 .btn--primary:hover:not(:disabled) {
   background: var(--brand-hover);
@@ -188,6 +188,7 @@ body:has(.panel) {
 .btn--danger {
   background: var(--ocupado);
   color: #fff;
+  box-shadow: var(--sombra-btn);
 }
 .btn--danger:hover:not(:disabled) {
   background: var(--ocupado-tinta);
@@ -196,12 +197,17 @@ body:has(.panel) {
   width: 100%;
 }
 .btn--huge {
-  min-height: 4.5rem;
+  min-height: var(--h-btn-grande);
   font-size: var(--t-lg);
   border-radius: var(--r-lg);
 }
 .btn[aria-busy='true'] {
   pointer-events: none;
+}
+/* Cargando no es deshabilitado: se ve vivo, no apagado */
+.btn[aria-busy='true']:disabled {
+  opacity: 0.8;
+  cursor: progress;
 }
 .btn[aria-busy='true'] .ico {
   animation: giro 0.9s linear infinite;
@@ -317,7 +323,8 @@ button.card:hover {
   white-space: nowrap;
   transition:
     background-color var(--d-1) var(--ease),
-    border-color var(--d-1) var(--ease);
+    border-color var(--d-1) var(--ease),
+    transform var(--d-1) var(--ease);
 }
 .filtro:hover {
   border-color: var(--line-input);
@@ -371,7 +378,7 @@ button.card:hover {
   border-radius: var(--r-hoja) var(--r-hoja) 0 0;
   padding: var(--s-3) var(--s-5) calc(var(--s-5) + 12px + env(safe-area-inset-bottom));
   box-shadow: var(--shadow-sheet);
-  animation: sube 450ms var(--ease);
+  animation: sube var(--d-3) var(--ease);
 }
 .hoja__asa {
   width: 2.5rem;
@@ -408,11 +415,20 @@ button.card:hover {
     border-radius: var(--r-hoja);
     padding-bottom: var(--s-5);
     box-shadow: var(--shadow-2);
-    animation: entra 380ms var(--resorte);
+    animation: entra var(--d-3) var(--ease);
   }
   .hoja__asa {
     display: none;
   }
+}
+/* Salida: la hoja baja y el fondo se aclara (el padre la desmonta al terminar) */
+.hoja--sale {
+  opacity: 0;
+  transition: opacity 200ms var(--ease-in);
+}
+.hoja--sale .hoja {
+  transform: translateY(24px);
+  transition: transform 200ms var(--ease-in);
 }
 @keyframes aparece {
   from {
@@ -423,9 +439,6 @@ button.card:hover {
 @keyframes sube {
   from {
     transform: translateY(100%);
-  }
-  70% {
-    transform: translateY(-0.5%);
   }
   to {
     transform: translateY(0);
@@ -440,6 +453,7 @@ button.card:hover {
 .btn-cerrar {
   display: grid;
   place-items: center;
+  flex: none;
   width: var(--touch);
   height: var(--touch);
   margin: calc(var(--s-2) * -1);
@@ -447,6 +461,7 @@ button.card:hover {
   border-radius: var(--r-md);
   background: transparent;
   color: var(--ink-2);
+  transition: background-color var(--d-1) var(--ease), transform var(--d-1) var(--ease);
 }
 .btn-cerrar:hover {
   background: var(--surface-2);
@@ -493,6 +508,10 @@ button.card:hover {
 .toast .ico {
   color: var(--brand);
 }
+.toast .toast__ok {
+  color: var(--libre);
+  animation: pop var(--d-2) var(--ease) 80ms backwards;
+}
 .toast--error {
   color: var(--ocupado-tinta);
 }
@@ -516,7 +535,7 @@ button.card:hover {
   background: var(--agua-suave);
 }
 .toast--sale {
-  animation: toast-out var(--d-2) var(--ease) forwards;
+  animation: toast-out var(--d-2) var(--ease-in) forwards; /* el toast se desmonta justo al terminar */
 }
 @keyframes toast-in {
   from {
@@ -608,6 +627,18 @@ button.card:hover {
   line-height: 1;
 }
 
+/* Cuando la cifra cambia (Realtime, otro día), el número nuevo sube con un fundido corto */
+.num__v {
+  display: inline-block;
+  animation: num-cambia var(--d-2) var(--ease);
+}
+@keyframes num-cambia {
+  from {
+    opacity: 0.35;
+    transform: translateY(6px);
+  }
+}
+
 /* ---------- Barra de stock ---------- */
 .barra {
   position: relative;
@@ -624,7 +655,7 @@ button.card:hover {
   transform-origin: left;
   transform: scaleX(var(--pct, 0));
   transition: transform var(--d-3) var(--ease);
-  animation: crece-barra 700ms var(--ease) backwards;
+  animation: crece-barra var(--d-3) var(--ease) backwards;
 }
 @keyframes crece-barra {
   from {
@@ -800,5 +831,12 @@ input[type='date'].input::-webkit-date-and-time-value {
   }
   .sk::after {
     display: none;
+  }
+  /* Sin movimiento de presión: el fondo y el foco siguen avisando */
+  .panel :is(.btn, .icono-btn, .btn-cerrar, .filtro, .pestana, .vidrio-btn, .rv-pasos__btn, .ins-cantidad__btn, .b-link, .buscador, .campana, .rv-nav__btn):active:not(:disabled) {
+    transform: none;
+  }
+  .hoja--sale .hoja {
+    transform: none;
   }
 }

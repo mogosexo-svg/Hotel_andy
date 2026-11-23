@@ -137,7 +137,7 @@ export function CuadreDia({ api, onVender }: { api: InsumosApi; onVender: () => 
               <li key={c.categoria}>
                 <span className="ins-barras__nombre">{c.categoria}</span>
                 <span className="ins-barras__pista" aria-hidden="true">
-                  <span style={{ width: `${(c.total_centavos / maxCat) * 100}%` }} />
+                  <span style={{ transform: `scaleX(${c.total_centavos / maxCat})` }} />
                 </span>
                 <strong>{dinero(c.total_centavos)}</strong>
               </li>

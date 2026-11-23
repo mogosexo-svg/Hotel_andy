@@ -86,7 +86,7 @@
   background: transparent;
   color: var(--ink-2);
   font-weight: 600;
-  transition: background-color var(--d-1) var(--ease);
+  transition: background-color var(--d-1) var(--ease), transform var(--d-1) var(--ease);
 }
 .icono-btn:hover {
   background: var(--surface-2);
@@ -116,7 +116,7 @@
 }
 .buscador:active,
 .campana:active {
-  transform: scale(0.97);
+  transform: scale(var(--press));
 }
 .buscador {
   justify-content: center;

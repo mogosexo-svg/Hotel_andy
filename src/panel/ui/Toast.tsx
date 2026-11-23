@@ -24,7 +24,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const quitar = useCallback((id: number) => {
     setItems((l) => l.map((t) => (t.id === id ? { ...t, saliendo: true } : t)));
-    window.setTimeout(() => setItems((l) => l.filter((t) => t.id !== id)), 220);
+    window.setTimeout(() => setItems((l) => l.filter((t) => t.id !== id)), 250); // = --d-2: no cortar la salida
   }, []);
 
   const api = useMemo<ToastApi>(() => {
@@ -47,7 +47,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div className="toasts" role="status" aria-live="polite">
         {items.map((t) => (
           <div key={t.id} className={`toast ${t.error ? 'toast--error' : ''} ${t.saliendo ? 'toast--sale' : ''}`}>
-            {t.error && <Icon name="alerta" />}
+            {t.error ? <Icon name="alerta" /> : <Icon name="check" className="toast__ok" />}
             <span className="toast__texto">{sinEmoji(t.texto)}</span>
             {t.deshacer && (
               <button

@@ -667,6 +667,7 @@ p.ins-alerta .ico {
   background: var(--surface);
   font-size: 1.75rem;
   font-weight: 600;
+  transition: background-color var(--d-1) var(--ease), transform var(--d-1) var(--ease);
 }
 .ins-pagos,
 .ins-reservas {
@@ -843,7 +844,9 @@ p.ins-alerta .ico {
   height: 100%;
   border-radius: 4px;
   background: var(--serie-1);
-  transition: width var(--d-3) var(--ease);
+  transform-origin: left;
+  transition: transform var(--d-3) var(--ease);
+  animation: crece var(--d-3) var(--ease) backwards;
 }
 .ins-barras__nombre {
   font-weight: 600;

@@ -205,6 +205,31 @@
   border-radius: 50%;
   background: var(--libre-tinte);
   color: var(--libre);
+  animation: pop var(--d-3) var(--ease) backwards;
+}
+/* Un solo anillo que se expande y se va: cierre hecho */
+.caja-exito__ico {
+  position: relative;
+}
+.caja-exito__ico::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--libre);
+  opacity: 0;
+  animation: caja-anillo var(--d-3) var(--ease) 120ms;
+  pointer-events: none;
+}
+@keyframes caja-anillo {
+  from {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.6);
+  }
 }
 .caja-chat {
   padding: var(--s-4) var(--s-3);
