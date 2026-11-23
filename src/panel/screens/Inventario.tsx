@@ -102,14 +102,14 @@ export function Inventario() {
       </header>
 
       <div className="ins-acciones-cab">
-        <Boton icono="inventario" onClick={() => setInventario(true)}>
+        <Boton icono="dinero" onClick={() => setVenta({ inicial: null })}>
+          Vender
+        </Boton>
+        <Boton variante="quiet" icono="inventario" onClick={() => setInventario(true)}>
           Hacer inventario
         </Boton>
         <Boton variante="quiet" icono="mas" onClick={() => setForm({})}>
           Nuevo producto
-        </Boton>
-        <Boton variante="quiet" icono="dinero" onClick={() => setVenta({ inicial: null })}>
-          Vender
         </Boton>
       </div>
 

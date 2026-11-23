@@ -7,7 +7,8 @@ import { hoyEC, saludo } from '../lib/format';
 import { nombreTurno } from './caja/logica';
 import { nivelStock } from '../lib/stock';
 import type { Pagina } from '../nav';
-import { Aviso, BarraStock, ErrorCarga, Skeleton } from '../ui/kit';
+import { Aviso, BarraStock, Boton, ErrorCarga, Skeleton } from '../ui/kit';
+import { pedirAccionInsumos } from '../data/insumos';
 import { Icon } from '../ui/Icon';
 import { GraficoOcupacion, GraficoCanales } from './graficos';
 import { HojaCuarto } from './HojaCuarto';
@@ -89,6 +90,15 @@ export function Inicio({ ir, porRevisar, cierre }: { ir: (p: Pagina) => void; po
           </h1>
           <p className="pantalla__sub">Así está el hotel ahora</p>
         </div>
+        <Boton
+          icono="dinero"
+          onClick={() => {
+            pedirAccionInsumos('venta');
+            ir('inventario');
+          }}
+        >
+          Vender
+        </Boton>
       </header>
 
       {error ? (
