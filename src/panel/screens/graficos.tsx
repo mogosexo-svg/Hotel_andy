@@ -108,7 +108,9 @@ export function GraficoOcupacion({ serie }: { serie: FilaIngreso[] }) {
         )}
       </svg>
       </div>
-      <table className="sr-only">
+      {/* La tabla va dentro de un div: una tabla no se encoge a 1 px y estiraba la página con un scroll vacío. */}
+      <div className="sr-only">
+      <table>
         <caption>Cuartos ocupados por día</caption>
         <thead>
           <tr>
@@ -127,6 +129,7 @@ export function GraficoOcupacion({ serie }: { serie: FilaIngreso[] }) {
           ))}
         </tbody>
       </table>
+      </div>
     </figure>
   );
 }
