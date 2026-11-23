@@ -105,7 +105,8 @@ if (dlg) {
     if (!dlg!.open || dlg!.hasAttribute('data-cierra')) return;
     const card = origen?.querySelector<HTMLElement>('.cuarto-foto');
     const real = imgDe(escena.querySelector('.v-slide[data-activa] .v-foto'));
-    const fin = () => { dlg!.close(); dlg!.removeAttribute('data-cierra'); dlg!.removeAttribute('data-vuelo'); dlg!.querySelectorAll('.v-gh').forEach((g) => g.remove()); document.documentElement.style.overflow = ''; origen?.focus({ preventScroll: true }); };
+    // Cancelar las animaciones de salida (fill: forwards): si no, al reabrir el fondo y el panel siguen en opacidad 0.
+    const fin = () => { dlg!.getAnimations({ subtree: true }).forEach((a) => a.cancel()); dlg!.close(); dlg!.removeAttribute('data-cierra'); dlg!.removeAttribute('data-vuelo'); dlg!.querySelectorAll('.v-gh').forEach((g) => g.remove()); document.documentElement.style.overflow = ''; origen?.focus({ preventScroll: true }); };
     if (rapido || reduce || !card || !real || !real.currentSrc) return fin();
     dlg!.setAttribute('data-cierra', '');
     const r = card.getBoundingClientRect();

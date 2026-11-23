@@ -9,7 +9,12 @@ import { resumenCuarto } from './practico';
 interface Props { c: Catalogo }
 const { c } = Astro.props;
 const incluye = resumenCuarto(c);
-const spans = ['s7', 's5', 's4', 's4', 's4', 's5', 's7'];
+// Grupos por capacidad: el huésped busca primero "dónde cabemos".
+const grupos = [
+  { titulo: 'Para dos', tipos: c.tipos.filter((t) => t.max_personas <= 2) },
+  { titulo: 'Para tres', tipos: c.tipos.filter((t) => t.max_personas === 3) },
+  { titulo: 'Para cuatro o más', tipos: c.tipos.filter((t) => t.max_personas >= 4) },
+].filter((g) => g.tipos.length);
 ---
 <section id="habitaciones" class="cuartos-sec">
   <div class="cab">
@@ -17,11 +22,14 @@ const spans = ['s7', 's5', 's4', 's4', 's4', 's5', 's7'];
     <h2 class="gigante gigante-m rv" set:html={titulo('Elige la habitación de tu *preferencia*')} />
     <p class="lead rv">{c.tipos.length} tipos, para dos personas o para toda la familia. El precio es por habitación.</p>
   </div>
+  {grupos.map((g) => (
+  <div class="grupo">
+  <h3 class="grupo-tit rv">{g.titulo}<span>{g.tipos.length} {g.tipos.length === 1 ? 'tipo' : 'tipos'}</span></h3>
   <ul class="cuartos">
-    {c.tipos.map((t, i) => {
+    {g.tipos.map((t) => {
       const fs = fotosDeTipo(t.clave);
       return (
-        <li class={`cuarto ${spans[i % spans.length]} rv`}>
+        <li class="cuarto rv">
           <button type="button" class="cuarto-btn" data-visor aria-haspopup="dialog" aria-label={`Ver fotos de ${t.nombre}`}>
             {fs.length ? (
               <Foto nombre={fs[0]} class="cuarto-foto" widths={[400, 700, 1000]} sizes="(min-width: 900px) 45vw, 92vw" />
@@ -63,7 +71,8 @@ const spans = ['s7', 's5', 's4', 's4', 's4', 's5', 's7'];
       );
     })}
   </ul>
-  <p class="nota">Las fotos son de habitaciones del hotel y pueden no ser exactamente el tipo que reservas.</p>
+  </div>
+  ))}
 
   <dialog class="visor" data-dlg aria-label="Fotos de la habitación" aria-modal="true">
     <div class="v-fondo-cap" aria-hidden="true"></div>
