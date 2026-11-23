@@ -16,10 +16,11 @@ const TIPO_PALABRA: Record<Movimiento['tipo'], string> = {
   uso: 'Se usó',
 };
 
-type Modo = 'llego' | 'uso' | 'contar';
+type Modo = 'llego' | 'uso' | 'perdio' | 'contar';
 const MODOS: Record<Modo, { titulo: string; pregunta: string; boton: string }> = {
   llego: { titulo: 'Llegó', pregunta: '¿Cuántos llegaron?', boton: 'Guardar lo que llegó' },
   uso: { titulo: 'Se usó', pregunta: '¿Cuántos se usaron?', boton: 'Guardar lo que se usó' },
+  perdio: { titulo: 'Se perdió', pregunta: '¿Cuántos se perdieron? Roto, vencido o dañado', boton: 'Guardar lo que se perdió' },
   contar: { titulo: 'Corregir cantidad', pregunta: '¿Cuántos hay ahora, contados?', boton: 'Guardar la cantidad' },
 };
 
@@ -69,7 +70,7 @@ export function ProductoHoja({ api, producto: p, onEditar, onCerrar }: Props) {
       ok = r.ok;
       if (!r.ok) setError(r.mensaje);
     } else {
-      ok = (await api.ajustar(p, modo === 'llego' ? 'compra' : 'conteo', cantidad, null)) != null;
+      ok = (await api.ajustar(p, modo === 'llego' ? 'compra' : modo === 'perdio' ? 'merma' : 'conteo', cantidad, null)) != null;
     }
     setGuardando(false);
     if (ok) setModo(null);
@@ -103,6 +104,9 @@ export function ProductoHoja({ api, producto: p, onEditar, onCerrar }: Props) {
               </Boton>
             </div>
             <div className="ins-enlaces">
+              <Boton variante="ghost" onClick={() => elegir('perdio')}>
+                Se perdió
+              </Boton>
               <Boton variante="ghost" onClick={() => elegir('contar')}>
                 Corregir cantidad
               </Boton>

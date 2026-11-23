@@ -1,7 +1,9 @@
 import { useState, type ReactNode } from 'react';
 import '../../styles/caja.css';
+import '../../styles/insumos.css';
 import { usePerfil } from '../../data/sesion';
-import { cerrarCaja, pedirPermisoAvisos, permisoAvisos, type Cierre, type ResumenCaja, useCaja } from '../../data/caja';
+import { cerrarCaja, pedirPermisoAvisos, permisoAvisos, type Cierre, type ResumenCaja, useCaja, useCuadre } from '../../data/caja';
+import { CuadreDia } from '../insumos/Cuadre';
 import { dinero, fechaCorta, hoyEC } from '../../lib/format';
 import { Aviso, Boton, ErrorCarga, Hoja, Skeleton } from '../../ui/kit';
 import { Icon } from '../../ui/Icon';
@@ -65,6 +67,8 @@ export function Caja() {
   const { resumen, cierres, cargando, error, recargar, refrescar } = useCaja();
   const [hecho, setHecho] = useState<Cierre | null>(null);
   const [abierto, setAbierto] = useState<Cierre | null>(null);
+  const [detalle, setDetalle] = useState(false);
+  const cuadre = useCuadre();
   const [permiso, setPermiso] = useState(permisoAvisos);
 
   const sub = hecho
@@ -147,9 +151,18 @@ export function Caja() {
                 ))}
               </ul>
             )}
+            <Boton variante="quiet" block icono="inventario" onClick={() => setDetalle(true)}>
+              Ver ventas y ganancia del día
+            </Boton>
           </aside>
         )}
       </div>
+
+      {detalle && (
+        <Hoja titulo="Ventas del día" onCerrar={() => setDetalle(false)}>
+          <CuadreDia cuadre={cuadre} />
+        </Hoja>
+      )}
 
       {abierto && (
         <Hoja titulo={`Cierre de ${nombreTurno(abierto.turno)} · ${fechaCorta(abierto.fecha)}`} onCerrar={() => setAbierto(null)}>

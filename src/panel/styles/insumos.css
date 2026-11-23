@@ -806,6 +806,7 @@ p.ins-alerta .ico {
   line-height: 1.1;
 }
 .ins-cifra__pct {
+  white-space: nowrap;
   color: var(--ink-2);
   font-size: var(--t-base);
   font-weight: 650;

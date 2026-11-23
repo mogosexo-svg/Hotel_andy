@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Aviso, Boton, Contador, ErrorCarga, Skeleton } from '../../ui/kit';
 import { Icon } from '../../ui/Icon';
-import type { Cuadre as DatosCuadre, InsumosApi } from '../../data/insumos';
+import type { Cuadre as DatosCuadre } from '../../data/insumos';
 import { margenPct } from './logica';
 import { dinero, fechaCorta, hoyEC, numero } from '../../lib/format';
 
@@ -14,8 +14,7 @@ function mueve(fecha: string, dias: number): string {
 }
 
 /** RF-63: lo que se vendió en el día, por producto, categoría y forma de pago, con el margen. */
-export function CuadreDia({ api, onVender }: { api: InsumosApi; onVender: () => void }) {
-  const { cuadre } = api;
+export function CuadreDia({ cuadre, onVender }: { cuadre: (fecha: string) => Promise<DatosCuadre | null>; onVender?: () => void }) {
   const hoy = hoyEC();
   const [fecha, setFecha] = useState(hoy);
   const [datos, setDatos] = useState<DatosCuadre | null>(null);
@@ -73,7 +72,7 @@ export function CuadreDia({ api, onVender }: { api: InsumosApi; onVender: () => 
         icono="dinero"
         titulo={esHoy ? 'Hoy todavía no hay ventas' : 'Ese día no hubo ventas'}
         texto="Cuando se venda una bebida o un snack, aparece aquí con su margen."
-        accion={esHoy ? { texto: 'Registrar una venta', onClick: onVender, icono: 'mas' } : undefined}
+        accion={esHoy && onVender ? { texto: 'Registrar una venta', onClick: onVender, icono: 'mas' } : undefined}
       />
     );
   else {
@@ -97,7 +96,7 @@ export function CuadreDia({ api, onVender }: { api: InsumosApi; onVender: () => 
             <p className="ins-cifra__t">Ganancia</p>
             <p className="ins-cifra__n ins-cifra__n--m">
               {dinero(datos.margen_centavos)}
-              {mp != null && <span className="ins-cifra__pct"> {mp} %</span>}
+              {mp != null && <span className="ins-cifra__pct"> {mp}&nbsp;%</span>}
             </p>
           </div>
         </div>

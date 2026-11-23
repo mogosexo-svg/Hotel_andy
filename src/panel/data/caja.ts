@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import type { Database } from '../../lib/database.types';
 import { usePerfil } from './sesion';
 import { mensajeError } from '../lib/errores';
+import type { Cuadre } from './insumos';
 
 export type Cierre = Database['public']['Tables']['cierres_caja']['Row'];
 export interface Movimiento {
@@ -136,4 +137,16 @@ export function useAlertaCaja(activo: boolean) {
   }, [activo, hotelId, refrescar, respirar]);
 
   return lista;
+}
+
+/** RF-63: ventas del día por producto, categoría y forma de pago, con el margen (se ve dentro de Caja). */
+export function useCuadre() {
+  const { hotelId } = usePerfil();
+  return useCallback(
+    async (fecha: string): Promise<Cuadre | null> => {
+      const { data, error } = await supabase.rpc('cuadre_dia', { p_hotel: hotelId, p_fecha: fecha });
+      return error ? null : (data as unknown as Cuadre);
+    },
+    [hotelId],
+  );
 }
